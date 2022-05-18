@@ -1,0 +1,20 @@
+Package: inAccMod
+Type: Package
+Title: Get and prepare the required inputs for AccessMod
+Version: 0.0.1.0
+Imports: 
+    crsuggest,
+    dplyr,
+    fs,
+    gdalUtils,
+    raster,
+    RCurl,
+    readxl,
+    rgeoboundaries,
+    rgeos,
+    sf,
+    sp,
+    stringi,
+    stringr,
+    utils
+RoxygenNote: 7.1.2
