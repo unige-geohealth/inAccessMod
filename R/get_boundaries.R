@@ -1,8 +1,8 @@
 #' Get boundary shapefile
 #'
 #' Internal function that is used to get the boundary shapefile required in other functions
-#' @param mainPath character; the parent directory of the country/region name folder
-#' @param region character; the country name
+#' @param mainPath character; the parent directory of the country folder
+#' @param region character; the country folder name
 #' @param type character; 'raw' or 'processed' depending on whether the required input is
 #' the raw input or the already processed one (i.e. projected shapefile).
 #' @param mostRecent logical; should the most recent input be selected? If FALSE and if there are multiple
@@ -26,7 +26,7 @@ get_boundaries <- function (mainPath, region, type, mostRecent) {
   }
   folders <- check_exists(pathBorder, type, layer = TRUE)
   if (is.null(folders)) {
-    stop(paste(str_to_title(type), "boundary shapefile is missing."))
+    stop(paste(stringr::str_to_title(type), "boundary shapefile is missing."))
   } else {
     if (type == "raw") {
       timeFolder <- choose_input(folders, "Shapefile downloaded at", mostRecent)

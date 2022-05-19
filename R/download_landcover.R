@@ -1,9 +1,9 @@
 #' Download landcover
 #'
 #' Download the Land Cover 100 m from the Copernicus Global Land Service and copy it to its corresponding folder.
-#' @param mainPath character; the parent directory of the country/region name folder
-#' @param region character; the country/region name
-#' @param alwaysDownload logical; should the raster always be downloaded, even they have already been 
+#' @param mainPath character; the parent directory of the country folder
+#' @param region character; the country folder name
+#' @param alwaysDownload logical; should the raster always be downloaded, even if it has already been 
 #' downloaded? If FALSE and if the raster has already been downloaded the user is 
 #' interactively asked whether they want to download it again or not.
 #' @param mostRecent logical; should the most recent boundary shapefile be selected to define the required landcover tiles? 

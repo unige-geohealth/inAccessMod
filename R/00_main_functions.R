@@ -1135,13 +1135,13 @@ download_osm <- function (x, mainPath, region, alwaysDownload = FALSE, countryNa
   shapeName <- gsub("\\.gpkg$", "", list.files(pathFolder)[grepl("\\.gpkg$", list.files(pathFolder))])
   st_write(shp, paste0(pathFolder, "/v", str_to_title(x), "_", shapeName, ".shp"), append=FALSE) # Save the layer
   logTxt <- paste0(mainPath, "/", region, "/data/log.txt")
-  write(paste0(Sys.time(), ": ", x, " dowloaded from OSM; ", paste(categ, collapse = ", "), "- Input folder ", timeFolder), file = logTxt, append = TRUE)
+  write(paste0(Sys.time(), ": ", x, " downloaded from OSM; ", paste(categ, collapse = ", "), "- Input folder ", timeFolder), file = logTxt, append = TRUE)
   file.remove(paste0(pathFolder, "/", list.files(pathFolder)[grepl("\\.gpkg$|\\.pbf$", list.files(pathFolder))]))
   cat(paste0(pathFolder, "/v", str_to_title(x), "_", shapeName,".shp", "\n"))
 }
 
 # Select directories to be processed
-select_DirFile <- function (x, msg) {
+select_folder <- function (x, msg) {
   n <- 1:length(x)
   indInput <- paste(paste0("\n", n, ": ", x))
   cat(indInput)
@@ -1518,7 +1518,7 @@ process_inputs <- function (mainPath, region, mostRecent = FALSE, alwaysProcess 
     stop("No input data available.")
   }
   if (!all) {
-    selectedFolders <- select_DirFile(rawFolders, "Enter all the indices that correspond to the inputs you want to process.\nOn the same line separated by a space, or just skip to select all inputs.")
+    selectedFolders <- select_folder(rawFolders, "Enter all the indices that correspond to the inputs you want to process.\nOn the same line separated by a space, or just skip to select all inputs.")
   } else {
     selectedFolders <- rawFolders
   }
@@ -1539,7 +1539,8 @@ process_inputs <- function (mainPath, region, mostRecent = FALSE, alwaysProcess 
     borderFolder <- paste0(borderPath, "/", timeFolder, "/raw")
     toProcess <- already_processed(borderFolder, alwaysProcess)
     if (toProcess) {
-      border <- load_layer(borderFolder)[[2]]
+      multipleFilesMsg <- "Select the boundary shapefile that you would like to use."
+      border <- load_layer(borderFolder, multipleFilesMsg)[[2]]
       border <- st_transform(border, crs(epsg))
       write(paste0(Sys.time(), ": vBorders shapefile projected (", epsg, ") - Input folder: ", timeFolder), file = logTxt, append = TRUE)
       sysTime <- Sys.time()

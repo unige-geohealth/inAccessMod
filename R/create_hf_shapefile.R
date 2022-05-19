@@ -1,9 +1,9 @@
 #' Create a health facility shapefile
 #'
 #' Create a point shapefile of health facilities based on a pre-processed HeRAMS health facility table obtained with the
-#' filter_hf function.
-#' @param mainPath character; the parent directory of the country/region name folder
-#' @param region character; the country name
+#' \code{filter_hf()}.
+#' @param mainPath character; the parent directory of the country folder
+#' @param region character; the country folder name
 #' @param mostRecentBoudaries logical; should the most recent processed boundary shapefile be used? If FALSE and if there are multiple
 #' available inputs, the user is interactively asked to select the input based on date and time.
 #' @param mostRecentTable logical; should the most recent processed health facility table be used? If FALSE and if there are multiple
@@ -12,7 +12,7 @@
 #' @param epsg numeric or character (coerced to character); ESPG code - Coordinate systems worldwide (EPSG/ESRI).
 #' Required only when lonlat = FALSE
 #' @param alwaysProcess logical; should always a new shapefile be created? If alwaysProcess = FALSE and if a shapefile has already
-#' been created from the same input table, the user is aksed whether they want to create a new shapefile or not. 
+#' been created from the same input table, the user is asked whether they want to create a new shapefile or not. 
 #' @export
 create_hf_shapefile <- function (mainPath, region, mostRecentBoundaries = TRUE, mostRecentTable = FALSE, lonlat = TRUE, epsg = NULL, alwaysProcess = FALSE) {
   if (!is.character(mainPath)) {
@@ -40,15 +40,12 @@ create_hf_shapefile <- function (mainPath, region, mostRecentBoundaries = TRUE, 
       }
     }
   }
+  logTxt <- paste0(mainPath, "/", region, "/data/log.txt")
   pathFacilities <- paste0(mainPath, "/", region, "/data/vFacilities")
   if (!dir.exists(paste0(pathFacilities))) {
     stop(paste(pathFacilities, " does not exist. Run the initiate_project function."))
   }
-  message("\nLoading processed boundary shapefile...")
-  border <- get_boundaries(mainPath, region, type = "processed", mostRecent = mostRecentBoundaries)
-  if (is.null(border)) {
-    
-  }
+  border <- get_boundaries(mainPath = mainPath, region = region, type = "raw")
   hf <- check_exists(path = pathFacilities, type = "processed", layer = FALSE, extension = "csv")
   if (is.null(hf)) {
     stop("No processed health facility table available. Run the filter_hf function.")
@@ -90,7 +87,7 @@ create_hf_shapefile <- function (mainPath, region, mostRecentBoundaries = TRUE, 
       }
     }
     pts <- sp::SpatialPointsDataFrame(coords = xy[complete.cases(xy), ], data = df[complete.cases(xy), ], proj4string = terra::crs(epsg))
-    border <- rgeos::gUnaryUnion(sf::as(sf::st_transform(border, terra::crs(pts)), "Spatial"))
+    border <- rgeos::gUnaryUnion(as(sf::st_transform(border, terra::crs(pts)), "Spatial"))
     inter <- rgeos::gIntersects(border, pts, byid = TRUE)
     interOutside <- FALSE
     if (!all(inter[, 1])) {
@@ -105,6 +102,7 @@ create_hf_shapefile <- function (mainPath, region, mostRecentBoundaries = TRUE, 
     shp <- sf::st_as_sf(pts[inter[, 1], c("external_id", "workspace_id", "date", "MoSD3", "HFNAME")])
     cat("\nSaving the HFs' shapefile...")
     sf::st_write(shp, paste(hfFolder, "health_facilities.shp", sep = "/"), append = FALSE)
+    write(paste0(Sys.time(), ": Health facility shapefile created - Input folder: ", timeFolder), file = logTxt, append = TRUE)
     if (interOutside) {
       write.table(df[!inter[, 1]], paste(hfFolder, "coordinates_outside.txt", sep = "/"))
       message(paste("\nYou can access the removed HFs at:\n", paste(hfFolder, "coordinates_outside.txt", sep = "/")))

@@ -1,18 +1,11 @@
 #' Copy input
 #'
 #' Copy a manually downloaded input to the project corresponding directory before being processed.
-#' @param mainPath character; the parent directory of the country/region name folder
-#' @param region character; the country name
+#' @param mainPath character; the parent directory of the country folder
+#' @param region character; the country folder name
 #' @param input character; the absolute path of the input. Can be a single path (corresponding to e.g. a health facility table) 
 #' or a vector of different paths (corresponding to e.g. shapefile documents)
-#' @examples 
-#' copy_input("C:/Main_directory", "Mali", "C:/Other_directory/Health_facility.xlsx");
-#' 
-#' input_files <- c("C:/Other_directory/admin.dbf",
-#'                  "C:/Other_directory/admin.prj",
-#'                  "C:/Other_directory/admin.shp",
-#'                  "C:/Other_directory/admin.shx");
-#' copy_input("C:/Main_directory", "Mali", input_files);
+#' @details The user is interactively asked to select the 'input' folder destination.
 #' @export
 copy_input <- function (mainPath, region, input) {
   for (i in 1:length(input)) {

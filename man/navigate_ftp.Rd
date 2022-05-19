@@ -16,7 +16,7 @@ navigate_ftp(folderLst, iso, pathFTP, pathFTP0)
 \item{pathFTP0}{character; the path of the main World Pop FTP directory. The variable IS NOT updated during the process.}
 }
 \value{
-A list of length 2; The first element is a character vector that contains the available files in the targeted folder
+a list of length 2; the first element is a character vector that contains the available files in the targeted folder
 and the second element is the path of the targeted folder.
 }
 \description{

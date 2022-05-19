@@ -13,7 +13,7 @@ download_boundaries(mainPath, region, adminLevel, alwaysDownload = FALSE)
 
 \item{adminLevel}{integer; administrative level of the boundaries. From 0 to 5.}
 
-\item{alwaysDownload}{logical; should the administrative boundaries always be downloaded, even they have already been 
+\item{alwaysDownload}{logical; should the administrative boundaries always be downloaded, even if they have already been 
 downloaded? If FALSE and if the administrative boundary shapefile has already been downloaded the user is 
 interactively asked whether they want to download it again or not.}
 }

@@ -1,7 +1,7 @@
 #' Check downloaded inputs
 #'
 #' Internal function that is used to check if an input has already been downloaded and if so, to ask the user
-#' if they want to dowload it again.
+#' if they want to download it again.
 #' @param folders character; path of a specific input (e.g. "./data/rDEM")
 #' @export
 check_downloaded <- function (folders) {

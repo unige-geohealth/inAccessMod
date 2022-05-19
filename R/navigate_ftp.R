@@ -5,7 +5,7 @@
 #' @param iso character; the country ISO alpha-3 code
 #' @param pathFTP character; the path of the main World Pop FTP directory. The variable IS updated during the process.
 #' @param pathFTP0 character; the path of the main World Pop FTP directory. The variable IS NOT updated during the process.
-#' @return A list of length 2; The first element is a character vector that contains the available files in the targeted folder
+#' @return a list of length 2; the first element is a character vector that contains the available files in the targeted folder
 #' and the second element is the path of the targeted folder.
 #' @details The function keeps running while no folder whose name is the country ISO code is reached.
 #' @export

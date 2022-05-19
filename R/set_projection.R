@@ -1,15 +1,15 @@
 #' Set projection
 #'
 #' Set the projected coordinate reference system of the project based on the extent of the boundary shapefile.
-#' @param mainPath character; the parent directory of the 'country' folder
-#' @param region character; the country name
+#' @param mainPath character; the parent directory of the country folder
+#' @param region character; the country folder name
 #' @param mostRecent logical; should the most recent downloaded boundary shapefile be selected? If FALSE and if there 
 #' are multiple available inputs, the user is interactively asked to select the input based on date and time.
-#' @param alwaysSet logical; should the projected coordinate reference system always be set, even it has already been 
+#' @param alwaysSet logical; should the projected coordinate reference system always be set, even if it has already been 
 #' set? If FALSE and if the projected coordinate reference system has already been set the user is 
 #' interactively asked whether they want to set it again or not.
 #' @param bestCRS logical; should the projected coordinate reference system be set automatically based on the "best-fit" 
-#' projected coordinate reference system? If FALSE, the user is asked to select the projected coordinate reference 
+#' projected coordinate reference system? If FALSE, the user is interactively asked to select the projected coordinate reference 
 #' system from a list of suitable reference systems.
 #' @details The "best-fit" and the suitable projected coordinate reference system are obtained with the 
 #' \code{suggest_top_crs} and the \code{suggest_crs}, respectively, from the \pkg{crsuggest} package.
@@ -47,8 +47,24 @@ set_projection <- function (mainPath, region, mostRecent = FALSE, alwaysSet = FA
     }
   }
   # Get the admin boundaries
-  message("\nLoading raw boundary shapefile...")
-  border <- get_boundaries(mainPath, region, "raw", mostRecent)
+  pathBorder <- paste0(mainPath, "/", region, "/data/vBorders")
+  if (!dir.exists(pathBorder)) {
+    stop(paste(pathBorder,"does not exist. Run the initiate_project function first or check the input parameters."))
+  }
+  folders <- check_exists(pathBorder, "raw", layer = TRUE)
+  if (is.null(folders)) {
+    stop("Raw boundary shapefile is missing.")
+  } else {
+    timeFolderBound <- choose_input(folders, "Shapefile downloaded at", mostRecent)
+    if (is.null(timeFolder)) {
+      stop_quietly("You exit the function.")
+    } else {
+      boundFolder <- paste0(pathBorder, "/", timeFolderBound, "/raw/")
+      multipleFilesMsg <- "Select the boundary shapefile that you would like to use."
+      message(paste("Loading raw boundaries..."))
+      border <- load_layer(boundFolder, multipleFilesMsg)[[2]]
+    }
+  } 
   validEPSG <- crsuggest::crs_sf$crs_code[!is.na(crsuggest::crs_sf$crs_units) & crsuggest::crs_sf$crs_units=="m" & crsuggest::crs_sf$crs_type == "projected"]
   best <- crsuggest::suggest_top_crs(border)
   # Select projection
@@ -111,6 +127,16 @@ set_projection <- function (mainPath, region, mostRecent = FALSE, alwaysSet = FA
   }else{
     write(paste0("EPSG:", epsg), file = paste0(mainPath, "/", region, "/data/config.txt"), append = TRUE)
     write(paste0(Sys.time(), ": Projection parameter set (", epsg, ")"), file = logTxt, append = TRUE)
-    message("\n\nProjection parameter has been set.")
   }
+  # Project the boundary shapefile
+  message("\nProjecting the boundary shapefile...")
+  border <- sf::st_transform(border, sf::st_crs(paste0("EPSG:", epsg)))
+  write(paste0(Sys.time(), ": vBorders shapefile projected (", paste0("EPSG:", epsg), ") - From input folder: ", timeFolder), file = logTxt, append = TRUE)
+  sysTime <- Sys.time()
+  outTimeFolder <- gsub("-|[[:space:]]|\\:", "", sysTime)
+  borderOutFolder <- paste0(gsub("raw", "processed", boundFolder), "/", outTimeFolder)
+  dir.create(borderOutFolder, recursive = TRUE)
+  st_write(border, paste0(borderOutFolder, "/vBorders.shp"), append=FALSE)
+  write(paste0(Sys.time(), ": Processed vBorders shapefile saved - Output folder: ", outTimeFolder), file = logTxt, append = TRUE)
+  message("\nProjection parameter has been set and the boundary shapefile has been projected.")
 }

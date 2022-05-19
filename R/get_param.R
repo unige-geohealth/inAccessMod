@@ -1,8 +1,8 @@
 #' Get project parameters
 #'
 #' Internal function that is used to access the config.txt of the project and get a specific parameter (e.g. ISo alpha-3 code).
-#' @param mainPath character; the parent directory of the country/region name folder
-#' @param region character; the country name
+#' @param mainPath character; the parent directory of the country folder
+#' @param region character; the country folder name
 #' @param param character; 'COUNTRY' to get the original country name, 'ISO' to get the ISO alpha-3 country code or 'EPSG'
 #' to get the EPSG code for layer projection
 #' @export

@@ -16,7 +16,7 @@ download_landcover(
 
 \item{region}{character; the country/region name}
 
-\item{alwaysDownload}{logical; should the raster always be downloaded, even they have already been 
+\item{alwaysDownload}{logical; should the raster always be downloaded, even if it has already been 
 downloaded? If FALSE and if the raster has already been downloaded the user is 
 interactively asked whether they want to download it again or not.}
 
@@ -25,7 +25,7 @@ If FALSE and if there are multiple available inputs, the user is interactively a
 and time.}
 }
 \description{
-Download the Land Cover 100 m from the Copernicus Global Land Service
+Download the Land Cover 100 m from the Copernicus Global Land Service and copy it to its corresponding folder.
 }
 \details{
 The function downloads the landcover tiles from the AWS cloud and determines the file names based on the extent

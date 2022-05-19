@@ -2,7 +2,7 @@
 #'
 #' Internal function that is used to check if an input already exists, and if so, retrieve the date and time of 
 #' the folder creation.
-#' @param path character; path of the country/region name data folder
+#' @param path character; path of the country folder
 #' @param type character; 'raw' or 'processed'
 #' @param layer logical; is the input a raster or a shapefile?
 #' @param extension character; if layer = FALSE, the extension of the input (e.g. 'xlsx')

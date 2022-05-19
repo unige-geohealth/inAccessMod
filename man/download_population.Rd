@@ -11,12 +11,12 @@ download_population(mainPath, region, alwaysDownload = FALSE)
 
 \item{region}{character; the country/region name}
 
-\item{alwaysDownload}{logical; should the raster always be downloaded, even they have already been 
+\item{alwaysDownload}{logical; should the raster always be downloaded, even if it has already been 
 downloaded? If FALSE and if the raster has already been downloaded the user is 
 interactively asked whether they want to download it again or not.}
 }
 \description{
-Download a population raster from the World Pop FTP
+Download a population raster from the World Pop FTP and copy it to its corresponding folder.
 }
 \details{
 The function accesses the World Pop FTP \url{ftp://ftp.worldpop.org.uk/GIS/Population/} and uses an internal

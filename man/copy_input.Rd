@@ -17,12 +17,6 @@ or a vector of different paths (corresponding to e.g. shapefile documents)}
 \description{
 Copy a manually downloaded input to the project corresponding directory before being processed.
 }
-\examples{
-copy_input("C:/Main_directory", "Mali", "C:/Other_directory/Health_facility.xlsx");
-
-input_files <- c("C:/Other_directory/admin.dbf",
-                 "C:/Other_directory/admin.prj",
-                 "C:/Other_directory/admin.shp",
-                 "C:/Other_directory/admin.shx");
-copy_input("C:/Main_directory", "Mali", input_files);
+\details{
+The user is interactively asked to select the 'input' folder destination.
 }

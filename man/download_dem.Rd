@@ -11,8 +11,8 @@ download_dem(mainPath, region, alwaysDownload = FALSE, mostRecent = FALSE)
 
 \item{region}{character; the country/region name}
 
-\item{alwaysDownload}{logical; should the administrative boundaries always be downloaded, even they have already been 
-downloaded? If FALSE and if the administrative boundary shapefile has already been downloaded the user is 
+\item{alwaysDownload}{logical; should the raster always be downloaded, even if it has already been 
+downloaded? If FALSE and if the raster has already been downloaded the user is 
 interactively asked whether they want to download it again or not.}
 
 \item{mostRecent}{logical; should the most recent boundary shapefile be selected to define the required DEM tiles? 
@@ -25,5 +25,5 @@ Download a SRTM 90m resolution (3 arc-seconds) DEM for the entire country and co
 \details{
 The function first download a SRTM tile grid shapefile from \url{https://github.com/sikli/srtm_country}.
 The SRTM tiles to be downloaded are selected based on the extent of the boundary shapefile and are downloaded using the 
-\code{getData} function from the \pkg{raster} package.
+\code{getData} function from the \pkg{raster} package. If there are multiple tiles, it produces a mosaic.
 }

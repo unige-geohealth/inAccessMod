@@ -20,12 +20,12 @@ set_projection(
 \item{mostRecent}{logical; should the most recent downloaded boundary shapefile be selected? If FALSE and if there 
 are multiple available inputs, the user is interactively asked to select the input based on date and time.}
 
-\item{alwaysSet}{logical; should the projected coordinate reference system always be set, even it has already been 
+\item{alwaysSet}{logical; should the projected coordinate reference system always be set, even if it has already been 
 set? If FALSE and if the projected coordinate reference system has already been set the user is 
 interactively asked whether they want to set it again or not.}
 
 \item{bestCRS}{logical; should the projected coordinate reference system be set automatically based on the "best-fit" 
-projected coordinate reference system? If FALSE, the user is asked to select the projected coordinate reference 
+projected coordinate reference system? If FALSE, the user is interactively asked to select the projected coordinate reference 
 system from a list of suitable reference systems.}
 }
 \description{

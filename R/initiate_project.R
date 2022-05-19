@@ -3,9 +3,9 @@
 #' Select the country, get the ISO 3166-1 alpha-3 country code, store it in a config.txt file and create the directory 
 #' main structure for the project. This function also creates a log.txt file that will record and track the main operations 
 #' related to the project.
-#' @param mainPath A path where the country name folder will be created
+#' @param mainPath A path where the country folder will be created
 #' @details The final structure arises when downloading and processing the data with the corresponding functions,
-#' and it allows multiple raw inputs and multiple processed outputs for each input. This can be useful when 
+#' and it allows multiple 'raw' inputs and multiple 'processed' outputs for each input. This can be useful when 
 #' performing different analyses for the same country (e.g. when we have updated data).
 #' @export
 initiate_project <- function (mainPath) {
@@ -16,7 +16,7 @@ initiate_project <- function (mainPath) {
     stop(paste(mainPath, "folder does not exist."))
   }
   countryLst <- countrycode::codelist$country.name.en[!is.na(countrycode::codelist$un.name.en)]
-  countryInd <- menu(countryLst, title="Select the country", graphics=TRUE)
+  countryInd <- utils::menu(countryLst, title="Select the country", graphics=TRUE)
   if (countryInd == 0) {
     stop_quietly("You exit the function.")
   }
@@ -51,7 +51,7 @@ initiate_project <- function (mainPath) {
     if (yn == 0) {
       stop_quietly("You exit the function.")
     }
-    newName <- paste0(types[type], str_to_title(newName))
+    newName <- paste0(types[type], stringr::str_to_title(newName))
     inputNames <- c(inputNames, newName)
     yn <- utils::menu(c("YES", "NO"), title="\nDo you want to add another input folder?")
     if (yn == 0) {

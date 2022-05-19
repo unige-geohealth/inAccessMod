@@ -28,7 +28,7 @@ available inputs, the user is interactively asked to select the input based on d
 Required only when lonlat = FALSE}
 
 \item{alwaysProcess}{logical; should always a new shapefile be created? If alwaysProcess = FALSE and if a shapefile has already
-been created from the same input table, the user is aksed whether they want to create a new shapefile or not.}
+been created from the same input table, the user is asked whether they want to create a new shapefile or not.}
 
 \item{mostRecentBoudaries}{logical; should the most recent processed boundary shapefile be used? If FALSE and if there are multiple
 available inputs, the user is interactively asked to select the input based on date and time.}
