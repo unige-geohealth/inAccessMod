@@ -1,11 +1,11 @@
 #' Filter health facilities
 #'
 #' Filter the HeRAMS health facility raw table based on a set of variables and export a table that contains only 
-#' the selected facilities. The selection is recorded within a log.txt file stored in the output folder.
+#' the selected facilities. The selection is recorded within a selected_hf.txt file stored in a sub-project folder. Different
+#' selections will create new sub-project folders. In the same sub-project folder different 'raw' sub-folders may be created
+#' depending on the original Excel document modification time.
 #' @param mainPath character; the parent directory of the country folder
 #' @param region character; the country folder name
-#' @param mostRecent logical; should the most recent 'raw' health facility table be used? If FALSE and if there are multiple
-#' available inputs, the user is interactively asked to select the input based on date and time.
 #' @param pathTable character; path to the HeRAMS Excel Table
 #' @export
 filter_hf <- function (mainPath, region, pathTable) {
@@ -26,45 +26,66 @@ filter_hf <- function (mainPath, region, pathTable) {
   if (!dir.exists(paste0(pathFacilities))) {
     stop(paste(pathFacilities, " does not exist. Run the initiate_project function."))
   }
-
-  timeFolder <- choose_input(rawHF, "Excel table copied at", mostRecent)
-  if (is.null(timeFolder)) {
-    stop_quietly("You exit the function.")
-  } else {
-    pathFacilities <- paste0(pathFacilities, "/", timeFolder, "/raw/")
-    files <- list.files(pathFacilities)[grepl("xlsx", list.files(pathFacilities))]
-    if (length(files) > 1) {
-      fileInd <- utils::menu(files, "Select the index corresponding to the health facility table to be processed.")
-      file <- files[fileInd]
-    }else{
-      file <- files
-    }
-    sysTime <- Sys.time()
-    t0 <- gsub("-|[[:space:]]|\\:","", sysTime)
-    outFolder <- paste(gsub("raw", "processed", pathFacilities), t0, sep = "/")
-    dir.create(outFolder, recursive = TRUE)
-    fileConn <- file(paste(outFolder, "log.txt", sep = "/"))
-    writeLines(sysTime %>% as.character(), fileConn)
-    close(fileConn)
-    newTib <- tryCatch({readxl::read_excel(paste(pathFacilities, file, sep = "/"), skip = 1, sheet = 2)}, error = function(e){NULL})
+  newTib <- tryCatch({readxl::read_excel(pathTable, skip = 1, sheet = 2)}, error = function(e){NULL})
+  if (is.null(newTib)) {
+    stop(paste(paste(pathFacilities, file, sep = "/"), "could not be opened."))
+  }
+  logTxt <- paste0(mainPath, "/", region, "/data/log.txt")
+  ctime <- file.info(pathTable)$mtime
+  variables <- c(health_facility_types = "MoSD3", 
+                 facility_ownership = "MoSD7", 
+                 functionality_status = "HFFUNCT", 
+                 facility_status = "MoSD4",
+                 accessibility_status = "HFACC"
+  )
+  tempDir <- paste0(pathFacilities, "/temp")
+  dir.create(tempDir)
+  for (i in 1:length(variables)){
+    backupTib <- newTib
+    newTib <- tibble_subset(newTib, variables[i], tempDir)
     if (is.null(newTib)) {
-      stop(paste(paste(pathFacilities, file, sep = "/"), "could not be opened."))
+      message("\nInvalid index ! All options were kept.")
+      newTib <- backupTib
+      next
     }
-    variables <- c(health_facility_types = "MoSD3", 
-                   facility_ownership = "MoSD7", 
-                   functionality_status = "HFFUNCT", 
-                   facility_status = "MoSD4",
-                   accessibility_status = "HFACC"
-    )
-    for (i in 1:length(variables)){
-      backupTib <- newTib
-      newTib <- filter_facilities(newTib, variables[i], outFolder)
-      if (is.null(newTib)) {
-        message("\nInvalid index ! All options were kept.")
-        newTib <- backupTib
-        next
+  }
+  lines1 <- readLines(paste(tempDir, "selected_hf.txt", sep = "/"))
+  fileLst <- list.files(pathFacilities, recursive = TRUE)
+  logTxtLst <- fileLst[grepl("selected_hf\\.txt$", fileLst)]
+  logTxtLst <- logTxtLst[!grepl("temp/", logTxtLst)]
+  subProjDir <- NULL
+  if (length(logTxtLst) > 0) {
+    for (i in 1:length(logTxtLst)) {
+      lines2 <- readLines(paste(pathFacilities, logTxtLst[i], sep = "/"))
+      if (all(lines1 == lines2)){
+        subProjDir <- gsub("/selected_hf\\.txt$", "", logTxtLst[i])
+        message(paste("Existing sub-project:", subProjDir))
+        break
       }
     }
-    write.csv(newTib, file = paste(outFolder, "health_facilities.csv", sep = "/"))
   }
+  if (is.null(subProjDir)) {
+    subProjDir <- list.dirs(pathFacilities, recursive = FALSE)
+    subProjDir <- grepl("^subProj[0-9]{3}", subProjDir)
+    if (length(as.character(length(subProjDir) + 1)) == 1) {
+      subProjDir <- paste0("subProj00", length(subProjDir) + 1)
+    } else if (length(as.character(length(subProjDir) + 1)) == 2) {
+      subProjDir <- paste0("subProj0", length(subProjDir) + 1)
+    } else {
+      subProjDir <- paste0("subProj", length(subProjDir) + 1)
+    }
+    message(paste("\nNew sub-project:", subProjDir))
+    dir.create(paste(pathFacilities, subProjDir, sep = "/"))
+    file.copy(paste(tempDir, "selected_hf.txt", sep = "/"), paste(pathFacilities, subProjDir, sep = "/"))
+  }
+  unlink(tempDir, recursive = TRUE)
+  outTimeFolder <- gsub("-|[[:space:]]|\\:", "", ctime)
+  outFolder <- paste(pathFacilities, subProjDir, outTimeFolder, "raw", sep = "/")
+  dir.create(outFolder, recursive = TRUE)
+  if (file.exists(paste(outFolder, "health_facilities.csv", sep = "/"))){
+    warning(paste(paste(outFolder, "health_facilities.csv", sep = "/"), "\nhas been overwritten."))
+  }
+  write.csv(newTib, file = paste(outFolder, "health_facilities.csv", sep = "/"))
+  write(paste0(Sys.time(), ": Health facilities where filtered - sub-project folder: ", subProjDir, " - input folder: ", outTimeFolder), file = logTxt, append = TRUE)
+  cat(paste0("\n", outFolder, "/health_facilities.csv\n"))
 }

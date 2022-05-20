@@ -7,8 +7,8 @@
 #' downloaded? If FALSE and if the raster has already been downloaded the user is 
 #' interactively asked whether they want to download it again or not.
 #' @param mostRecent logical; should the most recent boundary shapefile be selected to define the required DEM tiles? 
-#' If FALSE and if there are multiple available inputs, the user is interactively asked to select the input based on date 
-#' and time.
+#' If FALSE and if there are multiple available inputs, the user is interactively asked to select the input based on file
+#' creation time.
 #' @details The function first download a SRTM tile grid shapefile from \url{https://github.com/sikli/srtm_country}.
 #' The SRTM tiles to be downloaded are selected based on the extent of the boundary shapefile and are downloaded using the 
 #' \code{getData} function from the \pkg{raster} package. If there are multiple tiles, it produces a mosaic.

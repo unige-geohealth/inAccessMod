@@ -5,9 +5,9 @@
 #' @param mainPath character; the parent directory of the country folder
 #' @param region character; the country folder name
 #' @param mostRecentBoudaries logical; should the most recent processed boundary shapefile be used? If FALSE and if there are multiple
-#' available inputs, the user is interactively asked to select the input based on date and time.
+#' available inputs, the user is interactively asked to select the input based on file creation time.
 #' @param mostRecentTable logical; should the most recent processed health facility table be used? If FALSE and if there are multiple
-#' available inputs, the user is interactively asked to select the input based on date and time.
+#' available inputs, the user is interactively asked to select the input based on file creation time.
 #' @param lonlat logical; are the coordinates indicated in the health facility table given in lon/lat?
 #' @param epsg numeric or character (coerced to character); ESPG code - Coordinate systems worldwide (EPSG/ESRI).
 #' Required only when lonlat = FALSE
@@ -45,8 +45,25 @@ create_hf_shapefile <- function (mainPath, region, mostRecentBoundaries = TRUE, 
   if (!dir.exists(paste0(pathFacilities))) {
     stop(paste(pathFacilities, " does not exist. Run the initiate_project function."))
   }
-  border <- get_boundaries(mainPath = mainPath, region = region, type = "raw")
-  hf <- check_exists(path = pathFacilities, type = "processed", layer = FALSE, extension = "csv")
+  border <- get_boundaries(mainPath = mainPath, region = region, type = "processed")
+  subProjDirs <- list.dirs(pathFacilities, recursive = FALSE)
+  subProjDirs <- subProjDirs[grepl("subProj", subProjDirs)]
+  if (length(subProjDirs) == 0) {
+    stop("Filtered health facility table is missing. Run the filter_hf function.")
+  }
+  subProj <- stringr::str_extract(subProjDirs, "subProj[0-9]{3}$")
+  if (length(subProj) > 1) {
+    subProj <- c(subProj, "VIEW")
+    subInd <- utils::menu(subProj, title = "Select the sub-project or the VIEW option to see the selected HFs for each sub-project.")
+    if (subInd == length(subProj)) {
+      for (i in 1:(length(subProj)-1)) {
+        message(subProj[i])
+        cat(paste(readLines(paste(pathFacilities, subProj[i], "selected_hf.txt", sep = "/")), collapse = "\n"))
+        readline(prompt="Press [enter] to continue")
+      }
+    }
+  }
+  hf <- check_exists(path = pathFacilities, type = "raw", layer = FALSE, extension = "csv")
   if (is.null(hf)) {
     stop("No processed health facility table available. Run the filter_hf function.")
   }

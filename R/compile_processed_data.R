@@ -4,7 +4,7 @@
 #' @param mainPath character; the parent directory of the country folder
 #' @param region character; the country folder name
 #' @param mostRecent logical; should the most recent 'processed' input be selected? If FALSE and if there are multiple
-#' available 'processed' inputs, the user is interactively asked to select the 'processed' input based on date and time.
+#' available 'processed' inputs, the user is interactively asked to select the 'processed' input based on file creation time.
 #' @export
 compile_processed_data <- function (mainPath, region, mostRecent = TRUE) {
   if (!is.character(mainPath)) {

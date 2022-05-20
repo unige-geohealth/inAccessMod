@@ -7,8 +7,8 @@
 #' downloaded? If FALSE and if the raster has already been downloaded the user is 
 #' interactively asked whether they want to download it again or not.
 #' @param mostRecent logical; should the most recent boundary shapefile be selected to define the required landcover tiles? 
-#' If FALSE and if there are multiple available inputs, the user is interactively asked to select the input based on date 
-#' and time.
+#' If FALSE and if there are multiple available inputs, the user is interactively asked to select the input based on file creation
+#' time.
 #' @details The function downloads the landcover tiles from the AWS cloud and determines the file names based on the extent
 #' of the boundary shapefile. If there are multiple tiles, it produces a mosaic.
 #' @export

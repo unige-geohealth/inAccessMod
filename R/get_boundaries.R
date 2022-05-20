@@ -6,7 +6,7 @@
 #' @param type character; 'raw' or 'processed' depending on whether the required input is
 #' the raw input or the already processed one (i.e. projected shapefile).
 #' @param mostRecent logical; should the most recent input be selected? If FALSE and if there are multiple
-#' available inputs, the user is interactively asked to select the input based on date and time.
+#' available inputs, the user is interactively asked to select the input based on file creation time.
 #' @return object of class \code{sf} when a layer was successfully read
 #' @export
 get_boundaries <- function (mainPath, region, type, mostRecent) {

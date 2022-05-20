@@ -6,7 +6,7 @@
 #' @export
 check_downloaded <- function (folders) {
   indFolder <- paste(paste0("\n", folders))    
-  cat("\nInput was already downloaded at the following date and time:\n")
+  cat("\nInput was already downloaded at the following time:\n")
   cat(indFolder)
   yn <- utils::menu(c("YES","NO"), title="\n\nWould you like to download it again?")
   if (yn == 0) {

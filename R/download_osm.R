@@ -9,6 +9,8 @@
 #' interactively asked whether they want to download it again or not.
 #' @param countryName logical; should the country name be used to match with the \code{osm.pbf} file? If FALSE, it is the extent
 #' of the boundary shapefile that is matched with the \code{osm.pbf} file.
+#' @param mostRecent logical; should the most recent boundary shapefile be selected? If FALSE and if there are multiple
+#' available inputs, the user is interactively asked to select the input based on file creation time.
 #' @export
 download_osm <- function (x, mainPath, region, alwaysDownload = FALSE, countryName = TRUE, mostRecent = NULL) {
   if (!is.character(mainPath)) {

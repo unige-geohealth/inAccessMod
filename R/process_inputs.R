@@ -7,7 +7,7 @@
 #' can be set to "All" to consider all the available 'raw' inputs. If NULL, the user is interactively asked to select the available
 #' inputs to be processed.
 #' @param mostRecent logical; should the most recent input be selected? If FALSE and if there are multiple
-#' available inputs, the user is interactively asked to select the input based on date and time.
+#' available inputs, the user is interactively asked to select the input based on file creation time.
 #' @param alwaysProcess logical; should always the input be processed? If alwaysProcess = FALSE and if the input has already
 #' been processed, the user is interactively asked whether they want to process it or not.
 #' @param defaultMethods logical; should be the default methods be used for projecting and resampling, respectively. These

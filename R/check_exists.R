@@ -1,6 +1,6 @@
 #' Check existing inputs
 #'
-#' Internal function that is used to check if an input already exists, and if so, retrieve the date and time of 
+#' Internal function that is used to check if an input already exists, and if so, retrieve the time of 
 #' the folder creation.
 #' @param path character; path of the country folder
 #' @param type character; 'raw' or 'processed'

@@ -6,7 +6,7 @@
 #' @param border \code{sf} object; a boundary shapefile
 #' @param epsg character; string that can be used as input in \code{raster::crs()} to describe a projection and datum
 #' @param mostRecent logical; should the most recent input be selected? If FALSE and if there are multiple
-#' available inputs, the user is interactively asked to select the input based on date and time.
+#' available inputs, the user is interactively asked to select the input based on file creation time.
 #' @param defaultMethods logical; should be the default methods be used for projecting and resampling, respectively. These
 #' are the 'bilinear' method for projecting and the 'sum' or the 'bilinear' for the resampling, depending on if the new resolution
 #' is lower or higher.
