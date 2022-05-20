@@ -79,6 +79,22 @@ filter_hf <- function (mainPath, region, pathTable) {
     file.copy(paste(tempDir, "selected_hf.txt", sep = "/"), paste(pathFacilities, subProjDir, sep = "/"))
   }
   unlink(tempDir, recursive = TRUE)
+  tableID <- table(newTib$subject_id)
+  if (max(tableID) > 1) {
+    cat("\nWe have between", min(tableID), "and", max(tableID), "observations per health facility.")
+    optionsID <- c("Most recent", "Closest to a specific date", "Case by case")
+    optInd <- utils::menu(optionsID, title = "Choose one of the following options for handling multiple responses")
+    if (optInd == 1){
+      ids <- unique(newTib$subject_id)
+      for (i in 1:length(ids)) {
+        subTib <- newTib[newTib$subject_id == ids[i], ]
+        idDates <- as.Date(subTib$date)
+        rmInd <- which(order(idDates, decreasing = TRUE) != 1)
+        toRm <- subTib[c(rmInd), "external_id"]
+        newTib <- newTib[newTib$external_id != as.character(toRm), ]
+      }
+    }
+  }
   outTimeFolder <- gsub("-|[[:space:]]|\\:", "", ctime)
   outFolder <- paste(pathFacilities, subProjDir, outTimeFolder, "raw", sep = "/")
   dir.create(outFolder, recursive = TRUE)
