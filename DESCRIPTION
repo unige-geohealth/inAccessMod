@@ -9,6 +9,7 @@ Imports:
     fasterize,
     fs,
     gdalUtils,
+    lubridate,
     osmextract,
     raster,
     RCurl,

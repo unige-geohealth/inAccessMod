@@ -43,7 +43,7 @@ tibble_subset <- function (tib, var, tempDir) {
     # If only NA
     if (all(is.na(categories))) {
       cat("\n")
-      message(paste("\n\nThere are ONLY missing values for", gsub("_", " ", names(var)),":"))
+      message(paste("\n\nThere are ONLY missing values for", gsub("_", " ", names(var)), ":"))
       yn <- utils::menu(c("YES", "NO"), title = paste("\nDo you want to keep all the health facilities (if not, the script will stop and no output will be produced)?"))
       # We keep all the data and keep running the script
       if (yn == 1) {

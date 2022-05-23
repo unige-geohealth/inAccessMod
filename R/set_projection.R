@@ -109,7 +109,7 @@ set_projection <- function (mainPath, region, mostRecent = FALSE, alwaysSet = FA
     }
   }
   # Write the EPSG in the config.txt file
-  fileConn=file(paste0(mainPath, "/", region, "/data/config.txt"), open = "r")
+  fileConn = file(paste0(mainPath, "/", region, "/data/config.txt"), open = "r")
   configTxt <- readLines(fileConn)
   close(fileConn)
   logTxt <- paste0(mainPath, "/", region, "/data/log.txt")
