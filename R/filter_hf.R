@@ -119,6 +119,7 @@ filter_hf <- function (mainPath, region, pathTable, subProj = NULL, mostRecentOb
       cont <- unlist(strsplit(gsub("^.*\\: ", "", txtLines[i]), ", "))
       newTib <- newTib[newTib[, colN, drop = TRUE] %in% cont, ]
     }
+    subProjDir <- paste0("subProj", subProj)
   }
   
   sysTime <- Sys.time()

@@ -63,7 +63,7 @@ tibble_subset <- function (tib, var, tempDir) {
         # We keep the category and the NA
         if (yn == 1) {
           cat(paste0("Besides missing values, all entries has '", categories, "' value for ", gsub("_", " ", names(var))," column.\n"))
-          write(paste0(stringr::str_to_sentence(gsub("_", " ", names(var))), ": ", paste(categories, ", NA")), file = paste(tempDir, "selected_hf.txt", sep = "/"), append = TRUE)
+          write(paste0(stringr::str_to_sentence(gsub("_", " ", names(var))), ": ", paste(c(categories, "NA"), collapse = ", ")), file = paste(tempDir, "selected_hf.txt", sep = "/"), append = TRUE)
           return(tib)
         } else {
           # We only keep the category, discarding the NA
@@ -89,7 +89,7 @@ tibble_subset <- function (tib, var, tempDir) {
           yn <- utils::menu(c("YES", "NO"), title = paste("\nDo you want to keep these health facilities?"))
           # All categories and NA are kept
           if (yn == 1) {
-            write(paste0(stringr::str_to_sentence(gsub("_", " ", names(var))), ": ", paste(categories, collapse = ", "), ", NA"), file = paste(tempDir, "selected_hf.txt", sep = "/"), append = TRUE)
+            write(paste0(stringr::str_to_sentence(gsub("_", " ", names(var))), ": ", paste(c(categories, "NA"), collapse = ", ")), file = paste(tempDir, "selected_hf.txt", sep = "/"), append = TRUE)
             return(tib)
           } else {
             # All categories but no NA
@@ -99,7 +99,7 @@ tibble_subset <- function (tib, var, tempDir) {
           }
           # Invalid index, all categories and NA are kept
         } else if (!all(selInd %in% nCat)) {
-          write(paste0(stringr::str_to_sentence(gsub("_", " ", names(var))), ": ", paste(categories, collapse = ", "), ", NA"), file = paste(tempDir, "selected_hf.txt", sep = "/"), append = TRUE)
+          write(paste0(stringr::str_to_sentence(gsub("_", " ", names(var))), ": ", paste(c(categories, "NA"), collapse = ", ")), file = paste(tempDir, "selected_hf.txt", sep = "/"), append = TRUE)
           return(NULL)
         } else {
           message(paste("\nThere are missing values for", gsub("_", " ", names(var)), "for the following facilities:\n"))
@@ -108,7 +108,7 @@ tibble_subset <- function (tib, var, tempDir) {
           # Selected categories and NA are kept
           if (yn == 1) {
             tib <- tib[tib[, var, drop = TRUE] %in% categories[selInd] | is.na(tib[, var, drop = TRUE]), ]
-            write(paste0(stringr::str_to_sentence(gsub("_", " ", names(var))), ": ", paste(categories[selInd], collapse = ", "), ", NA"), file = paste(tempDir, "selected_hf.txt", sep = "/"), append = TRUE)
+            write(paste0(stringr::str_to_sentence(gsub("_", " ", names(var))), ": ", paste(c(categories[selInd], "NA"), collapse = ", ")), file = paste(tempDir, "selected_hf.txt", sep = "/"), append = TRUE)
             return(tib)
           } else {
             # Only selected categories
