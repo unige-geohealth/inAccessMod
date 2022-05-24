@@ -2,7 +2,7 @@
 % Please edit documentation in R/get_boundaries.R
 \name{get_boundaries}
 \alias{get_boundaries}
-\title{Get boundary shapefile}
+\title{Get Boundary Shapefile}
 \usage{
 get_boundaries(mainPath, region, type, mostRecent)
 }
