@@ -2,7 +2,7 @@
 % Please edit documentation in R/select_folder.R
 \name{select_folder}
 \alias{select_folder}
-\title{Select folders}
+\title{Select Folders}
 \usage{
 select_folder(x, msg)
 }

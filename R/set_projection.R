@@ -1,4 +1,4 @@
-#' Set projection
+#' Set Projection
 #'
 #' Set the projected coordinate reference system of the project based on the extent of the boundary shapefile.
 #' @param mainPath character; the parent directory of the country folder
@@ -55,7 +55,7 @@ set_projection <- function (mainPath, region, mostRecent = FALSE, alwaysSet = FA
   if (is.null(folders)) {
     stop("Raw boundary shapefile is missing.")
   } else {
-    timeFolderBound <- choose_input(folders, "Shapefile downloaded at", mostRecent)
+    timeFolderBound <- select_input(folders, "Shapefile downloaded at", mostRecent)
     if (is.null(timeFolder)) {
       stop_quietly("You exit the function.")
     } else {

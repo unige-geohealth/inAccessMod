@@ -1,6 +1,6 @@
-#' Stop quietly
+#' Stop Quietly
 #'
-#' Internal function that allows to stop a function with a non-error message.
+#' Internal function that allows to stop a function with a non-error message
 #' @param msg Character string
 #' @examples
 #' stop_quietly("This is a non-error message");

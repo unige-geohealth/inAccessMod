@@ -2,14 +2,14 @@
 % Please edit documentation in R/copy_input.R
 \name{copy_input}
 \alias{copy_input}
-\title{Copy input}
+\title{Copy Input}
 \usage{
 copy_input(mainPath, region, input)
 }
 \arguments{
-\item{mainPath}{character; the parent directory of the country/region name folder}
+\item{mainPath}{character; the parent directory of the country folder}
 
-\item{region}{character; the country name}
+\item{region}{character; the country folder name}
 
 \item{input}{character; the absolute path of the input. Can be a single path (corresponding to e.g. a health facility table) 
 or a vector of different paths (corresponding to e.g. shapefile documents)}

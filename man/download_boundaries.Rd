@@ -2,16 +2,16 @@
 % Please edit documentation in R/download_boundaries.R
 \name{download_boundaries}
 \alias{download_boundaries}
-\title{Download administrative boundaries}
+\title{Download Administrative Boundaries}
 \usage{
 download_boundaries(mainPath, region, adminLevel, alwaysDownload = FALSE)
 }
 \arguments{
-\item{mainPath}{character; the parent directory of the country/region name folder}
+\item{mainPath}{character; the parent directory of the country folder}
 
-\item{region}{character; the country/region name}
+\item{region}{character; the country folder name}
 
-\item{adminLevel}{integer; administrative level of the boundaries. From 0 to 5.}
+\item{adminLevel}{integer; administrative level of the boundaries. From 0 to 5}
 
 \item{alwaysDownload}{logical; should the administrative boundaries always be downloaded, even if they have already been 
 downloaded? If FALSE and if the administrative boundary shapefile has already been downloaded the user is 

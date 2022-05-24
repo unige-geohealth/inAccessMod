@@ -1,15 +1,17 @@
 #' Filter health facilities
 #'
 #' Filter the HeRAMS health facility raw table based on a set of variables and export a table that contains only 
-#' the selected facilities. The selection is recorded within a selected_hf.txt file stored in a sub-project folder. Different
-#' selections will create new sub-project folders. In the same sub-project folder different 'raw' sub-folders may be created
-#' depending on the original Excel document modification time.
+#' the selected facilities.
 #' @param mainPath character; the parent directory of the country folder
 #' @param region character; the country folder name
 #' @param pathTable character; path to the HeRAMS Excel Table
 #' @param subProj character; a string of three characters that correspond to the sub-project folder suffix like '001', '002'...'010'...'099'...'100'
+#' The criteria for selection are those of the specified sub-project. If NULL, an interactive selection by attribute is run in the console.
 #' @param mostRecentObs logical; should the most recent observation per health facility be taken into account? If NULL or FALSE, 
-#' the user is asked to choose among different methods for selection based on time observation.
+#' the user is asked to choose among three methods for selection based on time observation (most recent, closest to a specific date or case by case).
+#' @details The selection is recorded within a text file (selected_hf.txt) stored in the sub-project folder. Different
+#' selection criteria create new sub-project folders. In the same sub-project folder different 'raw' sub-folders may be created
+#' depending on the original Excel document modification time, and the selection of observations based on time.
 #' @export
 filter_hf <- function (mainPath, region, pathTable, subProj = NULL, mostRecentObs = NULL) {
   if (!is.character(mainPath)) {
@@ -18,20 +20,33 @@ filter_hf <- function (mainPath, region, pathTable, subProj = NULL, mostRecentOb
   if (!is.character(region)) {
     stop("region must be 'character'")
   }
-  if (!is.character(pathTable)) {
-    stop("pathTable must be 'character'")
-  } else {
-    if (!file.exists(pathTable)) {
-      stop("pathTable does not exists!")
+  yn <- 2
+  if(!is.null(pathTable)) {
+    if (!is.character(pathTable)) {
+      stop("pathTable must be 'character'")
+    } else {
+      if (!file.exists(pathTable)) {
+        stop("pathTable does not exists!")
+      }
     }
+  } else {
+    yn <- utils::menu(c("YES", "NO"), title = "pathTable is NULL; would like to load random example data for Switzerland?")
+    if (yn == 2) {
+      stop_quietly("No table to be filtered!")
+    } 
   }
+
   pathFacilities <- paste0(mainPath, "/", region, "/data/vFacilities")
   if (!dir.exists(paste0(pathFacilities))) {
     stop(paste(pathFacilities, " does not exist. Run the initiate_project function."))
   }
   newTib <- tryCatch({readxl::read_excel(pathTable, skip = 1, sheet = 2)}, error = function(e){NULL})
   if (is.null(newTib)) {
-    stop(paste(paste(pathFacilities, file, sep = "/"), "could not be opened."))
+    if (yn == 1) {
+      newTib <- inAccMod::random_herams_data
+    } else {
+      stop(paste(paste(pathFacilities, file, sep = "/"), "could not be opened."))
+    }
   }
   logTxt <- paste0(mainPath, "/", region, "/data/log.txt")
   mtime <- file.info(pathTable)$mtime
@@ -121,7 +136,6 @@ filter_hf <- function (mainPath, region, pathTable, subProj = NULL, mostRecentOb
     }
     subProjDir <- paste0("subProj", subProj)
   }
-  
   sysTime <- Sys.time()
   outTimeFolder <- gsub("-|[[:space:]]|\\:", "", sysTime)
   outFolder <- paste(pathFacilities, subProjDir, outTimeFolder, "raw", sep = "/")

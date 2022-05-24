@@ -2,7 +2,7 @@
 % Please edit documentation in R/process_shapefile.R
 \name{process_shapefile}
 \alias{process_shapefile}
-\title{Project and Clip shapefile}
+\title{Project and Clip Shapefile}
 \usage{
 process_shapefile(shp, border, epsg, inputName)
 }
@@ -12,6 +12,8 @@ process_shapefile(shp, border, epsg, inputName)
 \item{border}{\code{sf} object; a boundary shapefile used for clipping}
 
 \item{epsg}{character; string that can be used as input in \code{sf::st_crs()} to describe a projection and datum}
+
+\item{inputName}{character; the input name for console printing}
 }
 \value{
 \code{sf} object

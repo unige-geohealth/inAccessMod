@@ -1,15 +1,22 @@
-#' Create a health facility shapefile
+#' Create A Health Facility Point Shapefile
 #'
 #' Create a point shapefile of health facilities based on a pre-processed HeRAMS health facility table obtained with the
-#' \code{filter_hf()}.
+#' \code{filter_hf} function.
 #' @param mainPath character; the parent directory of the country folder
 #' @param region character; the country folder name
-#' @param mostRecentBoudaries logical; should the most recent processed boundary shapefile be used? If FALSE and if there are multiple
+#' @param mostRecentBoundaries logical; should the most recent processed boundary shapefile be used? If FALSE and if there are multiple
 #' available inputs, the user is interactively asked to select the input based on file creation time.
 #' @param lonlat logical; are the coordinates indicated in the health facility table given in lon/lat?
-#' @param epsg numeric or character (coerced to character); ESPG code - Coordinate systems worldwide (EPSG/ESRI).
+#' @param epsg numeric or character (coerced to character); ESPG code - Coordinate systems worldwide (EPSG/ESRI)
+#' @param rmNA logical; should the health facilities with non-available coordinates be removed? If NULL or FALSE the user is interactively
+#' asked whether they want to remove them or not.
+#' @param rmOut logical; should the health facilities falling outside of the country be removed? If NULL or FALSE the user is 
+#' interactively asked whether they want to remove them or not.
+#' @details Once the missing coordinate issue is addressed, the function checks whether the health facilities fall within the
+#' country boundary. There is a track record of both the facilities with missing coordinates and the ones that fall
+#' outside the country boundary.
 #' @export
-create_hf_shapefile <- function (mainPath, region, mostRecentBoundaries = TRUE, lonlat = TRUE, epsg = NULL) {
+create_hf_shapefile <- function (mainPath, region, mostRecentBoundaries = TRUE, lonlat = TRUE, epsg = NULL, rmNA = NULL, rmOut = NULL) {
   if (!is.character(mainPath)) {
     stop("mainPath must be 'character'")
   }
@@ -33,6 +40,16 @@ create_hf_shapefile <- function (mainPath, region, mostRecentBoundaries = TRUE, 
       else {
         epsg <- paste0("EPSG:", epsg)
       }
+    }
+  }
+  if (!is.null(rmNA)) {
+    if(!is.logical(rmNA)) {
+      stop("rmNA must be 'NULL' or 'logical'")
+    }
+  }
+  if (!is.null(rmOut)) {
+    if(!is.logical(rmOut)) {
+      stop("rmOut must be 'NULL' or 'logical'")
     }
   }
   logTxt <- paste0(mainPath, "/", region, "/data/log.txt")
@@ -96,7 +113,11 @@ create_hf_shapefile <- function (mainPath, region, mostRecentBoundaries = TRUE, 
     cat("\n")
     dfNA <- df[!complete.cases(xy), ]
     print(dfNA[, c("external_id", "workspace_id", "date", "MoSD3", "HFNAME")])
-    yn <- utils::menu(c("Exit the script and add the coordinates manually in the CSV file", "Remove these HFs"), title = paste("\nWhat would you like to do?"))
+    if (rmNA) {
+      yn <- 2
+    } else {
+      yn <- utils::menu(c("Exit the script and add the coordinates manually in the CSV file", "Remove these HFs"), title = paste("\nWhat would you like to do?"))
+    }
     if (yn == 1) {
       stop_quietly(paste("You exited the script! Correct the coordinates manually in the CSV file:\n", paste(hfFolder, file, sep = "/")))
     } else {
@@ -112,7 +133,11 @@ create_hf_shapefile <- function (mainPath, region, mostRecentBoundaries = TRUE, 
     interOutside <- TRUE
     message("The follwing HFs are outside the region/country boundaries:")
     print(df[!inter, c("external_id", "workspace_id", "date", "MoSD3", "HFNAME")])
-    yn <- utils::menu(c("Exit the script and correct the coordinates manually in the CSV file", "Remove these HFs and create a HFs' shapefile"), title = paste("\nWhat would you like to do?"))
+    if (rmOut) {
+      yn <- 2
+    } else {
+      yn <- utils::menu(c("Exit the script and correct the coordinates manually in the CSV file", "Remove these HFs and create a HFs' shapefile"), title = paste("\nWhat would you like to do?"))
+    }
     if (yn == 1) {
       stop_quietly(paste("You exited the script! Correct the coordinates manually in the CSV file:\n", paste(hfFolder, file, sep = "/")))
     }

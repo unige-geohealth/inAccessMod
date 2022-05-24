@@ -1,4 +1,4 @@
-#' Check Input
+#' Check Inputs
 #'
 #' Check whether a raw or processed input exists
 #' @param mainPath character; the parent directory of the country folder
@@ -7,9 +7,9 @@
 #' the raw input or the already processed one.
 #' @param onlyPrint logical; should the function just print which inputs are available and which are not available. Internally
 #' \code{print} is set FALSE, but when the function is used directly by the user, print should be set to TRUE.
-#' @param return character vector when \code{print} = FALSE, and NULL when \code{print} = TRUE
+#' @return character vector when \code{onlyPrint} = FALSE, and NULL when \code{onlyPrint} = TRUE
 #' @export
-check_input <- function (mainPath, region, type, onlyPrint = FALSE) {
+check_inputs <- function (mainPath, region, type, onlyPrint = FALSE) {
   if (!is.character(mainPath)) {
     stop("mainPath must be 'character'")
   }

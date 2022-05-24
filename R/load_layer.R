@@ -1,9 +1,9 @@
-#' Load spatial layer
+#' Load Spatial Layer
 #'
 #' Internal function that is used to load either a raster or a shapefile
 #' @param folder character; folder path of the layer
 #' @param multiMsg character; used for printing in case of the user is interactively asked to select one layer from multiple ones
-#' @param return a list of length 2; the first element can be a \code{SpatRaster} or NULL, 
+#' @return a list of length 2; the first element can be a \code{SpatRaster} or NULL, 
 #' and the second element can be a \code{sf} object or NULL.
 #' @export
 load_layer <- function (folder, multiMsg) {

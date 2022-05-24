@@ -1,7 +1,8 @@
-#' Download Open Street Map shapefiles
+#' Download Open Street Map Layers
 #'
 #' Download Open Street map shapefiles corresponding to 'roads', 'rivers' or any other natural feature and copy them
 #' to their corresponding folders.
+#' @param x character; target layer. Can be 'roads', 'waterLines' or 'naturalPolygons'
 #' @param mainPath character; the parent directory of the country folder
 #' @param region character; the country folder name
 #' @param alwaysDownload logical; should the shapefile always be downloaded, even if it has already been 
@@ -19,8 +20,8 @@ download_osm <- function (x, mainPath, region, alwaysDownload = FALSE, countryNa
   if (!is.character(region)) {
     stop("region must be 'character'")
   }
-  if (!(x == "roads" | x == "waterLines" | x == "waterPolygons")) {
-    stop("x must be 'roads', 'waterLines' or 'waterPolygons'")
+  if (!(x == "roads" | x == "waterLines" | x == "naturalPolygons")) {
+    stop("x must be 'roads', 'waterLines' or 'naturalPolygons'")
   }
   if (!is.logical(alwaysDownload)) {
     stop("alwaysDownload must be 'logical'")

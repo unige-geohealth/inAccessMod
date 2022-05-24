@@ -1,4 +1,4 @@
-#' Download population raster
+#' Download Population Raster
 #'
 #' Download a population raster from the World Pop FTP and copy it to its corresponding folder.
 #' @param mainPath character; the parent directory of the country folder
@@ -8,6 +8,8 @@
 #' interactively asked whether they want to download it again or not.
 #' @details The function accesses the World Pop FTP \url{ftp://ftp.worldpop.org.uk/GIS/Population/} and uses an internal
 #' function (\code{navigate_ftp}) in order to interactively navigate through the folders and select the population raster.
+#' to be downloaded. The ISO code retrieved internally by the \code{get_param} function is used to match the country FTP folder
+#' when available.
 #' @export
 download_population <- function (mainPath, region, alwaysDownload = FALSE) {
   if (!is.character(mainPath)) {

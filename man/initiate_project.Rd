@@ -2,12 +2,12 @@
 % Please edit documentation in R/initiate_project.R
 \name{initiate_project}
 \alias{initiate_project}
-\title{Initiate project}
+\title{Initiate Project}
 \usage{
 initiate_project(mainPath)
 }
 \arguments{
-\item{mainPath}{A path where the country name folder will be created}
+\item{mainPath}{A path where the country folder will be created}
 }
 \description{
 Select the country, get the ISO 3166-1 alpha-3 country code, store it in a config.txt file and create the directory 
@@ -16,6 +16,6 @@ related to the project.
 }
 \details{
 The final structure arises when downloading and processing the data with the corresponding functions,
-and it allows multiple raw inputs and multiple processed outputs for each input. This can be useful when 
+and it allows multiple 'raw' inputs and multiple 'processed' outputs for each input. This can be useful when 
 performing different analyses for the same country (e.g. when we have updated data).
 }

@@ -2,14 +2,14 @@
 % Please edit documentation in R/download_population.R
 \name{download_population}
 \alias{download_population}
-\title{Download population raster}
+\title{Download Population Raster}
 \usage{
 download_population(mainPath, region, alwaysDownload = FALSE)
 }
 \arguments{
-\item{mainPath}{character; the parent directory of the country/region name folder}
+\item{mainPath}{character; the parent directory of the country folder}
 
-\item{region}{character; the country/region name}
+\item{region}{character; the country folder name}
 
 \item{alwaysDownload}{logical; should the raster always be downloaded, even if it has already been 
 downloaded? If FALSE and if the raster has already been downloaded the user is 
@@ -21,4 +21,6 @@ Download a population raster from the World Pop FTP and copy it to its correspon
 \details{
 The function accesses the World Pop FTP \url{ftp://ftp.worldpop.org.uk/GIS/Population/} and uses an internal
 function (\code{navigate_ftp}) in order to interactively navigate through the folders and select the population raster.
+to be downloaded. The ISO code retrieved internally by the \code{get_param} function is used to match the country FTP folder
+when available.
 }

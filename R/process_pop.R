@@ -19,8 +19,8 @@
 #' @param gridRes numeric; the resolution of the grid shapefile used for correcting the raster. Ignored if popCorrection is FALSE.
 #' If NULL and popCorrection is TRUE, the user is interactively asked to provide the grid resolution.
 #' @return a list of length 2; The first element is the processed \code{SpatRaster} object and the second element is the selected
-#' projection method (for track record).
-#' @details The algorithm for correcting the population raster works as following: it create a grid shapefile, it sums up the population
+#' projection method (for track record)
+#' @details The algorithm for correcting the population raster works as following: it creates a grid shapefile, it sums up the population
 #' in each of the cell considering  both the 'raw' and the 'processed' population raster. Then a ratio is calculated between both
 #' values and related to each grid cell. The grid shapefile is rasterized using the ratios as values, and finally
 #' the 'processed' raster is multiplied by the rasterized ratio. The lower is the grid resolution, the finer is the correction.
@@ -33,7 +33,7 @@ process_pop <- function (mainPath, region, border, epsg, mostRecent, defaultMeth
   if (is.null(popFolders)) {
     stop("No input population raster available.")
   }
-  timeFolder <- choose_input(popFolders, "Raster downloaded at", mostRecent)
+  timeFolder <- select_input(popFolders, "Raster downloaded at", mostRecent)
   if (is.null(timeFolder)) {
     stop_quietly("You exit the function.")
   }

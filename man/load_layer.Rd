@@ -2,7 +2,7 @@
 % Please edit documentation in R/load_layer.R
 \name{load_layer}
 \alias{load_layer}
-\title{Load spatial layer}
+\title{Load Spatial Layer}
 \usage{
 load_layer(folder, multiMsg)
 }
@@ -10,9 +10,10 @@ load_layer(folder, multiMsg)
 \item{folder}{character; folder path of the layer}
 
 \item{multiMsg}{character; used for printing in case of the user is interactively asked to select one layer from multiple ones}
-
-\item{return}{a list of length 2; the first element can be a \code{SpatRaster} or NULL, 
-and the second element can be a \code{sf} object or NULL.}
+}
+\value{
+a list of length 2; the first element can be a \code{SpatRaster} or NULL, 
+and the second element can be a \code{sf} object or NULL.
 }
 \description{
 Internal function that is used to load either a raster or a shapefile

@@ -1,4 +1,4 @@
-#' Select by attribute
+#' Select By Attribute
 #'
 #' Internal function used to select the OSM shapefiles by attribute
 #' @param sfObject \code{sf} object

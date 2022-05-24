@@ -2,7 +2,7 @@
 % Please edit documentation in R/download_landcover.R
 \name{download_landcover}
 \alias{download_landcover}
-\title{Download landcover}
+\title{Download Landcover}
 \usage{
 download_landcover(
   mainPath,
@@ -12,17 +12,17 @@ download_landcover(
 )
 }
 \arguments{
-\item{mainPath}{character; the parent directory of the country/region name folder}
+\item{mainPath}{character; the parent directory of the country folder}
 
-\item{region}{character; the country/region name}
+\item{region}{character; the country folder name}
 
 \item{alwaysDownload}{logical; should the raster always be downloaded, even if it has already been 
 downloaded? If FALSE and if the raster has already been downloaded the user is 
 interactively asked whether they want to download it again or not.}
 
 \item{mostRecent}{logical; should the most recent boundary shapefile be selected to define the required landcover tiles? 
-If FALSE and if there are multiple available inputs, the user is interactively asked to select the input based on date 
-and time.}
+If FALSE and if there are multiple available inputs, the user is interactively asked to select the input based on file creation
+time.}
 }
 \description{
 Download the Land Cover 100 m from the Copernicus Global Land Service and copy it to its corresponding folder.

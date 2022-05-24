@@ -7,7 +7,7 @@
 #' @param resampMeth character; method used for estimating the new cell values. If NULL, the user is interactively
 #' asked to select one of the available methods for \code{terra::resample} function.
 #' @return a list of length 2; the first element is the processed \code{SpatRaster} object and the second element is the selected
-#' resampling method (for track record).
+#' resampling method (for track record)
 #' @export
 resample_raster <- function (ras1, ras0, rasInit, resampMeth) {
   if (is.null(resampMeth)) {

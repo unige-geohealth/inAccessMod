@@ -2,18 +2,18 @@
 % Please edit documentation in R/compile_processed_data.R
 \name{compile_processed_data}
 \alias{compile_processed_data}
-\title{Process Input Layers}
+\title{Compile Input Layers}
 \usage{
 compile_processed_data(mainPath, region, mostRecent = TRUE)
 }
 \arguments{
-\item{mainPath}{character; the parent directory of the country/region name folder}
+\item{mainPath}{character; the parent directory of the country folder}
 
-\item{region}{character; the country name}
+\item{region}{character; the country folder name}
 
 \item{mostRecent}{logical; should the most recent 'processed' input be selected? If FALSE and if there are multiple
-available 'processed' inputs, the user is interactively asked to select the 'processed' input based on date and time.}
+available 'processed' inputs, the user is interactively asked to select the 'processed' input based on file creation time.}
 }
 \description{
-Process any input layer and copy it to its corresponding folder
+Compile the available processed layers and copy them to a new folder to facilitate the further import into AccessMod
 }

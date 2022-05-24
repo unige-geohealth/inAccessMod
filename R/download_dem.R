@@ -9,9 +9,9 @@
 #' @param mostRecent logical; should the most recent boundary shapefile be selected to define the required DEM tiles? 
 #' If FALSE and if there are multiple available inputs, the user is interactively asked to select the input based on file
 #' creation time.
-#' @details The function first download a SRTM tile grid shapefile from \url{https://github.com/sikli/srtm_country}.
+#' @details The function first downloads a SRTM tile grid shapefile from \url{https://github.com/sikli/srtm_country}.
 #' The SRTM tiles to be downloaded are selected based on the extent of the boundary shapefile and are downloaded using the 
-#' \code{getData} function from the \pkg{raster} package. If there are multiple tiles, it produces a mosaic.
+#' \code{getData} function from the \pkg{raster} package. If there are multiple tiles, a mosaic is produced.
 #' @export
 download_dem <- function (mainPath, region, alwaysDownload = FALSE, mostRecent = FALSE) {
   if (!is.character(mainPath)) {

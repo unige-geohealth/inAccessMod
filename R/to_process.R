@@ -1,13 +1,13 @@
-#' Check processed inputs
+#' Decision On Input Processing
 #'
 #' Internal function that is used to check if an input has already been processed and if so, to ask the user
 #' if they want to process it again.
-#' @param path character; path of a specific input (e.g. "./data/rDEM")
+#' @param path character; path of an input folder
 #' @param alwaysProcess logical; should the raw input always be processed, even if it has already been 
 #' processed? If FALSE and if the raw input has already been processed the user is 
 #' interactively asked whether they want to process it again or not.
 #' @export
-already_processed <- function (path, alwaysProcess) {
+to_process <- function (path, alwaysProcess) {
   prFiles <- list.files(gsub("raw", "processed", path), recursive = TRUE, pattern = "*.tif|*.shp")
   if (length(prFiles) > 0) {
     if (!alwaysProcess) {

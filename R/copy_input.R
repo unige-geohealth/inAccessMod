@@ -1,4 +1,4 @@
-#' Copy input
+#' Copy Input
 #'
 #' Copy a manually downloaded input to the project corresponding directory before being processed.
 #' @param mainPath character; the parent directory of the country folder

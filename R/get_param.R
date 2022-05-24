@@ -1,6 +1,6 @@
-#' Get project parameters
+#' Get Project Parameters
 #'
-#' Internal function that is used to access the config.txt of the project and get a specific parameter (e.g. ISo alpha-3 code).
+#' Internal function that is used to access the config.txt of the project and get a specific parameter (e.g. ISO alpha-3 code).
 #' @param mainPath character; the parent directory of the country folder
 #' @param region character; the country folder name
 #' @param param character; 'COUNTRY' to get the original country name, 'ISO' to get the ISO alpha-3 country code or 'EPSG'

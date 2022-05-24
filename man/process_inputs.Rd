@@ -7,10 +7,10 @@
 process_inputs(
   mainPath,
   region,
-  all = FALSE,
+  selectedInputs = NULL,
   mostRecent = FALSE,
   alwaysProcess = FALSE,
-  defaultMethods = FALSE,
+  defaultMethods = NULL,
   changeRes = NULL,
   newRes = NULL,
   popCorrection = NULL,
@@ -18,27 +18,29 @@ process_inputs(
 )
 }
 \arguments{
-\item{mainPath}{character; the parent directory of the country/region name folder}
+\item{mainPath}{character; the parent directory of the country folder}
 
-\item{region}{character; the country name}
+\item{region}{character; the country folder name}
 
-\item{all}{logical; should all the available inputs be processed? If FALSE, the user is interactively asked to select the available
+\item{selectedInputs}{character; vector indicating the inputs to be processed. Raw inputs must be available. Argument
+can be set to "All" to consider all the available 'raw' inputs. If NULL, the user is interactively asked to select the available
 inputs to be processed.}
 
 \item{mostRecent}{logical; should the most recent input be selected? If FALSE and if there are multiple
-available inputs, the user is interactively asked to select the input based on date and time.}
+available inputs, the user is interactively asked to select the input based on file creation time.}
 
 \item{alwaysProcess}{logical; should always the input be processed? If alwaysProcess = FALSE and if the input has already
 been processed, the user is interactively asked whether they want to process it or not.}
 
-\item{defaultMethods}{logical; should be the default methods be used for projecting and resampling, respectively. These
-are the 'bilinear' method for projecting and the 'sum' or the 'bilinear' for the resampling, depending on if the new resolution
-is lower or higher.}
+\item{defaultMethods}{logical; should be the default methods be used for projecting and resampling, respectively. For the
+population raster, these are the 'bilinear' method for projecting and the 'sum' or the 'bilinear' for the resampling, 
+depending on if the new resolution is lower or higher. For the landcover raster, the 'near' method is used for both the 
+projection and resampling. For the the DEM, the 'bilinear' method is used for both the projection and resampling.}
 
-\item{changeRes}{logical; does the user want to change the raster resolution? If NULL, the resolution is printed and it is
-interactively asked the user if they want to change it. IF FALSE, there is no resampling.}
+\item{changeRes}{logical; does the user want to change the raster resolution of the population raster? If NULL, the resolution 
+is printed and it is interactively asked the user if they want to change it. IF FALSE, there is no resampling.}
 
-\item{newRes}{numeric; new resolution in meters. Ignored if the newRes is FALSE. If NULL and if \code{changeRes} is TRUE,
+\item{newRes}{numeric; new resolution in meters. Ignored if the changeRes is FALSE. If NULL and if \code{changeRes} is TRUE,
 the user is interactively asked to provide the new resolution.}
 
 \item{popCorrection}{logical; should the raster correction algorithm be run. If it is NULL, the user is interactively asked
@@ -53,5 +55,5 @@ Process any input layer and copy it to its corresponding folder
 \details{
 A 'processed' boundary shapefile is required for processing any other inputs. A 'processed' population raster is required
 for processing any other raster. These conditions are taken into account and the processing of these
-layers is performed even if they are not selected, if 'processed' layers are not available.
+layers is performed even if they are not selected if 'processed' layers are not available.
 }

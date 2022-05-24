@@ -1,4 +1,4 @@
-#' Select folders
+#' Select Folders
 #'
 #' Internal function used to subset elements from a character vector that correspond to folder names
 #' @param x character vector; folder names

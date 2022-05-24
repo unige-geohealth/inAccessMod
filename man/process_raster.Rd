@@ -18,7 +18,7 @@ asked to select one of the available methods for \code{terra::project} function.
 }
 \value{
 a list of length 2; The first element is the processed \code{SpatRaster} object and the second element is the selected
-projection method (for track record).
+projection method (for track record)
 }
 \description{
 Internal function used to crop, mask and project rasters

@@ -10,12 +10,13 @@
 #' available inputs, the user is interactively asked to select the input based on file creation time.
 #' @param alwaysProcess logical; should always the input be processed? If alwaysProcess = FALSE and if the input has already
 #' been processed, the user is interactively asked whether they want to process it or not.
-#' @param defaultMethods logical; should be the default methods be used for projecting and resampling, respectively. These
-#' are the 'bilinear' method for projecting and the 'sum' or the 'bilinear' for the resampling, depending on if the new resolution
-#' is lower or higher.
-#' @param changeRes logical; does the user want to change the raster resolution? If NULL, the resolution is printed and it is
-#' interactively asked the user if they want to change it. IF FALSE, there is no resampling.
-#' @param newRes numeric; new resolution in meters. Ignored if the newRes is FALSE. If NULL and if \code{changeRes} is TRUE,
+#' @param defaultMethods logical; should be the default methods be used for projecting and resampling, respectively. For the
+#' population raster, these are the 'bilinear' method for projecting and the 'sum' or the 'bilinear' for the resampling, 
+#' depending on if the new resolution is lower or higher. For the landcover raster, the 'near' method is used for both the 
+#' projection and resampling. For the the DEM, the 'bilinear' method is used for both the projection and resampling.
+#' @param changeRes logical; does the user want to change the raster resolution of the population raster? If NULL, the resolution 
+#' is printed and it is interactively asked the user if they want to change it. IF FALSE, there is no resampling.
+#' @param newRes numeric; new resolution in meters. Ignored if the changeRes is FALSE. If NULL and if \code{changeRes} is TRUE,
 #' the user is interactively asked to provide the new resolution.
 #' @param popCorrection logical; should the raster correction algorithm be run. If it is NULL, the user is interactively asked
 #' whether they want to run it or not.
@@ -23,7 +24,7 @@
 #' If NULL and popCorrection is TRUE, the user is interactively asked to provide the grid resolution.
 #' @details A 'processed' boundary shapefile is required for processing any other inputs. A 'processed' population raster is required
 #' for processing any other raster. These conditions are taken into account and the processing of these
-#' layers is performed even if they are not selected, if 'processed' layers are not available.
+#' layers is performed even if they are not selected if 'processed' layers are not available.
 #' @export
 process_inputs <- function (mainPath, region, selectedInputs = NULL, mostRecent = FALSE, alwaysProcess = FALSE, defaultMethods = NULL, changeRes = NULL, newRes = NULL, popCorrection = NULL, gridRes = NULL) {
   if (!is.character(mainPath)) {
@@ -32,15 +33,17 @@ process_inputs <- function (mainPath, region, selectedInputs = NULL, mostRecent 
   if (!is.character(region)) {
     stop("region must be 'character'")
   }
-  rawFolders <- check_input(mainPath, region, "raw")
+  rawFolders <- check_inputs(mainPath, region, "raw")
   if (length(rawFolders) == 0) {
     stop("No input data available.")
   }
-  if (!all(is.character(selectedInputs))) {
-    stop("selectedInputs must be 'character'")
-  } else {
-    if (!all(selectedInputs %in% c("All", rawFolders))) {
-      stop(paste0("selectedInputs (", c(selectedInputs), ") must be available"))
+  if (!is.null(selectedInputs)) {
+    if (!all(is.character(selectedInputs))) {
+      stop("selectedInputs must be 'character'")
+    } else {
+      if (!all(selectedInputs %in% c("All", rawFolders))) {
+        stop(paste0("selectedInputs (", paste(selectedInputs, collapse = ", "), ") must be available"))
+      }
     }
   }
   if (!is.logical(mostRecent)) {
@@ -51,18 +54,18 @@ process_inputs <- function (mainPath, region, selectedInputs = NULL, mostRecent 
   }
   if (!is.null(changeRes)) {
     if (!is.logical(changeRes)) {
-      stop("mostRecent must be NULL or 'logical'")
+      stop("changeRes must be NULL or 'logical'")
     }
   }
   if (!is.null(defaultMethods)) {
-    if (!is.logical(changeRes)) {
+    if (!is.logical(defaultMethods)) {
       stop("defaultMethods must be NULL or 'logical'")
     }
   } else {
     defaultMethods <- FALSE
   }
   if (!is.null(newRes)) {
-    if (!is.numeric(newRes) & newRes > 0) {
+    if (!(is.numeric(newRes) & newRes > 0)) {
       stop("newRes must be NULL or a real positive number'")
     }
   }
@@ -82,7 +85,7 @@ process_inputs <- function (mainPath, region, selectedInputs = NULL, mostRecent 
   if (length(epsg) == 0) {
     stop("EPSG for projection is not set. Run the set_projection function.")
   }
-  if (selectedInputs == "All") {
+  if ("All" %in% selectedInputs) {
     selectedFolders <- rawFolders
   } else if (is.null(selectedInputs)) {
     selectedFolders <- select_folder(rawFolders, "Enter all the indices that correspond to the inputs you want to process.\nOn the same line separated by a space, or just skip to select all inputs.")
@@ -99,12 +102,12 @@ process_inputs <- function (mainPath, region, selectedInputs = NULL, mostRecent 
       stop("\nBoundary shapefile is required for input processing. Run the download_boundaries function.")
     }
     message("\nLoading raw shapefile of boundaries...")
-    timeFolder <- choose_input(borderFolders, "Shapefile downloaded at", mostRecent)
+    timeFolder <- select_input(borderFolders, "Shapefile downloaded at", mostRecent)
     if (is.null(timeFolder)) {
       stop_quietly("You exit the function.")
     }
     borderFolder <- paste0(borderPath, "/", timeFolder, "/raw")
-    toProcess <- already_processed(borderFolder, alwaysProcess)
+    toProcess <- to_process(borderFolder, alwaysProcess)
     if (toProcess) {
       multipleFilesMsg <- "Select the boundary shapefile that you would like to use."
       border <- load_layer(borderFolder, multipleFilesMsg)[[2]]
@@ -122,7 +125,6 @@ process_inputs <- function (mainPath, region, selectedInputs = NULL, mostRecent 
   if (length(selectedFolders) < 1) {
     stop_quietly("No more input to be processed!")
   }
-  message("\nLoading processed boundary shapefile...")
   border <- get_boundaries(mainPath, region, "processed", mostRecent)
   if ("rPopulation" %in% selectedFolders) {
     process_pop(mainPath, region, border, epsg, mostRecent, defaultMethods, changeRes, newRes, popCorrection, gridRes)
@@ -143,7 +145,7 @@ process_inputs <- function (mainPath, region, selectedInputs = NULL, mostRecent 
       popFolders <- check_exists(popFolder, "processed", layer = TRUE)
     }
     message("\nLoading processed population raster...")
-    timeFolder <- choose_input(popFolders, "Population raster processed at:", mostRecent)
+    timeFolder <- select_input(popFolders, "Population raster processed at:", mostRecent)
     if (is.null(timeFolder)) {
       stop_quietly("You exit the function.")
     } else {
@@ -158,12 +160,12 @@ process_inputs <- function (mainPath, region, selectedInputs = NULL, mostRecent 
     message(selectedFolders[i])
     inputFolder <- paste0(mainPath, "/", region, "/data/", selectedFolders[i])
     inputFolders <- check_exists(inputFolder, "raw", layer = TRUE)
-    timeFolder <- choose_input(inputFolders, paste(selectedFolders[i], "downloaded at:"), mostRecent)
+    timeFolder <- select_input(inputFolders, paste(selectedFolders[i], "downloaded at:"), mostRecent)
     if (is.null(timeFolder)) {
       stop_quietly("You exit the function.")
     }
     inputFolder <- paste0(inputFolder, "/", timeFolder, "/raw")
-    processLayer <- already_processed(inputFolder, alwaysProcess)
+    processLayer <- to_process(inputFolder, alwaysProcess)
     if (!processLayer) {
       if (i == length(selectedFolders)) {
         stop_quietly("No more input to be processed!")
@@ -208,8 +210,11 @@ process_inputs <- function (mainPath, region, selectedInputs = NULL, mostRecent 
       outTimeFolder <- gsub("-|[[:space:]]|\\:", "", sysTime)
       outFolder <- paste0(gsub("raw", "processed", inputFolder), "/", outTimeFolder)
       dir.create(outFolder, recursive = TRUE)
-      st_write(shpProcessed, paste0(outFolder, "/", selectedFolders[i], ".shp"), append=FALSE)
-      write(paste0(Sys.time(), ": Processed ", selectedFolders[i], " shapefile saved - Output folder: ", outTimeFolder), file = logTxt, append = TRUE)
+      shpName <- paste0(selectedFolders[i], ".shp")
+      # In case we have sub-project for HeRAMS data
+      shpName <- gsub("/subProj[0-9]{3}", "", shpName)
+      st_write(shpProcessed, paste0(outFolder, "/", shpName, ".shp"), append=FALSE)
+      write(paste0(Sys.time(), ": Processed ", shpName, " shapefile saved - Output folder: ", outTimeFolder), file = logTxt, append = TRUE)
     }
   }
   cat("\nDone!\n")

@@ -2,23 +2,23 @@
 % Please edit documentation in R/check_exists.R
 \name{check_exists}
 \alias{check_exists}
-\title{Check existing inputs}
+\title{Check Existing Inputs}
 \usage{
 check_exists(path, type, layer = TRUE, extension = NULL)
 }
 \arguments{
-\item{path}{character; path of the country/region name data folder}
+\item{path}{character; path of the country folder}
 
 \item{type}{character; 'raw' or 'processed'}
 
-\item{layer}{logical; is the input a raster or a shapefile?}
+\item{layer}{logical; is the input a spatial layer (e.g. raster or shapefile)?}
 
-\item{extension}{character; if layer = FALSE, the extension of the input (e.g. 'xlsx')}
+\item{extension}{character; if \code{layer} = FALSE, the extension of the input (e.g. 'xlsx')}
 }
 \value{
-character; data and time of the input folder creation
+character; time of the input folder creation
 }
 \description{
-Internal function that is used to check if an input already exists, and if so, retrieve the date and time of 
+Internal function that is used to check if an input already exists, and if so, to retrieve the time of 
 the folder creation.
 }

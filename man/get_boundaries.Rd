@@ -7,15 +7,15 @@
 get_boundaries(mainPath, region, type, mostRecent)
 }
 \arguments{
-\item{mainPath}{character; the parent directory of the country/region name folder}
+\item{mainPath}{character; the parent directory of the country folder}
 
-\item{region}{character; the country name}
+\item{region}{character; the country folder name}
 
 \item{type}{character; 'raw' or 'processed' depending on whether the required input is
 the raw input or the already processed one (i.e. projected shapefile).}
 
 \item{mostRecent}{logical; should the most recent input be selected? If FALSE and if there are multiple
-available inputs, the user is interactively asked to select the input based on date and time.}
+available inputs, the user is interactively asked to select the input based on file creation time.}
 }
 \value{
 object of class \code{sf} when a layer was successfully read

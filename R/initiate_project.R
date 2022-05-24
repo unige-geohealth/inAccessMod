@@ -1,4 +1,4 @@
-#' Initiate project
+#' Initiate Project
 #'
 #' Select the country, get the ISO 3166-1 alpha-3 country code, store it in a config.txt file and create the directory 
 #' main structure for the project. This function also creates a log.txt file that will record and track the main operations 
@@ -32,7 +32,7 @@ initiate_project <- function (mainPath) {
   region <- stringi::stri_trans_general(str = region, id = "Latin-ASCII")
   # Main standard inputs
   inputNames=c("rDEM", "rPopulation", "rLandcover", "vRoads", "vWaterLines", 
-               "vWaterPolygons", "vBorders","vFacilities")
+               "vNaturalPolygons", "vBorders","vFacilities")
   message(paste("\nThe following input folders will be created:", paste(inputNames,collapse=", ")))
   # Add other data ?
   yn <- utils::menu(c("YES","NO"), title="\nDo you want to add another input folder (type 1 or 2)?")

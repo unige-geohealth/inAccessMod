@@ -2,7 +2,7 @@
 % Please edit documentation in R/set_projection.R
 \name{set_projection}
 \alias{set_projection}
-\title{Set projection}
+\title{Set Projection}
 \usage{
 set_projection(
   mainPath,
@@ -13,9 +13,9 @@ set_projection(
 )
 }
 \arguments{
-\item{mainPath}{character; the parent directory of the 'country' folder}
+\item{mainPath}{character; the parent directory of the country folder}
 
-\item{region}{character; the country name}
+\item{region}{character; the country folder name}
 
 \item{mostRecent}{logical; should the most recent downloaded boundary shapefile be selected? If FALSE and if there 
 are multiple available inputs, the user is interactively asked to select the input based on date and time.}

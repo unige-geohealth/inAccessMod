@@ -1,4 +1,4 @@
-#' Get boundary shapefile
+#' Get Boundary Shapefile
 #'
 #' Internal function that is used to get the boundary shapefile required in other functions
 #' @param mainPath character; the parent directory of the country folder
@@ -29,7 +29,7 @@ get_boundaries <- function (mainPath, region, type, mostRecent) {
     stop(paste(stringr::str_to_title(type), "boundary shapefile is missing."))
   } else {
     if (type == "raw") {
-      timeFolder <- choose_input(folders, "Shapefile downloaded at", mostRecent)
+      timeFolder <- select_input(folders, "Shapefile downloaded at", mostRecent)
       if (is.null(timeFolder)) {
         stop_quietly("You exit the function.")
       } else {
@@ -40,14 +40,14 @@ get_boundaries <- function (mainPath, region, type, mostRecent) {
         return(border)
       }
     } else {
-      timeFolder <- choose_input(folders, "Shapefile processed at", mostRecent)
+      timeFolder <- select_input(folders, "Shapefile processed at", mostRecent)
       if (is.null(timeFolder)) {
         stop_quietly("You exit the function.")
       } else {
         folderLst <- list.dirs(pathBorder)
         boundFolder <-   folderLst[grepl(paste0("processed/", timeFolder), folderLst)]
         multipleFilesMsg <- "Select the boundary shapefile that you would like to use."
-        message("\nLoading boundaries...")
+        message(paste("\nLoading", type, "boundaries..."))
         border <- load_layer(boundFolder, multipleFilesMsg)[[2]]
         return(border)
       }

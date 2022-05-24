@@ -2,14 +2,14 @@
 % Please edit documentation in R/get_param.R
 \name{get_param}
 \alias{get_param}
-\title{Get project parameters}
+\title{Get Project Parameters}
 \usage{
 get_param(mainPath, region, param)
 }
 \arguments{
-\item{mainPath}{character; the parent directory of the country/region name folder}
+\item{mainPath}{character; the parent directory of the country folder}
 
-\item{region}{character; the country name}
+\item{region}{character; the country folder name}
 
 \item{param}{character; 'COUNTRY' to get the original country name, 'ISO' to get the ISO alpha-3 country code or 'EPSG'
 to get the EPSG code for layer projection}

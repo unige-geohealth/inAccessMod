@@ -2,12 +2,12 @@
 % Please edit documentation in R/check_downloaded.R
 \name{check_downloaded}
 \alias{check_downloaded}
-\title{Check downloaded inputs}
+\title{Check Downloaded Inputs}
 \usage{
 check_downloaded(folders)
 }
 \arguments{
-\item{folders}{character; path of a specific input (e.g. "./data/rDEM")}
+\item{folders}{character; path of a specific input folder}
 }
 \description{
 Internal function that is used to check if an input has already been downloaded and if so, to ask the user

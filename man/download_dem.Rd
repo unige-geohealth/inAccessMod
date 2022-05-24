@@ -7,23 +7,23 @@
 download_dem(mainPath, region, alwaysDownload = FALSE, mostRecent = FALSE)
 }
 \arguments{
-\item{mainPath}{character; the parent directory of the country/region name folder}
+\item{mainPath}{character; the parent directory of the country folder}
 
-\item{region}{character; the country/region name}
+\item{region}{character; the country folder name}
 
 \item{alwaysDownload}{logical; should the raster always be downloaded, even if it has already been 
 downloaded? If FALSE and if the raster has already been downloaded the user is 
 interactively asked whether they want to download it again or not.}
 
 \item{mostRecent}{logical; should the most recent boundary shapefile be selected to define the required DEM tiles? 
-If FALSE and if there are multiple available inputs, the user is interactively asked to select the input based on date 
-and time.}
+If FALSE and if there are multiple available inputs, the user is interactively asked to select the input based on file
+creation time.}
 }
 \description{
 Download a SRTM 90m resolution (3 arc-seconds) DEM for the entire country and copy it to its corresponding folder.
 }
 \details{
-The function first download a SRTM tile grid shapefile from \url{https://github.com/sikli/srtm_country}.
+The function first downloads a SRTM tile grid shapefile from \url{https://github.com/sikli/srtm_country}.
 The SRTM tiles to be downloaded are selected based on the extent of the boundary shapefile and are downloaded using the 
-\code{getData} function from the \pkg{raster} package. If there are multiple tiles, it produces a mosaic.
+\code{getData} function from the \pkg{raster} package. If there are multiple tiles, a mosaic is produced.
 }

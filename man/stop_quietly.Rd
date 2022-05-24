@@ -2,7 +2,7 @@
 % Please edit documentation in R/stop_quietly.R
 \name{stop_quietly}
 \alias{stop_quietly}
-\title{Stop quietly}
+\title{Stop Quietly}
 \usage{
 stop_quietly(msg)
 }
@@ -10,7 +10,7 @@ stop_quietly(msg)
 \item{msg}{Character string}
 }
 \description{
-Internal function that allows to stop a function with a non-error message.
+Internal function that allows to stop a function with a non-error message
 }
 \examples{
 stop_quietly("This is a non-error message");

@@ -1,9 +1,9 @@
-#' Download administrative boundaries
+#' Download Administrative Boundaries
 #'
 #' Download the administraive boundary shapefile from \emph{geoboundaries} and copy it to its corresponding folder.
 #' @param mainPath character; the parent directory of the country folder
 #' @param region character; the country folder name
-#' @param adminLevel integer; administrative level of the boundaries. From 0 to 5.
+#' @param adminLevel integer; administrative level of the boundaries. From 0 to 5
 #' @param alwaysDownload logical; should the administrative boundaries always be downloaded, even if they have already been 
 #' downloaded? If FALSE and if the administrative boundary shapefile has already been downloaded the user is 
 #' interactively asked whether they want to download it again or not.

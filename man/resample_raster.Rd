@@ -18,7 +18,7 @@ asked to select one of the available methods for \code{terra::resample} function
 }
 \value{
 a list of length 2; the first element is the processed \code{SpatRaster} object and the second element is the selected
-resampling method (for track record).
+resampling method (for track record)
 }
 \description{
 Internal function used to resample rasters

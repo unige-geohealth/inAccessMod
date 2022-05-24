@@ -2,38 +2,42 @@
 % Please edit documentation in R/create_hf_shapefile.R
 \name{create_hf_shapefile}
 \alias{create_hf_shapefile}
-\title{Create a health facility shapefile}
+\title{Create A Health Facility Point Shapefile}
 \usage{
 create_hf_shapefile(
   mainPath,
   region,
   mostRecentBoundaries = TRUE,
-  mostRecentTable = FALSE,
   lonlat = TRUE,
   epsg = NULL,
-  alwaysProcess = FALSE
+  rmNA = NULL,
+  rmOut = NULL
 )
 }
 \arguments{
-\item{mainPath}{character; the parent directory of the country/region name folder}
+\item{mainPath}{character; the parent directory of the country folder}
 
-\item{region}{character; the country name}
+\item{region}{character; the country folder name}
 
-\item{mostRecentTable}{logical; should the most recent processed health facility table be used? If FALSE and if there are multiple
-available inputs, the user is interactively asked to select the input based on date and time.}
+\item{mostRecentBoundaries}{logical; should the most recent processed boundary shapefile be used? If FALSE and if there are multiple
+available inputs, the user is interactively asked to select the input based on file creation time.}
 
 \item{lonlat}{logical; are the coordinates indicated in the health facility table given in lon/lat?}
 
-\item{epsg}{numeric or character (coerced to character); ESPG code - Coordinate systems worldwide (EPSG/ESRI).
-Required only when lonlat = FALSE}
+\item{epsg}{numeric or character (coerced to character); ESPG code - Coordinate systems worldwide (EPSG/ESRI)}
 
-\item{alwaysProcess}{logical; should always a new shapefile be created? If alwaysProcess = FALSE and if a shapefile has already
-been created from the same input table, the user is asked whether they want to create a new shapefile or not.}
+\item{rmNA}{logical; should the health facilities with non-available coordinates be removed? If NULL or FALSE the user is interactively
+asked whether they want to remove them or not.}
 
-\item{mostRecentBoudaries}{logical; should the most recent processed boundary shapefile be used? If FALSE and if there are multiple
-available inputs, the user is interactively asked to select the input based on date and time.}
+\item{rmOut}{logical; should the health facilities falling outside of the country be removed? If NULL or FALSE the user is 
+interactively asked whether they want to remove them or not.}
 }
 \description{
 Create a point shapefile of health facilities based on a pre-processed HeRAMS health facility table obtained with the
-filter_hf function.
+\code{filter_hf} function.
+}
+\details{
+Once the missing coordinate issue is addressed, the function checks whether the health facilities fall within the
+country boundary. There is a track record of both the facilities with missing coordinates and the ones that fall
+outside the country boundary.
 }

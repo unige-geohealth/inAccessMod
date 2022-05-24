@@ -27,7 +27,7 @@ process_pop(
 \item{epsg}{character; string that can be used as input in \code{raster::crs()} to describe a projection and datum}
 
 \item{mostRecent}{logical; should the most recent input be selected? If FALSE and if there are multiple
-available inputs, the user is interactively asked to select the input based on date and time.}
+available inputs, the user is interactively asked to select the input based on file creation time.}
 
 \item{defaultMethods}{logical; should be the default methods be used for projecting and resampling, respectively. These
 are the 'bilinear' method for projecting and the 'sum' or the 'bilinear' for the resampling, depending on if the new resolution
@@ -47,13 +47,13 @@ If NULL and popCorrection is TRUE, the user is interactively asked to provide th
 }
 \value{
 a list of length 2; The first element is the processed \code{SpatRaster} object and the second element is the selected
-projection method (for track record).
+projection method (for track record)
 }
 \description{
 Internal function used to process the population raster and copy it to its corresponding process folder
 }
 \details{
-The algorithm for correcting the population raster works as following: it create a grid shapefile, it sums up the population
+The algorithm for correcting the population raster works as following: it creates a grid shapefile, it sums up the population
 in each of the cell considering  both the 'raw' and the 'processed' population raster. Then a ratio is calculated between both
 values and related to each grid cell. The grid shapefile is rasterized using the ratios as values, and finally
 the 'processed' raster is multiplied by the rasterized ratio. The lower is the grid resolution, the finer is the correction.

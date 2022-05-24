@@ -7,7 +7,7 @@
 #' @param projMeth character; method used for estimating the new cell values. If NULL, the user is interactively
 #' asked to select one of the available methods for \code{terra::project} function.
 #' @return a list of length 2; The first element is the processed \code{SpatRaster} object and the second element is the selected
-#' projection method (for track record).
+#' projection method (for track record)
 #' @export
 process_raster <- function (ras, border, epsg, projMeth) {
   border <- sf::st_transform(as(border, "sf"), terra::crs(ras))

@@ -2,7 +2,7 @@
 % Please edit documentation in R/select_categories.R
 \name{select_categories}
 \alias{select_categories}
-\title{Select by attribute}
+\title{Select By Attribute}
 \usage{
 select_categories(sfObject, columnName)
 }

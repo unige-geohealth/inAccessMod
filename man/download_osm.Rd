@@ -2,7 +2,7 @@
 % Please edit documentation in R/download_osm.R
 \name{download_osm}
 \alias{download_osm}
-\title{Download Open Street Map shapefiles}
+\title{Download Open Street Map Layers}
 \usage{
 download_osm(
   x,
@@ -14,9 +14,11 @@ download_osm(
 )
 }
 \arguments{
-\item{mainPath}{character; the parent directory of the country/region name folder}
+\item{x}{character; target layer. Can be 'roads', 'waterLines' or 'naturalPolygons'}
 
-\item{region}{character; the country/region name}
+\item{mainPath}{character; the parent directory of the country folder}
+
+\item{region}{character; the country folder name}
 
 \item{alwaysDownload}{logical; should the shapefile always be downloaded, even if it has already been 
 downloaded? If FALSE and if the shapefile has already been downloaded the user is 
@@ -24,6 +26,9 @@ interactively asked whether they want to download it again or not.}
 
 \item{countryName}{logical; should the country name be used to match with the \code{osm.pbf} file? If FALSE, it is the extent
 of the boundary shapefile that is matched with the \code{osm.pbf} file.}
+
+\item{mostRecent}{logical; should the most recent boundary shapefile be selected? If FALSE and if there are multiple
+available inputs, the user is interactively asked to select the input based on file creation time.}
 }
 \description{
 Download Open Street map shapefiles corresponding to 'roads', 'rivers' or any other natural feature and copy them

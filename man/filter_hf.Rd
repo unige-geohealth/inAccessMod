@@ -4,17 +4,27 @@
 \alias{filter_hf}
 \title{Filter health facilities}
 \usage{
-filter_hf(mainPath, region, mostRecent)
+filter_hf(mainPath, region, pathTable, subProj = NULL, mostRecentObs = NULL)
 }
 \arguments{
-\item{mainPath}{character; the parent directory of the country/region name folder}
+\item{mainPath}{character; the parent directory of the country folder}
 
-\item{region}{character; the country name}
+\item{region}{character; the country folder name}
 
-\item{mostRecent}{logical; should the most recent raw health facility table be used? If FALSE and if there are multiple
-available inputs, the user is interactively asked to select the input based on date and time.}
+\item{pathTable}{character; path to the HeRAMS Excel Table}
+
+\item{subProj}{character; a string of three characters that correspond to the sub-project folder suffix like '001', '002'...'010'...'099'...'100'
+The criteria for selection are those of the specified sub-project. If NULL, an interactive selection by attribute is run in the console.}
+
+\item{mostRecentObs}{logical; should the most recent observation per health facility be taken into account? If NULL or FALSE, 
+the user is asked to choose among three methods for selection based on time observation (most recent, closest to a specific date or case by case).}
 }
 \description{
-Filters interactively the HeRAMS health facility raw table based on a set of variables and export a table that contains only 
-the selected facilities. The selection is recorded within a log.txt file stored in the output folder.
+Filter the HeRAMS health facility raw table based on a set of variables and export a table that contains only 
+the selected facilities.
+}
+\details{
+The selection is recorded within a text file (selected_hf.txt) stored in the sub-project folder. Different
+selection criteria create new sub-project folders. In the same sub-project folder different 'raw' sub-folders may be created
+depending on the original Excel document modification time, and the selection of observations based on time.
 }

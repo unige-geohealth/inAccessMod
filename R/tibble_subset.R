@@ -1,6 +1,6 @@
-#' Tibble subset and track record
+#' Tibble Subset And Track Record
 #'
-#' Internal function used in the filter_hf function.
+#' Internal function used in the \code{filter_hf} function
 #' @param tib \code{tibble} object;
 #' @param var character vector; variable names (from filter_hf function)
 #' @param tempDir character; temporary folder

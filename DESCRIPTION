@@ -2,6 +2,14 @@ Package: inAccMod
 Type: Package
 Title: Get and prepare the required inputs for AccessMod
 Version: 0.0.1.0
+Authors@R: c(
+    person("Pablo", "Timoner", email = "pablo.timoner@unige.ch", role = c("aut", "cre")),
+    person("Fleur", "Hierink", email = "fleur.hierink@unige.ch", role = "aut"),
+    person("Nicolas", "Ray", email = "nicolas.ray@unige.ch", role = "aut" )
+  )
+Description: This package includes functions that allow the user to easily prepare all the required 
+    layers for AccessMod. A proper folder structure is created in order to manage multi-temporal and/or sub-project data. 
+    The functions to process health facility tables are specifically designed to handle HeRAMS data.
 Imports: 
     crsuggest,
     dplyr,
@@ -22,3 +30,6 @@ Imports:
     stringr,
     utils
 RoxygenNote: 7.1.2
+Depends: 
+    R (>= 2.10)
+LazyData: true

@@ -1,4 +1,4 @@
-#' Download landcover
+#' Download Landcover
 #'
 #' Download the Land Cover 100 m from the Copernicus Global Land Service and copy it to its corresponding folder.
 #' @param mainPath character; the parent directory of the country folder
