@@ -49,8 +49,10 @@ filter_hf <- function (mainPath, country, pathTable, mostRecentObs = NULL, subPr
     }
   }
   logTxt <- paste0(mainPath, "/", country, "/data/log.txt")
-  mtime <- file.info(pathTable)$mtime
-  
+  mtime <- tryCatch({file.info(pathTable)$mtime}, error = function(e){NULL})
+  if(is.null(mtime)) {
+    mtime <- "00-00-00 00:00:00 CEST (example data)"
+  }
   if (!is.null(subProj)) {
     if(!is.character(subProj)){
       stop("If not NULL, subProj must be 'character'")
