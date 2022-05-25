@@ -72,6 +72,14 @@ filter_hf <- function (mainPath, country, pathTable, mostRecentObs = NULL, subPr
   } else {
     mostRecentObs <- FALSE
   }
+  
+  sysTime <- Sys.time()
+  outTimeFolder <- gsub("-|[[:space:]]|\\:", "", sysTime)
+  outFolder <- paste(pathFacilities, subProjDir, outTimeFolder, "raw", sep = "/")
+  dir.create(outFolder, recursive = TRUE)
+  
+  logSubProjTxt <-  paste(pathFacilities, subProjDir, outTimeFolder, "time_frame.txt", sep = "/")
+  
   if (mostRecentObs) {
     cat("For each facility, the most recent observation is kept.\n")
     optInd <- 1
@@ -193,12 +201,6 @@ filter_hf <- function (mainPath, country, pathTable, mostRecentObs = NULL, subPr
     }
     subProjDir <- paste0("subProj", subProj)
   }
-  sysTime <- Sys.time()
-  outTimeFolder <- gsub("-|[[:space:]]|\\:", "", sysTime)
-  outFolder <- paste(pathFacilities, subProjDir, outTimeFolder, "raw", sep = "/")
-  dir.create(outFolder, recursive = TRUE)
-  
-  logSubProjTxt <-  paste(pathFacilities, subProjDir, outTimeFolder, "time_frame.txt", sep = "/")
   write(paste0("Modification time of the raw Excel table: ", mtime), file = logSubProjTxt, append = TRUE)
   
   write.csv(newTib, file = paste(outFolder, "health_facilities.csv", sep = "/"))
