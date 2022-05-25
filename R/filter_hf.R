@@ -43,7 +43,7 @@ filter_hf <- function (mainPath, country, pathTable, mostRecentObs = NULL, subPr
   newTib <- tryCatch({readxl::read_excel(pathTable, skip = 1, sheet = 2)}, error = function(e){NULL})
   if (is.null(newTib)) {
     if (yn == 1) {
-      newTib <- inAccMod::random_herams_data
+      newTib <- inAccMod::fictitious_herams_data
     } else {
       stop(paste(paste(pathFacilities, file, sep = "/"), "could not be opened."))
     }
