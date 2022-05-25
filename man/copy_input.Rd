@@ -4,12 +4,12 @@
 \alias{copy_input}
 \title{Copy Input}
 \usage{
-copy_input(mainPath, region, input)
+copy_input(mainPath, country, input)
 }
 \arguments{
 \item{mainPath}{character; the parent directory of the country folder}
 
-\item{region}{character; the country folder name}
+\item{country}{character; the country folder name}
 
 \item{input}{character; the absolute path of the input. Can be a single path (corresponding to e.g. a health facility table) 
 or a vector of different paths (corresponding to e.g. shapefile documents)}

@@ -2,7 +2,7 @@
 #'
 #' Download the Land Cover 100 m from the Copernicus Global Land Service and copy it to its corresponding folder.
 #' @param mainPath character; the parent directory of the country folder
-#' @param region character; the country folder name
+#' @param country character; the country folder name
 #' @param alwaysDownload logical; should the raster always be downloaded, even if it has already been 
 #' downloaded? If FALSE and if the raster has already been downloaded the user is 
 #' interactively asked whether they want to download it again or not.
@@ -12,12 +12,12 @@
 #' @details The function downloads the landcover tiles from the AWS cloud and determines the file names based on the extent
 #' of the boundary shapefile. If there are multiple tiles, it produces a mosaic.
 #' @export
-download_landcover <- function (mainPath, region, alwaysDownload = FALSE, mostRecent = FALSE) {
+download_landcover <- function (mainPath, country, alwaysDownload = FALSE, mostRecent = FALSE) {
   if (!is.character(mainPath)) {
     stop("mainPath must be 'character'")
   }
-  if (!is.character(region)) {
-    stop("region must be 'character'")
+  if (!is.character(country)) {
+    stop("country must be 'character'")
   }
   if (!is.logical(alwaysDownload)) {
     stop("alwaysDownload must be 'logical'")
@@ -26,7 +26,7 @@ download_landcover <- function (mainPath, region, alwaysDownload = FALSE, mostRe
     stop("mostRecent must be 'logical'")
   }
   # Check directory
-  pathLandcover <- paste0(mainPath, "/", region, "/data/rLandcover")
+  pathLandcover <- paste0(mainPath, "/", country, "/data/rLandcover")
   folders <- check_exists(pathLandcover, "raw", layer = TRUE)
   if (!is.null(folders)) {
     if (!alwaysDownload) {
@@ -36,7 +36,7 @@ download_landcover <- function (mainPath, region, alwaysDownload = FALSE, mostRe
   awsLCFolder <- "https://s3-eu-west-1.amazonaws.com/vito.landcover.global/v3.0.1/2019/"
   awsLCSuffix <- "_PROBAV_LC100_global_v3.0.1_2019-nrt_Discrete-Classification-map_EPSG-4326.tif"
   message("\nLoading raw boundary shapefile...")
-  border <- get_boundaries(mainPath, region, "raw", mostRecent)
+  border <- get_boundaries(mainPath, country, "raw", mostRecent)
   # Based on https://lcviewer.vito.be/download and the names of available files for downloading
   # Coordinate intervals
   seqCoord <- list(X = seq(from = -180, to = 180, by = 20), Y = seq(from = -40, to = 80, by = 20))
@@ -61,7 +61,7 @@ download_landcover <- function (mainPath, region, alwaysDownload = FALSE, mostRe
         }
       }
       if (coord > max(seqDeg) | coord < min(seqDeg)) {
-        stop("Region outside the limits of the Land Cover availability.")
+        stop("Country outside the limits of the Land Cover availability.")
       }
       getPosition <- findInterval(seqDeg, vec=coord)
       partialTileDeg[[i]][j] <- seqDeg[min(which(getPosition == 1)) + adjustTile[i]]
@@ -103,13 +103,13 @@ download_landcover <- function (mainPath, region, alwaysDownload = FALSE, mostRe
       urls <- c(urls, paste0(awsLCFolder, charX, charY, "/", charX, charY, awsLCSuffix))
     }
   }
-  logTxt <- paste0(mainPath, "/", region, "/data/log.txt")
+  logTxt <- paste0(mainPath, "/", country, "/data/log.txt")
   sysTime <- Sys.time()
   timeFolder <- gsub("-|[[:space:]]|\\:", "", sysTime)
   dir.create(paste0(pathLandcover, "/", timeFolder, "/raw"), recursive = TRUE)
   pathLandcover <- paste0(pathLandcover, "/", timeFolder, "/raw")
   if (length(urls) == 1) {
-    utils::download.file(urls, destfile = paste0(pathLandcover, "/", region, awsLCSuffix, ".tif"), mode = "wb")
+    utils::download.file(urls, destfile = paste0(pathLandcover, "/", country, awsLCSuffix, ".tif"), mode = "wb")
     write(paste0(Sys.time(), ": Single landcover tile downloaded - Input folder ", timeFolder), file = logTxt, append = TRUE)
   }else{
     # Download SRTM tiles shapefile in a temporary folder
@@ -122,9 +122,9 @@ download_landcover <- function (mainPath, region, alwaysDownload = FALSE, mostRe
     cat(paste0("Creating a mosaic with the downloaded rasters...\n"))
     files <- list.files(tmpFolder, pattern = "*.tif", full.names=TRUE)
     # Gdal mosaic
-    gdalUtils::mosaic_rasters(gdalfile = files, dst_dataset = paste0(pathLandcover, "/", region, awsLCSuffix, ".tif"), of="GTiff")
+    gdalUtils::mosaic_rasters(gdalfile = files, dst_dataset = paste0(pathLandcover, "/", country, awsLCSuffix, ".tif"), of="GTiff")
     write(paste0(Sys.time(), ": Multiple landcover tiles downloaded and mosaicked - Input folder ", timeFolder), file = logTxt, append = TRUE)
     unlink(tmpFolder, recursive = TRUE)
   }
-  cat(paste0(pathLandcover, "/", region, awsLCSuffix, "\n"))
+  cat(paste0(pathLandcover, "/", country, awsLCSuffix, "\n"))
 }

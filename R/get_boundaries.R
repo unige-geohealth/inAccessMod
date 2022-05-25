@@ -2,25 +2,25 @@
 #'
 #' Internal function that is used to get the boundary shapefile required in other functions
 #' @param mainPath character; the parent directory of the country folder
-#' @param region character; the country folder name
+#' @param country character; the country folder name
 #' @param type character; 'raw' or 'processed' depending on whether the required input is
 #' the raw input or the already processed one (i.e. projected shapefile).
 #' @param mostRecent logical; should the most recent input be selected? If FALSE and if there are multiple
 #' available inputs, the user is interactively asked to select the input based on file creation time.
 #' @return object of class \code{sf} when a layer was successfully read
 #' @export
-get_boundaries <- function (mainPath, region, type, mostRecent) {
+get_boundaries <- function (mainPath, country, type, mostRecent) {
   if (!is.character(mainPath)) {
     stop("mainPath must be 'character'")
   }
-  if (!is.character(region)) {
-    stop("region must be 'character'")
+  if (!is.character(country)) {
+    stop("country must be 'character'")
   }
   if (!type %in% c("raw", "processed")) {
     stop("type must be 'raw' or 'processed")
   }
   # Check directory
-  pathBorder <- paste0(mainPath, "/", region, "/data/vBorders")
+  pathBorder <- paste0(mainPath, "/", country, "/data/vBorders")
   if (!dir.exists(pathBorder)) {
     stop(paste(pathBorder,"does not exist. Run the initiate_project function first or check the input parameters."))
   }

@@ -4,12 +4,12 @@
 \alias{download_population}
 \title{Download Population Raster}
 \usage{
-download_population(mainPath, region, alwaysDownload = FALSE)
+download_population(mainPath, country, alwaysDownload = FALSE)
 }
 \arguments{
 \item{mainPath}{character; the parent directory of the country folder}
 
-\item{region}{character; the country folder name}
+\item{country}{character; the country folder name}
 
 \item{alwaysDownload}{logical; should the raster always be downloaded, even if it has already been 
 downloaded? If FALSE and if the raster has already been downloaded the user is 

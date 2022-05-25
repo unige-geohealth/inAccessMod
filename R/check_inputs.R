@@ -2,19 +2,19 @@
 #'
 #' Check whether a raw or processed input exists
 #' @param mainPath character; the parent directory of the country folder
-#' @param region character; the country folder name
+#' @param country character; the country folder name
 #' @param type character; 'raw' or 'processed' depending on whether the required input is
 #' the raw input or the already processed one.
 #' @param onlyPrint logical; should the function just print which inputs are available and which are not available. Internally
 #' \code{print} is set FALSE, but when the function is used directly by the user, print should be set to TRUE.
 #' @return character vector when \code{onlyPrint} = FALSE, and NULL when \code{onlyPrint} = TRUE
 #' @export
-check_inputs <- function (mainPath, region, type, onlyPrint = FALSE) {
+check_inputs <- function (mainPath, country, type, onlyPrint = FALSE) {
   if (!is.character(mainPath)) {
     stop("mainPath must be 'character'")
   }
-  if (!is.character(region)) {
-    stop("region must be 'character'")
+  if (!is.character(country)) {
+    stop("country must be 'character'")
   }
   if (!type %in% c("raw","processed")) {
     stop("type must be 'raw' or 'processed'")
@@ -22,11 +22,11 @@ check_inputs <- function (mainPath, region, type, onlyPrint = FALSE) {
   if (!is.logical(onlyPrint)) {
     stop("print must be 'logical'")
   }
-  fileLst <- list.files(paste0(mainPath, "/", region, "/data"), recursive = TRUE)
+  fileLst <- list.files(paste0(mainPath, "/", country, "/data"), recursive = TRUE)
   fileLst <- fileLst[!grepl("zToAccessMod", fileLst)]
   fileAv <- fileLst[grepl(paste0(type, "/.*(\\.tif|\\.shp)"), fileLst)]
   folderAv <- unique(gsub("/[0-9].*$", "", fileAv))
-  folderLst <- list.dirs(paste0(mainPath, "/", region, "/data"), recursive = TRUE)[-1]
+  folderLst <- list.dirs(paste0(mainPath, "/", country, "/data"), recursive = TRUE)[-1]
   folderLst <- folderLst[!grepl("zToAccessMod", folderLst)]
   folderLst <- unique(gsub("/[0-9].*$", "", folderLst))
   folderLst <- gsub("^.*/data/", "", folderLst)

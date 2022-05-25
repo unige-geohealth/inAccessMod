@@ -4,12 +4,12 @@
 \alias{download_boundaries}
 \title{Download Administrative Boundaries}
 \usage{
-download_boundaries(mainPath, region, adminLevel, alwaysDownload = FALSE)
+download_boundaries(mainPath, country, adminLevel, alwaysDownload = FALSE)
 }
 \arguments{
 \item{mainPath}{character; the parent directory of the country folder}
 
-\item{region}{character; the country folder name}
+\item{country}{character; the country folder name}
 
 \item{adminLevel}{integer; administrative level of the boundaries. From 0 to 5}
 

@@ -2,7 +2,7 @@
 #' 
 #' Process any input layer and copy it to its corresponding folder
 #' @param mainPath character; the parent directory of the country folder
-#' @param region character; the country folder name
+#' @param country character; the country folder name
 #' @param selectedInputs character; vector indicating the inputs to be processed. Raw inputs must be available. Argument
 #' can be set to "All" to consider all the available 'raw' inputs. If NULL, the user is interactively asked to select the available
 #' inputs to be processed.
@@ -26,14 +26,14 @@
 #' for processing any other raster. These conditions are taken into account and the processing of these
 #' layers is performed even if they are not selected if 'processed' layers are not available.
 #' @export
-process_inputs <- function (mainPath, region, selectedInputs = NULL, mostRecent = FALSE, alwaysProcess = FALSE, defaultMethods = NULL, changeRes = NULL, newRes = NULL, popCorrection = NULL, gridRes = NULL) {
+process_inputs <- function (mainPath, country, selectedInputs = NULL, mostRecent = FALSE, alwaysProcess = FALSE, defaultMethods = NULL, changeRes = NULL, newRes = NULL, popCorrection = NULL, gridRes = NULL) {
   if (!is.character(mainPath)) {
     stop("mainPath must be 'character'")
   }
-  if (!is.character(region)) {
-    stop("region must be 'character'")
+  if (!is.character(country)) {
+    stop("country must be 'character'")
   }
-  rawFolders <- check_inputs(mainPath, region, "raw")
+  rawFolders <- check_inputs(mainPath, country, "raw")
   if (length(rawFolders) == 0) {
     stop("No input data available.")
   }
@@ -79,8 +79,8 @@ process_inputs <- function (mainPath, region, selectedInputs = NULL, mostRecent 
       stop("gridRes must be NULL or a real positive number'")
     }
   }
-  logTxt <- paste0(mainPath, "/", region, "/data/log.txt")
-  epsg <- get_param(mainPath = mainPath, region = region, "EPSG")
+  logTxt <- paste0(mainPath, "/", country, "/data/log.txt")
+  epsg <- get_param(mainPath = mainPath, country = country, "EPSG")
   epsg <- paste0("EPSG:", epsg)
   if (length(epsg) == 0) {
     stop("EPSG for projection is not set. Run the set_projection function.")
@@ -93,7 +93,7 @@ process_inputs <- function (mainPath, region, selectedInputs = NULL, mostRecent 
     selectedFolders <- selectedInputs
   }
   # Border is required for any input processing; if wanted, first process this layer
-  borderPath <- paste0(mainPath, "/", region, "/data/vBorders")
+  borderPath <- paste0(mainPath, "/", country, "/data/vBorders")
   borderPr <- check_exists(borderPath, "processed", layer = TRUE)
   # If we want to process border or if no processed shapefile exists (required for any other processing)
   if (("vBorders" %in% selectedFolders) | is.null(borderPr)) {
@@ -125,23 +125,23 @@ process_inputs <- function (mainPath, region, selectedInputs = NULL, mostRecent 
   if (length(selectedFolders) < 1) {
     stop_quietly("No more input to be processed!")
   }
-  border <- get_boundaries(mainPath, region, "processed", mostRecent)
+  border <- get_boundaries(mainPath, country, "processed", mostRecent)
   if ("rPopulation" %in% selectedFolders) {
-    process_pop(mainPath, region, border, epsg, mostRecent, defaultMethods, changeRes, newRes, popCorrection, gridRes)
+    process_pop(mainPath, country, border, epsg, mostRecent, defaultMethods, changeRes, newRes, popCorrection, gridRes)
     selectedFolders <- selectedFolders[!grepl("rPopulation", selectedFolders)]
   }
   # Check if other rasters to be processed
   filesRasTrue <- NULL
   for (i in 1:length(selectedFolders)) {
-    files <- list.files(paste0(mainPath, "/", region, "/data/", selectedFolders[i]), recursive = TRUE)
+    files <- list.files(paste0(mainPath, "/", country, "/data/", selectedFolders[i]), recursive = TRUE)
     filesRasTrue <- c(filesRasTrue, any(grepl("raw/.*\\.tif",files)))
   }
   if (any(filesRasTrue)) {
-    popFolder <- paste0(mainPath, "/", region, "/data/rPopulation")
+    popFolder <- paste0(mainPath, "/", country, "/data/rPopulation")
     popFolders <- check_exists(popFolder, "processed", layer = TRUE)
     if (is.null(popFolders)) {
       message("\nNo processed population raster is available.\nProcessing raw population raster...")
-      process_pop(mainPath, region, border, epsg, mostRecent, defaultMethods, changeRes, newRes, popCorrection, gridRes)
+      process_pop(mainPath, country, border, epsg, mostRecent, defaultMethods, changeRes, newRes, popCorrection, gridRes)
       popFolders <- check_exists(popFolder, "processed", layer = TRUE)
     }
     message("\nLoading processed population raster...")
@@ -158,7 +158,7 @@ process_inputs <- function (mainPath, region, selectedInputs = NULL, mostRecent 
   for (i in 1:length(selectedFolders)) {
     cat("\n")
     message(selectedFolders[i])
-    inputFolder <- paste0(mainPath, "/", region, "/data/", selectedFolders[i])
+    inputFolder <- paste0(mainPath, "/", country, "/data/", selectedFolders[i])
     inputFolders <- check_exists(inputFolder, "raw", layer = TRUE)
     timeFolder <- select_input(inputFolders, paste(selectedFolders[i], "downloaded at:"), mostRecent)
     if (is.null(timeFolder)) {

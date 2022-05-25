@@ -3,7 +3,7 @@
 #' Create a point shapefile of health facilities based on a pre-processed HeRAMS health facility table obtained with the
 #' \code{filter_hf} function.
 #' @param mainPath character; the parent directory of the country folder
-#' @param region character; the country folder name
+#' @param country character; the country folder name
 #' @param mostRecentBoundaries logical; should the most recent processed boundary shapefile be used? If FALSE and if there are multiple
 #' available inputs, the user is interactively asked to select the input based on file creation time.
 #' @param lonlat logical; are the coordinates indicated in the health facility table given in lon/lat?
@@ -16,12 +16,12 @@
 #' country boundary. There is a track record of both the facilities with missing coordinates and the ones that fall
 #' outside the country boundary.
 #' @export
-create_hf_shapefile <- function (mainPath, region, mostRecentBoundaries = TRUE, lonlat = TRUE, epsg = NULL, rmNA = NULL, rmOut = NULL) {
+create_hf_shapefile <- function (mainPath, country, mostRecentBoundaries = TRUE, lonlat = TRUE, epsg = NULL, rmNA = NULL, rmOut = NULL) {
   if (!is.character(mainPath)) {
     stop("mainPath must be 'character'")
   }
-  if (!is.character(region)) {
-    stop("region must be 'character'")
+  if (!is.character(country)) {
+    stop("country must be 'character'")
   }
   if (!is.logical(lonlat)) {
     stop("lonlat must be 'logical'")
@@ -52,12 +52,12 @@ create_hf_shapefile <- function (mainPath, region, mostRecentBoundaries = TRUE, 
       stop("rmOut must be 'NULL' or 'logical'")
     }
   }
-  logTxt <- paste0(mainPath, "/", region, "/data/log.txt")
-  pathFacilities <- paste0(mainPath, "/", region, "/data/vFacilities")
+  logTxt <- paste0(mainPath, "/", country, "/data/log.txt")
+  pathFacilities <- paste0(mainPath, "/", country, "/data/vFacilities")
   if (!dir.exists(paste0(pathFacilities))) {
     stop(paste(pathFacilities, " does not exist. Run the initiate_project function."))
   }
-  border <- get_boundaries(mainPath = mainPath, region = region, type = "processed", mostRecentBoundaries)
+  border <- get_boundaries(mainPath = mainPath, country = country, type = "processed", mostRecentBoundaries)
   subProjDirs <- list.dirs(pathFacilities, recursive = FALSE)
   subProjDirs <- subProjDirs[grepl("subProj", subProjDirs)]
   if (length(subProjDirs) == 0) {
@@ -131,7 +131,7 @@ create_hf_shapefile <- function (mainPath, region, mostRecentBoundaries = TRUE, 
   interOutside <- FALSE
   if (!all(inter[, 1])) {
     interOutside <- TRUE
-    message("The follwing HFs are outside the region/country boundaries:")
+    message("The follwing HFs are outside the country boundaries:")
     print(df[!inter, c("external_id", "workspace_id", "date", "MoSD3", "HFNAME")])
     if (rmOut) {
       yn <- 2

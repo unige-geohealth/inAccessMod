@@ -4,12 +4,12 @@
 \alias{get_boundaries}
 \title{Get Boundary Shapefile}
 \usage{
-get_boundaries(mainPath, region, type, mostRecent)
+get_boundaries(mainPath, country, type, mostRecent)
 }
 \arguments{
 \item{mainPath}{character; the parent directory of the country folder}
 
-\item{region}{character; the country folder name}
+\item{country}{character; the country folder name}
 
 \item{type}{character; 'raw' or 'processed' depending on whether the required input is
 the raw input or the already processed one (i.e. projected shapefile).}

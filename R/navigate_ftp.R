@@ -12,7 +12,7 @@
 navigate_ftp <- function (folderLst, iso, pathFTP, pathFTP0) {
   navig <- TRUE
   while (navig) {
-    # If there is a folder with our region code, select it
+    # If there is a folder with our country code, select it
     isoProp <- sum(grepl("^[A-Z]{3}$", folderLst)) / length(folderLst)
     if (any(grepl(paste0("^", iso, "$"), folderLst))) {
       pathFTP <- paste0(pathFTP, iso,"/")

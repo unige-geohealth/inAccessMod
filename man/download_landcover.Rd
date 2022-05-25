@@ -6,7 +6,7 @@
 \usage{
 download_landcover(
   mainPath,
-  region,
+  country,
   alwaysDownload = FALSE,
   mostRecent = FALSE
 )
@@ -14,7 +14,7 @@ download_landcover(
 \arguments{
 \item{mainPath}{character; the parent directory of the country folder}
 
-\item{region}{character; the country folder name}
+\item{country}{character; the country folder name}
 
 \item{alwaysDownload}{logical; should the raster always be downloaded, even if it has already been 
 downloaded? If FALSE and if the raster has already been downloaded the user is 

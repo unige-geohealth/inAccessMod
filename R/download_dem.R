@@ -2,7 +2,7 @@
 #'
 #' Download a SRTM 90m resolution (3 arc-seconds) DEM for the entire country and copy it to its corresponding folder.
 #' @param mainPath character; the parent directory of the country folder
-#' @param region character; the country folder name
+#' @param country character; the country folder name
 #' @param alwaysDownload logical; should the raster always be downloaded, even if it has already been 
 #' downloaded? If FALSE and if the raster has already been downloaded the user is 
 #' interactively asked whether they want to download it again or not.
@@ -13,12 +13,12 @@
 #' The SRTM tiles to be downloaded are selected based on the extent of the boundary shapefile and are downloaded using the 
 #' \code{getData} function from the \pkg{raster} package. If there are multiple tiles, a mosaic is produced.
 #' @export
-download_dem <- function (mainPath, region, alwaysDownload = FALSE, mostRecent = FALSE) {
+download_dem <- function (mainPath, country, alwaysDownload = FALSE, mostRecent = FALSE) {
   if (!is.character(mainPath)) {
     stop("mainPath must be 'character'")
   }
-  if (!is.character(region)) {
-    stop("region must be 'character'")
+  if (!is.character(country)) {
+    stop("country must be 'character'")
   }
   if (!is.logical(alwaysDownload)) {
     stop("alwaysDownload must be 'logical'")
@@ -27,15 +27,14 @@ download_dem <- function (mainPath, region, alwaysDownload = FALSE, mostRecent =
     stop("mostRecent must be 'logical'")
   }
   # Check directory
-  pathDEM <- paste0(mainPath, "/", region, "/data/rDEM")
+  pathDEM <- paste0(mainPath, "/", country, "/data/rDEM")
   folders <- check_exists(pathDEM, "raw", layer = TRUE)
   if (!is.null(folders)) {
     if (!alwaysDownload) {
       check_downloaded(folders)
     }
   }
-  message("\nLoading raw boundary shapefile...")
-  border <- get_boundaries(mainPath, region, "raw", mostRecent)
+  border <- get_boundaries(mainPath, country, "raw", mostRecent)
   border <- as(border, "Spatial")
   border <- rgeos::gUnaryUnion(border)
   # Download SRTM tiles shapefile in a temporary folder
@@ -51,7 +50,7 @@ download_dem <- function (mainPath, region, alwaysDownload = FALSE, mostRecent =
   shp <- raster::shapefile(paste0(tmpFolder, "/srtm_country-master/srtm/tiles.shp"))
   intersects <- rgeos::gIntersects(border, shp, byid=TRUE)
   tiles <- shp[intersects[,1],]
-  logTxt <- paste0(mainPath, "/", region, "/data/log.txt")
+  logTxt <- paste0(mainPath, "/", country, "/data/log.txt")
   #Download tiles
   if (length(tiles) > 1) {
     srtmList  <- list()

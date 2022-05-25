@@ -7,7 +7,7 @@
 download_osm(
   x,
   mainPath,
-  region,
+  country,
   alwaysDownload = FALSE,
   countryName = TRUE,
   mostRecent = NULL
@@ -18,7 +18,7 @@ download_osm(
 
 \item{mainPath}{character; the parent directory of the country folder}
 
-\item{region}{character; the country folder name}
+\item{country}{character; the country folder name}
 
 \item{alwaysDownload}{logical; should the shapefile always be downloaded, even if it has already been 
 downloaded? If FALSE and if the shapefile has already been downloaded the user is 

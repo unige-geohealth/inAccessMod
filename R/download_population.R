@@ -2,7 +2,7 @@
 #'
 #' Download a population raster from the World Pop FTP and copy it to its corresponding folder.
 #' @param mainPath character; the parent directory of the country folder
-#' @param region character; the country folder name
+#' @param country character; the country folder name
 #' @param alwaysDownload logical; should the raster always be downloaded, even if it has already been 
 #' downloaded? If FALSE and if the raster has already been downloaded the user is 
 #' interactively asked whether they want to download it again or not.
@@ -11,25 +11,25 @@
 #' to be downloaded. The ISO code retrieved internally by the \code{get_param} function is used to match the country FTP folder
 #' when available.
 #' @export
-download_population <- function (mainPath, region, alwaysDownload = FALSE) {
+download_population <- function (mainPath, country, alwaysDownload = FALSE) {
   if (!is.character(mainPath)) {
     stop("mainPath must be 'character'")
   }
-  if (!is.character(region)) {
-    stop("region must be 'character'")
+  if (!is.character(country)) {
+    stop("country must be 'character'")
   }
   if (!is.logical(alwaysDownload)) {
     stop("alwaysDownload must be 'logical'")
   }
   # Check directory
-  pathPop <- paste0(mainPath, "/", region, "/data/rPopulation")
+  pathPop <- paste0(mainPath, "/", country, "/data/rPopulation")
   folders <- check_exists(pathPop, "raw", layer = TRUE)
   if (!is.null(folders)) {
     if (!alwaysDownload) {
       check_downloaded(folders)
     }
   }
-  iso <- get_param(mainPath, region, "ISO")
+  iso <- get_param(mainPath, country, "ISO")
   pathFTP0 <- ftpWorldPop
   pathFTP <- pathFTP0
   downloadProcess <- TRUE
@@ -68,7 +68,7 @@ download_population <- function (mainPath, region, alwaysDownload = FALSE) {
       downloadProcess <- TRUE
       pathFTP <- pathFTP0
     }else{
-      logTxt <- paste0(mainPath, "/", region, "/data/log.txt")
+      logTxt <- paste0(mainPath, "/", country, "/data/log.txt")
       sysTime <- Sys.time()
       timeFolder <- gsub("-|[[:space:]]|\\:", "", sysTime)
       dir.create(paste0(pathPop, "/", timeFolder, "/raw"), recursive = TRUE)

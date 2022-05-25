@@ -6,7 +6,7 @@
 \usage{
 set_projection(
   mainPath,
-  region,
+  country,
   mostRecent = FALSE,
   alwaysSet = FALSE,
   bestCRS = FALSE
@@ -15,10 +15,10 @@ set_projection(
 \arguments{
 \item{mainPath}{character; the parent directory of the country folder}
 
-\item{region}{character; the country folder name}
+\item{country}{character; the country folder name}
 
 \item{mostRecent}{logical; should the most recent downloaded boundary shapefile be selected? If FALSE and if there 
-are multiple available inputs, the user is interactively asked to select the input based on date and time.}
+are multiple available inputs, the user is interactively asked to select the input based on download time.}
 
 \item{alwaysSet}{logical; should the projected coordinate reference system always be set, even if it has already been 
 set? If FALSE and if the projected coordinate reference system has already been set the user is 
@@ -32,7 +32,7 @@ system from a list of suitable reference systems.}
 Set the projected coordinate reference system of the project based on the extent of the boundary shapefile.
 }
 \details{
-The "best-fit" and the suitable projected coordinate reference system are obtained with the 
+The "best-fit" and the suitable projected coordinate reference systems are obtained with the 
 \code{suggest_top_crs} and the \code{suggest_crs}, respectively, from the \pkg{crsuggest} package.
 Both function work by analyzing the extent of the spatial dataset and comparing it to the area extents
 in the EPSG's coordinate reference system database.

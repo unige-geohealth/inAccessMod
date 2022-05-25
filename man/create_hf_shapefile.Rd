@@ -6,7 +6,7 @@
 \usage{
 create_hf_shapefile(
   mainPath,
-  region,
+  country,
   mostRecentBoundaries = TRUE,
   lonlat = TRUE,
   epsg = NULL,
@@ -17,7 +17,7 @@ create_hf_shapefile(
 \arguments{
 \item{mainPath}{character; the parent directory of the country folder}
 
-\item{region}{character; the country folder name}
+\item{country}{character; the country folder name}
 
 \item{mostRecentBoundaries}{logical; should the most recent processed boundary shapefile be used? If FALSE and if there are multiple
 available inputs, the user is interactively asked to select the input based on file creation time.}

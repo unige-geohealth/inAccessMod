@@ -1,8 +1,8 @@
 #' Process Population Raster
 #'
 #' Internal function used to process the population raster and copy it to its corresponding process folder
-#' @param mainPath character; the parent directory of the country/region name folder
-#' @param region character; the country name
+#' @param mainPath character; the parent directory of the country name folder
+#' @param country character; the country name
 #' @param border \code{sf} object; a boundary shapefile
 #' @param epsg character; string that can be used as input in \code{raster::crs()} to describe a projection and datum
 #' @param mostRecent logical; should the most recent input be selected? If FALSE and if there are multiple
@@ -25,10 +25,10 @@
 #' values and related to each grid cell. The grid shapefile is rasterized using the ratios as values, and finally
 #' the 'processed' raster is multiplied by the rasterized ratio. The lower is the grid resolution, the finer is the correction.
 #' @export
-process_pop <- function (mainPath, region, border, epsg, mostRecent, defaultMethods, changeRes, newRes, popCorrection, gridRes) {
-  logTxt <- paste0(mainPath, "/", region, "/data/log.txt")
+process_pop <- function (mainPath, country, border, epsg, mostRecent, defaultMethods, changeRes, newRes, popCorrection, gridRes) {
+  logTxt <- paste0(mainPath, "/", country, "/data/log.txt")
   message("\nProcessing population raster...")
-  popFolder <- paste0(mainPath, "/", region, "/data/rPopulation")
+  popFolder <- paste0(mainPath, "/", country, "/data/rPopulation")
   popFolders <- check_exists(popFolder, "raw", layer = TRUE)
   if (is.null(popFolders)) {
     stop("No input population raster available.")

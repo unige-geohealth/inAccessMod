@@ -21,15 +21,15 @@ initiate_project <- function (mainPath) {
     stop_quietly("You exit the function.")
   }
   # Store the original name
-  regionOriginalName <- countryLst[countryInd]
+  countryOriginalName <- countryLst[countryInd]
   # Store the ISO code
-  iso3 <- as.character(countrycode::codelist[countrycode::codelist$country.name.en == regionOriginalName, "iso3c"])
+  iso3 <- as.character(countrycode::codelist[countrycode::codelist$country.name.en == countryOriginalName, "iso3c"])
   # Modify the name if necessary for directory name
-  region <- gsub(" \\(.*\\)|\\(.*\\)", "", regionOriginalName)
-  region <- gsub("[^[[:alnum:]]", " ", region)
-  region <- stringr::str_squish(region)
-  region <- gsub("[[:space:]]", "_", region)
-  region <- stringi::stri_trans_general(str = region, id = "Latin-ASCII")
+  country <- gsub(" \\(.*\\)|\\(.*\\)", "", countryOriginalName)
+  country <- gsub("[^[[:alnum:]]", " ", country)
+  country <- stringr::str_squish(country)
+  country <- gsub("[[:space:]]", "_", country)
+  country <- stringi::stri_trans_general(str = country, id = "Latin-ASCII")
   # Main standard inputs
   inputNames=c("rDEM", "rPopulation", "rLandcover", "vRoads", "vWaterLines", 
                "vNaturalPolygons", "vBorders","vFacilities")
@@ -59,21 +59,21 @@ initiate_project <- function (mainPath) {
     }
   }
   # Create directories
-  pathData <- paste0(mainPath, "/", toupper(region), "/data")
+  pathData <- paste0(mainPath, "/", toupper(country), "/data")
   dir.create(pathData, recursive = TRUE, showWarnings = FALSE)
   for (inputName in inputNames) {
     dir.create(paste0(pathData, "/", inputName), showWarnings = FALSE)
   }
   # Create config.txt for ISO code, and then EPSG as well
-  pathRegion <- paste0(mainPath, "/", region, "/data")
-  fileConn <- file(paste0(pathRegion, "/config.txt"))
-  writeLines(c(paste0("COUNTRY:", regionOriginalName), paste0("ISO:", iso3)), fileConn)
+  pathCountry <- paste0(mainPath, "/", country, "/data")
+  fileConn <- file(paste0(pathCountry, "/config.txt"))
+  writeLines(c(paste0("COUNTRY:", countryOriginalName), paste0("ISO:", iso3)), fileConn)
   close(fileConn)
   # Create log.txt for operation tracking
-  fileConn <- file(paste0(pathRegion, "/log.txt"))
-  writeLines(regionOriginalName, fileConn)
+  fileConn <- file(paste0(pathCountry, "/log.txt"))
+  writeLines(countryOriginalName, fileConn)
   writeLines(paste0(Sys.time(), ": Project initiated"), fileConn)
   close(fileConn)
   # Print directory tree
-  fs::dir_tree(paste0(mainPath, "/", region, "/data"))
+  fs::dir_tree(paste0(mainPath, "/", country, "/data"))
 }

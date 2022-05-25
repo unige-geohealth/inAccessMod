@@ -4,7 +4,7 @@
 #' to their corresponding folders.
 #' @param x character; target layer. Can be 'roads', 'waterLines' or 'naturalPolygons'
 #' @param mainPath character; the parent directory of the country folder
-#' @param region character; the country folder name
+#' @param country character; the country folder name
 #' @param alwaysDownload logical; should the shapefile always be downloaded, even if it has already been 
 #' downloaded? If FALSE and if the shapefile has already been downloaded the user is 
 #' interactively asked whether they want to download it again or not.
@@ -13,12 +13,12 @@
 #' @param mostRecent logical; should the most recent boundary shapefile be selected? If FALSE and if there are multiple
 #' available inputs, the user is interactively asked to select the input based on file creation time.
 #' @export
-download_osm <- function (x, mainPath, region, alwaysDownload = FALSE, countryName = TRUE, mostRecent = NULL) {
+download_osm <- function (x, mainPath, country, alwaysDownload = FALSE, countryName = TRUE, mostRecent = NULL) {
   if (!is.character(mainPath)) {
     stop("mainPath must be 'character'")
   }
-  if (!is.character(region)) {
-    stop("region must be 'character'")
+  if (!is.character(country)) {
+    stop("country must be 'character'")
   }
   if (!(x == "roads" | x == "waterLines" | x == "naturalPolygons")) {
     stop("x must be 'roads', 'waterLines' or 'naturalPolygons'")
@@ -37,7 +37,7 @@ download_osm <- function (x, mainPath, region, alwaysDownload = FALSE, countryNa
       stop("mostRecent must be 'logical'")
     }
   }
-  pathFolder <- paste0(mainPath, "/", region, "/data/v", stringr::str_to_title(x))
+  pathFolder <- paste0(mainPath, "/", country, "/data/v", stringr::str_to_title(x))
   folders <- check_exists(pathFolder, "raw", layer = TRUE)
   if (!is.null(folders)) {
     if (!alwaysDownload) {
@@ -60,7 +60,7 @@ download_osm <- function (x, mainPath, region, alwaysDownload = FALSE, countryNa
   pathFolder <- paste0(pathFolder, "/", timeFolder, "/raw")
   # Download
   if (countryName) {
-    countryName <- get_param(mainPath, region, "COUNTRY")
+    countryName <- get_param(mainPath, country, "COUNTRY")
     shp <- osmextract::oe_get(countryName,
                   quiet = FALSE,
                   query = querySQL,
@@ -68,7 +68,7 @@ download_osm <- function (x, mainPath, region, alwaysDownload = FALSE, countryNa
                   force_download = TRUE)
   }else{
     message("\nLoading raw boundary shapefile...")
-    border <- get_boundaries(mainPath, region, "raw", mostRecent)
+    border <- get_boundaries(mainPath, country, "raw", mostRecent)
     # Download 
     shp <- osmextract::oe_get(st_bbox(border),
                   quiet = FALSE,
@@ -81,7 +81,7 @@ download_osm <- function (x, mainPath, region, alwaysDownload = FALSE, countryNa
   categ <- shpCat[[2]]
   shapeName <- gsub("\\.gpkg$", "", list.files(pathFolder)[grepl("\\.gpkg$", list.files(pathFolder))])
   sf::st_write(shp, paste0(pathFolder, "/v", stringr::str_to_title(x), "_", shapeName, ".shp"), append=FALSE) # Save the layer
-  logTxt <- paste0(mainPath, "/", region, "/data/log.txt")
+  logTxt <- paste0(mainPath, "/", country, "/data/log.txt")
   write(paste0(Sys.time(), ": ", x, " downloaded from OSM; ", paste(categ, collapse = ", "), "- Input folder ", timeFolder), file = logTxt, append = TRUE)
   file.remove(paste0(pathFolder, "/", list.files(pathFolder)[grepl("\\.gpkg$|\\.pbf$", list.files(pathFolder))]))
   cat(paste0(pathFolder, "/v", stringr::str_to_title(x), "_", shapeName,".shp", "\n"))

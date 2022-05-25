@@ -4,12 +4,12 @@
 \alias{check_inputs}
 \title{Check Inputs}
 \usage{
-check_inputs(mainPath, region, type, onlyPrint = FALSE)
+check_inputs(mainPath, country, type, onlyPrint = FALSE)
 }
 \arguments{
 \item{mainPath}{character; the parent directory of the country folder}
 
-\item{region}{character; the country folder name}
+\item{country}{character; the country folder name}
 
 \item{type}{character; 'raw' or 'processed' depending on whether the required input is
 the raw input or the already processed one.}

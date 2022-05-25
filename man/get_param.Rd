@@ -4,12 +4,12 @@
 \alias{get_param}
 \title{Get Project Parameters}
 \usage{
-get_param(mainPath, region, param)
+get_param(mainPath, country, param)
 }
 \arguments{
 \item{mainPath}{character; the parent directory of the country folder}
 
-\item{region}{character; the country folder name}
+\item{country}{character; the country folder name}
 
 \item{param}{character; 'COUNTRY' to get the original country name, 'ISO' to get the ISO alpha-3 country code or 'EPSG'
 to get the EPSG code for layer projection}

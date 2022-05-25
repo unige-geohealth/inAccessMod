@@ -6,7 +6,7 @@
 \usage{
 process_inputs(
   mainPath,
-  region,
+  country,
   selectedInputs = NULL,
   mostRecent = FALSE,
   alwaysProcess = FALSE,
@@ -20,7 +20,7 @@ process_inputs(
 \arguments{
 \item{mainPath}{character; the parent directory of the country folder}
 
-\item{region}{character; the country folder name}
+\item{country}{character; the country folder name}
 
 \item{selectedInputs}{character; vector indicating the inputs to be processed. Raw inputs must be available. Argument
 can be set to "All" to consider all the available 'raw' inputs. If NULL, the user is interactively asked to select the available
