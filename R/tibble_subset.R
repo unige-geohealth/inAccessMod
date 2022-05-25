@@ -7,6 +7,7 @@
 #' @return A \code{tibble} object
 #' @export
 tibble_subset <- function (tib, var, tempDir) {
+  `%>%` <- purrr::`%>%`
   categories <- dplyr::pull(tib, var) %>% unique()
   # If no NA
   if (!any(is.na(categories))) {

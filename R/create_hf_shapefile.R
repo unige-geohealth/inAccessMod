@@ -12,6 +12,8 @@
 #' asked whether they want to remove them or not.
 #' @param rmOut logical; should the health facilities falling outside of the country be removed? If NULL or FALSE the user is 
 #' interactively asked whether they want to remove them or not.
+#' @param subProj character; a string of three characters that correspond to the sub-project folder suffix like '001', '002'...'010'...'099'...'100'
+#' If NULL, the user is interactively asked to choose the sub-project from the available ones.
 #' @details Once the missing coordinate issue is addressed, the function checks whether the health facilities fall within the
 #' country boundary. There is a track record of both the facilities with missing coordinates and the ones that fall
 #' outside the country boundary.
@@ -52,30 +54,47 @@ create_hf_shapefile <- function (mainPath, country, mostRecentBoundaries = TRUE,
       stop("rmOut must be 'NULL' or 'logical'")
     }
   }
-  logTxt <- paste0(mainPath, "/", country, "/data/log.txt")
   pathFacilities <- paste0(mainPath, "/", country, "/data/vFacilities")
   if (!dir.exists(paste0(pathFacilities))) {
     stop(paste(pathFacilities, " does not exist. Run the initiate_project function."))
   }
+  if (!is.null(subProj)) {
+    if(!is.character(subProj)){
+      stop("If not NULL, subProj must be 'character'")
+    }
+    if(!grepl("[0-9]{3}", subProj)) {
+      stop("If not NULL, subProj must contains three characters that correspond to the sub-project folder suffix like '001', '002'...'010'...'099'...'100'")
+    }
+    if(!dir.exists(paste0(pathFacilities, "/subProj", subProj))) {
+      stop(paste0(pathFacilities, "/subProj", subProj, "does not exist"))
+    }
+  }
+  logTxt <- paste0(mainPath, "/", country, "/data/log.txt")
+
   border <- get_boundaries(mainPath = mainPath, country = country, type = "processed", mostRecentBoundaries)
   subProjDirs <- list.dirs(pathFacilities, recursive = FALSE)
   subProjDirs <- subProjDirs[grepl("subProj", subProjDirs)]
-  if (length(subProjDirs) == 0) {
-    stop("Filtered health facility table is missing. Run the filter_hf function.")
-  }
-  subProj <- stringr::str_extract(subProjDirs, "subProj[0-9]{3}$")
-  if (length(subProj) > 1) {
-    subProj <- c(subProj, "VIEW")
-    subInd <- utils::menu(subProj, title = "Select the sub-project or the VIEW option to see the selected HFs for each sub-project.")
-    while (subInd == length(subProj)) {
-      for (i in 1:(length(subProj)-1)) {
-        message(subProj[i])
-        cat(paste(readLines(paste(pathFacilities, subProj[i], "selected_hf.txt", sep = "/")), collapse = "\n"))
-        readline(prompt="Press [enter] to continue")
-      }
-      subInd <- utils::menu(subProj, title = "Select the sub-project or the VIEW option to see the selected HFs for each sub-project.")
+  if (is.null(subProj)) {
+    if (length(subProjDirs) == 0) {
+      stop("Filtered health facility table is missing. Run the filter_hf function.")
     }
-    subProj <- subProjDirs[subInd]
+    subProj <- stringr::str_extract(subProjDirs, "subProj[0-9]{3}$")
+    if (length(subProj) > 1) {
+      subProj <- c(subProj, "VIEW")
+      subInd <- utils::menu(subProj, title = "Select the sub-project or the VIEW option to see the selected HFs for each sub-project.")
+      while (subInd == length(subProj)) {
+        for (i in 1:(length(subProj)-1)) {
+          message(subProj[i])
+          cat(paste(readLines(paste(pathFacilities, subProj[i], "selected_hf.txt", sep = "/")), collapse = "\n"))
+          readline(prompt="Press [enter] to continue")
+        }
+        subInd <- utils::menu(subProj, title = "Select the sub-project or the VIEW option to see the selected HFs for each sub-project.")
+      }
+      subProj <- subProjDirs[subInd]
+    }
+  } else {
+    subProj <- paste0("subProj", subProj)
+    subProj <- subProjDirs[grepl(subProj, subProjDirs)]
   }
   subProjTime <- list.dirs(subProj, recursive = FALSE)
   subProjTime <- subProjTime[grepl("[0-9]{14}", subProjTime)]
