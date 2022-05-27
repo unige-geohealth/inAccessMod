@@ -1,6 +1,6 @@
 #' Compile Input Layers
 #' 
-#' Compile the available processed layers and copy them to a new folder to facilitate the further import into AccessMod
+#' Compiles the available processed layers and copy them to a new folder called zToAccessMod to facilitate the further import into AccessMod
 #' @param mainPath character; the parent directory of the country folder
 #' @param country character; the country folder name
 #' @param mostRecent logical; should the most recent 'processed' input be selected? If FALSE and if there are multiple
@@ -16,6 +16,7 @@ compile_processed_data <- function (mainPath, country, mostRecent = TRUE) {
   if (!is.logical(mostRecent)) {
     stop("mostRecent must be 'logical'")
   }
+  logTxt <- paste0(mainPath, "/", country, "/data/log.txt")
   folderLst <- list.dirs(paste0(mainPath, "/", country))
   inputsAv <- folderLst[grepl("processed", folderLst)]
   inputsAv <- unique(gsub("/[0-9]{14}/processed.*", "", gsub("^.*/data/", "", inputsAv)))

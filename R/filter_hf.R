@@ -147,6 +147,7 @@ filter_hf <- function (mainPath, country, pathTable, subProj = NULL, mostRecentO
   dir.create(outFolder, recursive = TRUE)
   logSubProjTxt <-  paste(pathFacilities, subProjDir, outTimeFolder, "time_frame.txt", sep = "/")
   write(paste0("Modification time of the raw Excel table: ", mtime), file = logSubProjTxt, append = TRUE)
+  optionsID <- c("Most recent", "Date limit and most recent", "Closest to a specific date", "Case by case")
   
   if (mostRecentObs) {
     cat("For each facility, the most recent observation is kept.\n")
@@ -154,7 +155,6 @@ filter_hf <- function (mainPath, country, pathTable, subProj = NULL, mostRecentO
   } else {
     tableID <- table(newTib$subject_id)
     message(paste("\nThere are between", min(tableID), "and", max(tableID), "observations per health facility."))
-    optionsID <- c("Most recent", "Date limit and most recent", "Closest to a specific date", "Case by case")
     optInd <- utils::menu(optionsID, title = "\nChoose one of the following options for selecting observations")
   }
   write(paste0("Option for selecting observations: ", optionsID[optInd]), file = logSubProjTxt, append = TRUE)

@@ -19,6 +19,7 @@ Imports:
     gdalUtils,
     lubridate,
     osmextract,
+    purrr,
     raster,
     RCurl,
     readxl,

@@ -6,10 +6,9 @@
 #' @param alwaysDownload logical; should the raster always be downloaded, even if it has already been 
 #' downloaded? If FALSE and if the raster has already been downloaded the user is 
 #' interactively asked whether they want to download it again or not.
-#' @details The function accesses the World Pop FTP \url{ftp://ftp.worldpop.org.uk/GIS/Population/} and uses an internal
-#' function (\code{navigate_ftp}) in order to interactively navigate through the folders and select the population raster.
-#' to be downloaded. The ISO code retrieved internally by the \code{get_param} function is used to match the country FTP folder
-#' when available.
+#' @details The function accesses the World Pop FTP and uses an internal function (\code{navigate_ftp}) in order to interactively navigate 
+#' through the folders and select the population raster to be downloaded. The ISO code retrieved internally by the \code{get_param} function 
+#' is used to match the country FTP folder when available.
 #' @export
 download_population <- function (mainPath, country, alwaysDownload = FALSE) {
   if (!is.character(mainPath)) {
@@ -30,10 +29,9 @@ download_population <- function (mainPath, country, alwaysDownload = FALSE) {
     }
   }
   iso <- get_param(mainPath, country, "ISO")
-  pathFTP0 <- ftpWorldPop
+  pathFTP0 <- "ftp://ftp.worldpop.org.uk/GIS/Population/"
   pathFTP <- pathFTP0
   downloadProcess <- TRUE
-  ftpWorldPop <- "ftp://ftp.worldpop.org.uk/GIS/Population/"
   while (downloadProcess) {
     # To avoid error message
     gc()

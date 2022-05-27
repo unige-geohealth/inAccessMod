@@ -18,7 +18,7 @@
 #' country boundary. There is a track record of both the facilities with missing coordinates and the ones that fall
 #' outside the country boundary.
 #' @export
-create_hf_shapefile <- function (mainPath, country, mostRecentBoundaries = TRUE, lonlat = TRUE, epsg = NULL, rmNA = NULL, rmOut = NULL) {
+create_hf_shapefile <- function (mainPath, country, mostRecentBoundaries = TRUE, lonlat = TRUE, epsg = NULL, rmNA = NULL, rmOut = NULL, subProj = NULL) {
   if (!is.character(mainPath)) {
     stop("mainPath must be 'character'")
   }
@@ -48,11 +48,15 @@ create_hf_shapefile <- function (mainPath, country, mostRecentBoundaries = TRUE,
     if(!is.logical(rmNA)) {
       stop("rmNA must be 'NULL' or 'logical'")
     }
+  } else {
+    rmNA <- FALSE
   }
   if (!is.null(rmOut)) {
     if(!is.logical(rmOut)) {
       stop("rmOut must be 'NULL' or 'logical'")
     }
+  } else {
+    rmOut <- FALSE
   }
   pathFacilities <- paste0(mainPath, "/", country, "/data/vFacilities")
   if (!dir.exists(paste0(pathFacilities))) {
@@ -91,6 +95,8 @@ create_hf_shapefile <- function (mainPath, country, mostRecentBoundaries = TRUE,
         subInd <- utils::menu(subProj, title = "Select the sub-project or the VIEW option to see the selected HFs for each sub-project.")
       }
       subProj <- subProjDirs[subInd]
+    } else {
+      subProj <- subProjDirs
     }
   } else {
     subProj <- paste0("subProj", subProj)
@@ -118,14 +124,14 @@ create_hf_shapefile <- function (mainPath, country, mostRecentBoundaries = TRUE,
   multiMsg <- "Select the CSV table that you would like to process."
   if (length(filesCsv) > 1) {
     fileInd <- utils::menu(filesCsv, multiMsg)
-    file <- filesShp[fileInd]
+    fi <- filesShp[fileInd]
   }else{
-    file <- filesCsv
+    fi <- filesCsv
   }
-  df <- read.csv(paste(hfFolder, file, sep = "/"))
+  df <- read.csv(paste(hfFolder, fi, sep = "/"))
   xy <- data.frame(Lat = df[, "MoSDGPS_SQ002", drop = TRUE], Lon = df[, "MoSDGPS_SQ001", drop = TRUE])
   if (nrow(xy[complete.cases(xy), ]) == 0) {
-    stop_quietly(paste("Coordinates are not available! Add them manually in the CSV file:\n", paste(hfFolder, file, sep = "/")))
+    stop_quietly(paste("Coordinates are not available! Add them manually in the CSV file:\n", paste(hfFolder, fi, sep = "/")))
   }
   if (!all(complete.cases(xy))) {
     message(paste("Coordinates are missing for the following facilities:"))
@@ -138,10 +144,10 @@ create_hf_shapefile <- function (mainPath, country, mostRecentBoundaries = TRUE,
       yn <- utils::menu(c("Exit the script and add the coordinates manually in the CSV file", "Remove these HFs"), title = paste("\nWhat would you like to do?"))
     }
     if (yn == 1) {
-      stop_quietly(paste("You exited the script! Correct the coordinates manually in the CSV file:\n", paste(hfFolder, file, sep = "/")))
+      stop_quietly(paste("You exited the script! Correct the coordinates manually in the CSV file:\n", paste(hfFolder, fi, sep = "/")))
     } else {
       write.table(dfNA, paste(hfFolder, "coordinates_NA.txt", sep = "/"))
-      message(paste("\nYou can access the removed HFs at:\n", paste(hfFolder, "coordinates_NA.txt", sep = "/")))
+      message(paste("\nYou can access the removed HFs at:\n", paste(hfFolder, "coordinates_NA.txt", sep = "/"), "\n"))
     }
   }
   pts <- sp::SpatialPointsDataFrame(coords = xy[complete.cases(xy), ], data = df[complete.cases(xy), ], proj4string = terra::crs(epsg))
@@ -158,16 +164,16 @@ create_hf_shapefile <- function (mainPath, country, mostRecentBoundaries = TRUE,
       yn <- utils::menu(c("Exit the script and correct the coordinates manually in the CSV file", "Remove these HFs and create a HFs' shapefile"), title = paste("\nWhat would you like to do?"))
     }
     if (yn == 1) {
-      stop_quietly(paste("You exited the script! Correct the coordinates manually in the CSV file:\n", paste(hfFolder, file, sep = "/")))
+      stop_quietly(paste("You exited the script! Correct the coordinates manually in the CSV file:\n", paste(hfFolder, fi, sep = "/")))
     }
   }
-  shp <- sf::st_as_sf(pts[inter[, 1], c("external_id", "workspace_id", "date", "MoSD3", "HFNAME")])
-  cat("\nSaving the HFs' shapefile...")
-  sf::st_write(shp, paste(hfFolder, "health_facilities.shp", sep = "/"), append = FALSE)
-  inputFolder <- stringr::str_extract(hfFolder, "subProj[0-9]{3}/[0-9]{14}")
-  write(paste0(Sys.time(), ": Health facility shapefile created - Input folder: ", inputFolder), file = logTxt, append = TRUE)
   if (interOutside) {
     write.table(df[!inter[, 1]], paste(hfFolder, "coordinates_outside.txt", sep = "/"))
-    message(paste("\nYou can access the removed HFs at:\n", paste(hfFolder, "coordinates_outside.txt", sep = "/")))
+    message(paste("\nYou can access the removed HFs at:\n", paste(hfFolder, "coordinates_outside.txt", sep = "/"), "\n"))
   }
+  shp <- sf::st_as_sf(pts[inter[, 1], c("external_id", "workspace_id", "date", "MoSD3", "HFNAME")])
+  cat("\nSaving the HFs' shapefile...\n")
+  sf::st_write(shp, paste(hfFolder, "health_facilities.shp", sep = "/"), append = FALSE)
+  inputFolder <- stringr::str_extract(hfFolder, "subProj[0-9]{3}/[0-9]{14}")
+  write(paste0(Sys.time(), ": Health facility shapefile created - Input folder: ", inputFolder), fi = logTxt, append = TRUE)
 }

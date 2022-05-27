@@ -4,7 +4,7 @@
 \alias{check_inputs}
 \title{Check Inputs}
 \usage{
-check_inputs(mainPath, country, type, onlyPrint = FALSE)
+check_inputs(mainPath, country, type, onlyPrint = TRUE)
 }
 \arguments{
 \item{mainPath}{character; the parent directory of the country folder}
@@ -15,7 +15,7 @@ check_inputs(mainPath, country, type, onlyPrint = FALSE)
 the raw input or the already processed one.}
 
 \item{onlyPrint}{logical; should the function just print which inputs are available and which are not available. Internally
-\code{print} is set FALSE, but when the function is used directly by the user, print should be set to TRUE.}
+\code{onlyPrint} is set FALSE, but when the function is used directly by the user, print should be set to TRUE.}
 }
 \value{
 character vector when \code{onlyPrint} = FALSE, and NULL when \code{onlyPrint} = TRUE

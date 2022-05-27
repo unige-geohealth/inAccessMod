@@ -31,6 +31,6 @@ of the boundary shapefile that is matched with the \code{osm.pbf} file.}
 available inputs, the user is interactively asked to select the input based on file creation time.}
 }
 \description{
-Download Open Street map shapefiles corresponding to 'roads', 'rivers' or any other natural feature and copy them
+Download Open Street Map shapefiles from the Geofabrik's free download server that correspond to 'roads', 'rivers' or any other natural feature and copy them
 to their corresponding folders.
 }

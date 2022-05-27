@@ -1,6 +1,6 @@
 #' Download Open Street Map Layers
 #'
-#' Download Open Street map shapefiles corresponding to 'roads', 'rivers' or any other natural feature and copy them
+#' Download Open Street Map shapefiles from the Geofabrik's free download server that correspond to 'roads', 'rivers' or any other natural feature and copy them
 #' to their corresponding folders.
 #' @param x character; target layer. Can be 'roads', 'waterLines' or 'naturalPolygons'
 #' @param mainPath character; the parent directory of the country folder
@@ -31,10 +31,10 @@ download_osm <- function (x, mainPath, country, alwaysDownload = FALSE, countryN
   }
   if (!countryName) {
     if (is.null(mostRecent)) {
-      stop("mostRecent is required when countryName is FALSE")
+      mostRecent <- FALSE
     }
     if (!is.logical(mostRecent)){
-      stop("mostRecent must be 'logical'")
+      stop("mostRecent must be NULL or 'logical'")
     }
   }
   pathFolder <- paste0(mainPath, "/", country, "/data/v", stringr::str_to_title(x))
@@ -67,10 +67,9 @@ download_osm <- function (x, mainPath, country, alwaysDownload = FALSE, countryN
                   download_directory = pathFolder,
                   force_download = TRUE)
   }else{
-    message("\nLoading raw boundary shapefile...")
     border <- get_boundaries(mainPath, country, "raw", mostRecent)
     # Download 
-    shp <- osmextract::oe_get(st_bbox(border),
+    shp <- osmextract::oe_get(sf::st_bbox(border),
                   quiet = FALSE,
                   query = querySQL,
                   download_directory = pathFolder,

@@ -13,18 +13,19 @@
 #' @param defaultMethods logical; should be the default methods be used for projecting and resampling, respectively. For the
 #' population raster, these are the 'bilinear' method for projecting and the 'sum' or the 'bilinear' for the resampling, 
 #' depending on if the new resolution is lower or higher. For the landcover raster, the 'near' method is used for both the 
-#' projection and resampling. For the the DEM, the 'bilinear' method is used for both the projection and resampling.
+#' projection and resampling. For the the DEM, the 'bilinear' method is used for both the projection and resampling. If FALSE, 
+#' the user is interactively asked to choose the methods from a list of options.
 #' @param changeRes logical; does the user want to change the raster resolution of the population raster? If NULL, the resolution 
 #' is printed and it is interactively asked the user if they want to change it. IF FALSE, there is no resampling.
 #' @param newRes numeric; new resolution in meters. Ignored if the changeRes is FALSE. If NULL and if \code{changeRes} is TRUE,
 #' the user is interactively asked to provide the new resolution.
 #' @param popCorrection logical; should the raster correction algorithm be run. If it is NULL, the user is interactively asked
 #' whether they want to run it or not.
-#' @param gridRes numeric; the resolution of the grid shapefile used for correcting the raster. Ignored if popCorrection is FALSE.
-#' If NULL and popCorrection is TRUE, the user is interactively asked to provide the grid resolution.
+#' @param gridRes numeric; the resolution of the grid shapefile used for correcting the raster. Ignored if \code{popCorrection} is FALSE.
+#' If NULL and \code{popCorrection} is TRUE, the user is interactively asked to provide the grid resolution.
 #' @details A 'processed' boundary shapefile is required for processing any other inputs. A 'processed' population raster is required
 #' for processing any other raster. These conditions are taken into account and the processing of these
-#' layers is performed even if they are not selected if 'processed' layers are not available.
+#' layers is performed even if they are not selected and if 'processed' layers are not available.
 #' @export
 process_inputs <- function (mainPath, country, selectedInputs = NULL, mostRecent = FALSE, alwaysProcess = FALSE, defaultMethods = NULL, changeRes = NULL, newRes = NULL, popCorrection = NULL, gridRes = NULL) {
   if (!is.character(mainPath)) {
@@ -33,7 +34,7 @@ process_inputs <- function (mainPath, country, selectedInputs = NULL, mostRecent
   if (!is.character(country)) {
     stop("country must be 'character'")
   }
-  rawFolders <- check_inputs(mainPath, country, "raw")
+  rawFolders <- check_inputs(mainPath, country, "raw", onlyPrint = FALSE)
   if (length(rawFolders) == 0) {
     stop("No input data available.")
   }
@@ -117,7 +118,7 @@ process_inputs <- function (mainPath, country, selectedInputs = NULL, mostRecent
       outTimeFolder <- gsub("-|[[:space:]]|\\:", "", sysTime)
       borderOutFolder <- paste0(gsub("raw", "processed", borderFolder), "/", outTimeFolder)
       dir.create(borderOutFolder, recursive = TRUE)
-      st_write(border, paste0(borderOutFolder, "/vBorders.shp"), append=FALSE)
+      sf::st_write(border, paste0(borderOutFolder, "/vBorders.shp"), append=FALSE)
       write(paste0(Sys.time(), ": Processed vBorders shapefile saved - Output folder: ", outTimeFolder), file = logTxt, append = TRUE)
       selectedFolders <- selectedFolders[!grepl("vBorders", selectedFolders)]
     }
@@ -200,7 +201,7 @@ process_inputs <- function (mainPath, country, selectedInputs = NULL, mostRecent
       outTimeFolder <- gsub("-|[[:space:]]|\\:", "", sysTime)
       outFolder <- paste0(gsub("raw", "processed", inputFolder), "/", outTimeFolder)
       dir.create(outFolder, recursive = TRUE)
-      writeRaster(rasResampled, paste0(outFolder, "/", selectedFolders[i], ".tif"), overwrite=TRUE)
+      terra::writeRaster(rasResampled, paste0(outFolder, "/", selectedFolders[i], ".tif"), overwrite=TRUE)
       write(paste0(Sys.time(), ": Processed ", selectedFolders[i], " raster saved - Output folder: ", outTimeFolder), file = logTxt, append = TRUE)
     }
     if (!is.null(inputLayers[[2]])) {
@@ -213,7 +214,7 @@ process_inputs <- function (mainPath, country, selectedInputs = NULL, mostRecent
       shpName <- paste0(selectedFolders[i], ".shp")
       # In case we have sub-project for HeRAMS data
       shpName <- gsub("/subProj[0-9]{3}", "", shpName)
-      st_write(shpProcessed, paste0(outFolder, "/", shpName, ".shp"), append=FALSE)
+      sf::st_write(shpProcessed, paste0(outFolder, "/", shpName), append=FALSE)
       write(paste0(Sys.time(), ": Processed ", shpName, " shapefile saved - Output folder: ", outTimeFolder), file = logTxt, append = TRUE)
     }
   }

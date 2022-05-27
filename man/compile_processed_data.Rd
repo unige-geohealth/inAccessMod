@@ -15,5 +15,5 @@ compile_processed_data(mainPath, country, mostRecent = TRUE)
 available 'processed' inputs, the user is interactively asked to select the 'processed' input based on file creation time.}
 }
 \description{
-Compile the available processed layers and copy them to a new folder to facilitate the further import into AccessMod
+Compiles the available processed layers and copy them to a new folder called zToAccessMod to facilitate the further import into AccessMod
 }

@@ -82,7 +82,7 @@ process_pop <- function (mainPath, country, border, epsg, mostRecent, defaultMet
       }
     }
     popReprojNew <- popReproj
-    res(popReproj) <- newRes
+    terra::res(popReproj) <- newRes
     if (defaultMethods) {
       if (newRes[1] >= resInit[1]) {
         resampMeth <- "sum"
@@ -92,7 +92,7 @@ process_pop <- function (mainPath, country, border, epsg, mostRecent, defaultMet
     } else {
       resampMeth <- NULL
     }
-    popFinalMeth <- terra::resample_raster(popReprojNew, popReproj, popRas, resampMeth)
+    popFinalMeth <- resample_raster(popReprojNew, popReproj, popRas, resampMeth)
     popFinal <- popFinalMeth[[1]]
     resampMeth <- popFinalMeth[[2]]
     write(paste0(Sys.time(), ": Population raster resampled using the '", resampMeth, "' method - From input folder: ", timeFolder), file = logTxt, append = TRUE)
@@ -137,6 +137,7 @@ process_pop <- function (mainPath, country, border, epsg, mostRecent, defaultMet
     cat("\nSumming values of the processed population raster per grid cell before correction\n")
     popFinalSum <- exactextractr::exact_extract(popFinal, grd, "sum")
     # Ratio per grid cell
+    gc()
     grd$pop_diff <- popSum / popFinalSum
     # The only zones that are not going to be corrected are the ones that
     # initially had some population but that lost them with projection.

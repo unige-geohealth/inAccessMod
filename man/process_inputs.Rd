@@ -35,7 +35,8 @@ been processed, the user is interactively asked whether they want to process it 
 \item{defaultMethods}{logical; should be the default methods be used for projecting and resampling, respectively. For the
 population raster, these are the 'bilinear' method for projecting and the 'sum' or the 'bilinear' for the resampling, 
 depending on if the new resolution is lower or higher. For the landcover raster, the 'near' method is used for both the 
-projection and resampling. For the the DEM, the 'bilinear' method is used for both the projection and resampling.}
+projection and resampling. For the the DEM, the 'bilinear' method is used for both the projection and resampling. If FALSE, 
+the user is interactively asked to choose the methods from a list of options.}
 
 \item{changeRes}{logical; does the user want to change the raster resolution of the population raster? If NULL, the resolution 
 is printed and it is interactively asked the user if they want to change it. IF FALSE, there is no resampling.}
@@ -46,8 +47,8 @@ the user is interactively asked to provide the new resolution.}
 \item{popCorrection}{logical; should the raster correction algorithm be run. If it is NULL, the user is interactively asked
 whether they want to run it or not.}
 
-\item{gridRes}{numeric; the resolution of the grid shapefile used for correcting the raster. Ignored if popCorrection is FALSE.
-If NULL and popCorrection is TRUE, the user is interactively asked to provide the grid resolution.}
+\item{gridRes}{numeric; the resolution of the grid shapefile used for correcting the raster. Ignored if \code{popCorrection} is FALSE.
+If NULL and \code{popCorrection} is TRUE, the user is interactively asked to provide the grid resolution.}
 }
 \description{
 Process any input layer and copy it to its corresponding folder
@@ -55,5 +56,5 @@ Process any input layer and copy it to its corresponding folder
 \details{
 A 'processed' boundary shapefile is required for processing any other inputs. A 'processed' population raster is required
 for processing any other raster. These conditions are taken into account and the processing of these
-layers is performed even if they are not selected if 'processed' layers are not available.
+layers is performed even if they are not selected and if 'processed' layers are not available.
 }

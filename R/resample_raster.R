@@ -10,6 +10,7 @@
 #' resampling method (for track record)
 #' @export
 resample_raster <- function (ras1, ras0, rasInit, resampMeth) {
+  `%>%` <- purrr::`%>%`
   if (is.null(resampMeth)) {
     resamplingMethod <- c("near", "bilinear", "cubic", "cubicspline", "lanczos", "sum", "min", "q1", "q3", "max", "average", "mode", "rms")
     resm <- utils::menu(resamplingMethod, title = cat(paste("\n\nSelect resampling method for:\n", rasInit %>% terra::sources(),"\nSee terra::resample function help for more details.")))

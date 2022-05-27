@@ -35,7 +35,6 @@ download_landcover <- function (mainPath, country, alwaysDownload = FALSE, mostR
   }
   awsLCFolder <- "https://s3-eu-west-1.amazonaws.com/vito.landcover.global/v3.0.1/2019/"
   awsLCSuffix <- "_PROBAV_LC100_global_v3.0.1_2019-nrt_Discrete-Classification-map_EPSG-4326.tif"
-  message("\nLoading raw boundary shapefile...")
   border <- get_boundaries(mainPath, country, "raw", mostRecent)
   # Based on https://lcviewer.vito.be/download and the names of available files for downloading
   # Coordinate intervals

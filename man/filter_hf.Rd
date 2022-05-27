@@ -4,7 +4,7 @@
 \alias{filter_hf}
 \title{Filter health facilities}
 \usage{
-filter_hf(mainPath, country, pathTable, mostRecentObs = NULL, subProj = NULL)
+filter_hf(mainPath, country, pathTable, subProj = NULL, mostRecentObs = NULL)
 }
 \arguments{
 \item{mainPath}{character; the parent directory of the country folder}
@@ -13,11 +13,11 @@ filter_hf(mainPath, country, pathTable, mostRecentObs = NULL, subProj = NULL)
 
 \item{pathTable}{character; path to the HeRAMS Excel Table}
 
-\item{mostRecentObs}{logical; should the most recent observation per health facility be taken into account? If NULL or FALSE, 
-the user is asked to choose among four methods for selection based on time observation (most recent, date limit and most recent, closest to a specific date or case by case).}
-
 \item{subProj}{character; a string of three characters that correspond to the sub-project folder suffix like '001', '002'...'010'...'099'...'100'
 The criteria for selection are those of the specified sub-project. If NULL, an interactive selection by attribute is run in the console.}
+
+\item{mostRecentObs}{logical; should the most recent observation per health facility be taken into account? If NULL or FALSE, 
+the user is asked to choose among four methods for selection based on time observation (most recent, date limit and most recent, closest to a specific date or case by case).}
 }
 \description{
 Filter the HeRAMS health facility raw table based on a set of variables and export a table that contains only 

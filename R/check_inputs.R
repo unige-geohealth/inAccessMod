@@ -6,10 +6,10 @@
 #' @param type character; 'raw' or 'processed' depending on whether the required input is
 #' the raw input or the already processed one.
 #' @param onlyPrint logical; should the function just print which inputs are available and which are not available. Internally
-#' \code{print} is set FALSE, but when the function is used directly by the user, print should be set to TRUE.
+#' \code{onlyPrint} is set FALSE, but when the function is used directly by the user, print should be set to TRUE.
 #' @return character vector when \code{onlyPrint} = FALSE, and NULL when \code{onlyPrint} = TRUE
 #' @export
-check_inputs <- function (mainPath, country, type, onlyPrint = FALSE) {
+check_inputs <- function (mainPath, country, type, onlyPrint = TRUE) {
   if (!is.character(mainPath)) {
     stop("mainPath must be 'character'")
   }
@@ -31,6 +31,9 @@ check_inputs <- function (mainPath, country, type, onlyPrint = FALSE) {
   folderLst <- unique(gsub("/[0-9].*$", "", folderLst))
   folderLst <- gsub("^.*/data/", "", folderLst)
   folderNAv <- folderLst[!folderLst %in% folderAv]
+  
+  folderAv <- folderAv[!grepl("^vFacilities$", folderAv)]
+  folderNAv <- folderNAv[!grepl("^vFacilities$", folderNAv)]
   if (length(folderAv) > 0) {
     if (length(folderAv) == 1) {
       message(paste("\nThe following", type, "input is AVAILABLE:"))
