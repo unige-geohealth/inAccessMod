@@ -102,7 +102,7 @@ set_projection <- function (mainPath, country, mostRecent = FALSE, alwaysSet = F
             valid <- TRUE
           }
         }else{
-          epsg <- unlist(str_split(string = suggestedCRS[selectedProj], pattern = " "))[2]
+          epsg <- unlist(stringr::str_split(string = suggestedCRS[selectedProj], pattern = " "))[2]
           valid <- TRUE
         }
       }

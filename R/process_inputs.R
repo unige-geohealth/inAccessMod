@@ -212,8 +212,8 @@ process_inputs <- function (mainPath, country, selectedInputs = NULL, mostRecent
       outFolder <- paste0(gsub("raw", "processed", inputFolder), "/", outTimeFolder)
       dir.create(outFolder, recursive = TRUE)
       shpName <- paste0(selectedFolders[i], ".shp")
-      # In case we have sub-project for HeRAMS data
-      shpName <- gsub("/subProj[0-9]{3}", "", shpName)
+      # In case we have scenario for HeRAMS data
+      shpName <- gsub("/scenario[0-9]{3}", "", shpName)
       sf::st_write(shpProcessed, paste0(outFolder, "/", shpName), append=FALSE)
       write(paste0(Sys.time(), ": Processed ", shpName, " shapefile saved - Output folder: ", outTimeFolder), file = logTxt, append = TRUE)
     }

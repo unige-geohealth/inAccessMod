@@ -12,13 +12,13 @@
 #' asked whether they want to remove them or not.
 #' @param rmOut logical; should the health facilities falling outside of the country be removed? If NULL or FALSE the user is 
 #' interactively asked whether they want to remove them or not.
-#' @param subProj character; a string of three characters that correspond to the sub-project folder suffix like '001', '002'...'010'...'099'...'100'
-#' If NULL, the user is interactively asked to choose the sub-project from the available ones.
+#' @param scenario character; a string of three characters that correspond to the scenario folder suffix like '001', '002'...'010'...'099'...'100'
+#' If NULL, the user is interactively asked to choose the scenario from the available ones.
 #' @details Once the missing coordinate issue is addressed, the function checks whether the health facilities fall within the
 #' country boundary. There is a track record of both the facilities with missing coordinates and the ones that fall
 #' outside the country boundary.
 #' @export
-create_hf_shapefile <- function (mainPath, country, mostRecentBoundaries = TRUE, lonlat = TRUE, epsg = NULL, rmNA = NULL, rmOut = NULL, subProj = NULL) {
+create_hf_shapefile <- function (mainPath, country, mostRecentBoundaries = TRUE, lonlat = TRUE, epsg = NULL, rmNA = NULL, rmOut = NULL, scenario = NULL) {
   if (!is.character(mainPath)) {
     stop("mainPath must be 'character'")
   }
@@ -62,64 +62,64 @@ create_hf_shapefile <- function (mainPath, country, mostRecentBoundaries = TRUE,
   if (!dir.exists(paste0(pathFacilities))) {
     stop(paste(pathFacilities, " does not exist. Run the initiate_project function."))
   }
-  if (!is.null(subProj)) {
-    if(!is.character(subProj)){
-      stop("If not NULL, subProj must be 'character'")
+  if (!is.null(scenario)) {
+    if(!is.character(scenario)){
+      stop("If not NULL, scenario must be 'character'")
     }
-    if(!grepl("[0-9]{3}", subProj)) {
-      stop("If not NULL, subProj must contains three characters that correspond to the sub-project folder suffix like '001', '002'...'010'...'099'...'100'")
+    if(!grepl("[0-9]{3}", scenario)) {
+      stop("If not NULL, scenario must contains three characters that correspond to the scenario folder suffix like '001', '002'...'010'...'099'...'100'")
     }
-    if(!dir.exists(paste0(pathFacilities, "/subProj", subProj))) {
-      stop(paste0(pathFacilities, "/subProj", subProj, "does not exist"))
+    if(!dir.exists(paste0(pathFacilities, "/scenario", scenario))) {
+      stop(paste0(pathFacilities, "/scenario", scenario, "does not exist"))
     }
   }
   logTxt <- paste0(mainPath, "/", country, "/data/log.txt")
 
   border <- get_boundaries(mainPath = mainPath, country = country, type = "processed", mostRecentBoundaries)
-  subProjDirs <- list.dirs(pathFacilities, recursive = FALSE)
-  subProjDirs <- subProjDirs[grepl("subProj", subProjDirs)]
-  if (is.null(subProj)) {
-    if (length(subProjDirs) == 0) {
+  scenarioDirs <- list.dirs(pathFacilities, recursive = FALSE)
+  scenarioDirs <- scenarioDirs[grepl("scenario", scenarioDirs)]
+  if (is.null(scenario)) {
+    if (length(scenarioDirs) == 0) {
       stop("Filtered health facility table is missing. Run the filter_hf function.")
     }
-    subProj <- stringr::str_extract(subProjDirs, "subProj[0-9]{3}$")
-    if (length(subProj) > 1) {
-      subProj <- c(subProj, "VIEW")
-      subInd <- utils::menu(subProj, title = "Select the sub-project or the VIEW option to see the selected HFs for each sub-project.")
-      while (subInd == length(subProj)) {
-        for (i in 1:(length(subProj)-1)) {
-          message(subProj[i])
-          cat(paste(readLines(paste(pathFacilities, subProj[i], "selected_hf.txt", sep = "/")), collapse = "\n"))
+    scenario <- stringr::str_extract(scenarioDirs, "scenario[0-9]{3}$")
+    if (length(scenario) > 1) {
+      scenario <- c(scenario, "VIEW")
+      subInd <- utils::menu(scenario, title = "Select the scenario or the VIEW option to see the selected HFs for each scenario.")
+      while (subInd == length(scenario)) {
+        for (i in 1:(length(scenario)-1)) {
+          message(scenario[i])
+          cat(paste(readLines(paste(pathFacilities, scenario[i], "selected_hf.txt", sep = "/")), collapse = "\n"))
           readline(prompt="Press [enter] to continue")
         }
-        subInd <- utils::menu(subProj, title = "Select the sub-project or the VIEW option to see the selected HFs for each sub-project.")
+        subInd <- utils::menu(scenario, title = "Select the scenario or the VIEW option to see the selected HFs for each scenario.")
       }
-      subProj <- subProjDirs[subInd]
+      scenario <- scenarioDirs[subInd]
     } else {
-      subProj <- subProjDirs
+      scenario <- scenarioDirs
     }
   } else {
-    subProj <- paste0("subProj", subProj)
-    subProj <- subProjDirs[grepl(subProj, subProjDirs)]
+    scenario <- paste0("scenario", scenario)
+    scenario <- scenarioDirs[grepl(scenario, scenarioDirs)]
   }
-  subProjTime <- list.dirs(subProj, recursive = FALSE)
-  subProjTime <- subProjTime[grepl("[0-9]{14}", subProjTime)]
-  subProjTime <- stringr::str_extract(subProjTime, "[0-9]{14}")
-  subProjTimeForm <- paste0(substr(subProjTime, 1, 4), "-", substr(subProjTime, 5, 6), "-", substr(subProjTime, 7, 8), " ", substr(subProjTime, 9, 10), ":", substr(subProjTime, 11, 12), ":", substr(subProjTime, 13, 14), " CEST")
-  if (length(subProjTime) > 1) {
-    subProjTimeForm <- c(subProjTimeForm, "VIEW")
-    subInd <- utils::menu(subProjTimeForm, title = "Select the filtered table time creation or the VIEW option to see the selection parameters for each time.")
-    while (subInd == length(subProjTimeForm)) {
-      for (i in 1:(length(subProjTimeForm)-1)) {
-        message(subProjTimeForm[i])
-        cat(paste(readLines(paste(subProj, subProjTime[i], "time_frame.txt", sep = "/")), collapse = "\n"))
+  scenarioTime <- list.dirs(scenario, recursive = FALSE)
+  scenarioTime <- scenarioTime[grepl("[0-9]{14}", scenarioTime)]
+  scenarioTime <- stringr::str_extract(scenarioTime, "[0-9]{14}")
+  scenarioTimeForm <- paste0(substr(scenarioTime, 1, 4), "-", substr(scenarioTime, 5, 6), "-", substr(scenarioTime, 7, 8), " ", substr(scenarioTime, 9, 10), ":", substr(scenarioTime, 11, 12), ":", substr(scenarioTime, 13, 14), " CEST")
+  if (length(scenarioTime) > 1) {
+    scenarioTimeForm <- c(scenarioTimeForm, "VIEW")
+    subInd <- utils::menu(scenarioTimeForm, title = "Select the filtered table time creation or the VIEW option to see the selection parameters for each time.")
+    while (subInd == length(scenarioTimeForm)) {
+      for (i in 1:(length(scenarioTimeForm)-1)) {
+        message(scenarioTimeForm[i])
+        cat(paste(readLines(paste(scenario, scenarioTime[i], "time_frame.txt", sep = "/")), collapse = "\n"))
         readline(prompt="Press [enter] to continue")
       }
-      subInd <- utils::menu(subProjTimeForm, title = "Select the filtered table time creation or the VIEW option to see the selection parameters for each time.")
+      subInd <- utils::menu(scenarioTimeForm, title = "Select the filtered table time creation or the VIEW option to see the selection parameters for each time.")
     }
-    subProjTime <- subProjTime[subInd]
+    scenarioTime <- scenarioTime[subInd]
   }
-  hfFolder <- paste(subProj, subProjTime, "raw", sep = "/")
+  hfFolder <- paste(scenario, scenarioTime, "raw", sep = "/")
   filesCsv <- list.files(hfFolder)[grepl("\\.csv$", list.files(hfFolder))]
   multiMsg <- "Select the CSV table that you would like to process."
   if (length(filesCsv) > 1) {
@@ -174,6 +174,6 @@ create_hf_shapefile <- function (mainPath, country, mostRecentBoundaries = TRUE,
   shp <- sf::st_as_sf(pts[inter[, 1], c("external_id", "workspace_id", "date", "MoSD3", "HFNAME")])
   cat("\nSaving the HFs' shapefile...\n")
   sf::st_write(shp, paste(hfFolder, "health_facilities.shp", sep = "/"), append = FALSE)
-  inputFolder <- stringr::str_extract(hfFolder, "subProj[0-9]{3}/[0-9]{14}")
+  inputFolder <- stringr::str_extract(hfFolder, "scenario[0-9]{3}/[0-9]{14}")
   write(paste0(Sys.time(), ": Health facility shapefile created - Input folder: ", inputFolder), fi = logTxt, append = TRUE)
 }

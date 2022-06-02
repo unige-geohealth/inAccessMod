@@ -5,15 +5,15 @@
 #' @param mainPath character; the parent directory of the country folder
 #' @param country character; the country folder name
 #' @param pathTable character; path to the HeRAMS Excel Table
-#' @param subProj character; a string of three characters that correspond to the sub-project folder suffix like '001', '002'...'010'...'099'...'100'
-#' The criteria for selection are those of the specified sub-project. If NULL, an interactive selection by attribute is run in the console.
+#' @param scenario character; a string of three characters that correspond to the scenario folder suffix like '001', '002'...'010'...'099'...'100'
+#' The criteria for selection are those of the specified scenario. If NULL, an interactive selection by attribute is run in the console.
 #' @param mostRecentObs logical; should the most recent observation per health facility be taken into account? If NULL or FALSE, 
 #' the user is asked to choose among four methods for selection based on time observation (most recent, date limit and most recent, closest to a specific date or case by case).
-#' @details The selection is recorded within a text file (selected_hf.txt) stored in the sub-project folder. Different
-#' selection criteria create new sub-project folders. In the same sub-project folder different 'raw' sub-folders may be created
+#' @details The selection is recorded within a text file (selected_hf.txt) stored in the scenario folder. Different
+#' selection criteria create new scenario folders. In the same scenario folder different 'raw' sub-folders may be created
 #' depending on the original Excel document modification time, and the selection of observations based on time. 
 #' @export
-filter_hf <- function (mainPath, country, pathTable, subProj = NULL, mostRecentObs = NULL) {
+filter_hf <- function (mainPath, country, pathTable, scenario = NULL, mostRecentObs = NULL) {
   if (!is.character(mainPath)) {
     stop("mainPath must be 'character'")
   }
@@ -53,15 +53,15 @@ filter_hf <- function (mainPath, country, pathTable, subProj = NULL, mostRecentO
   if(is.null(mtime)) {
     mtime <- "00-00-00 00:00:00 CEST (example data)"
   }
-  if (!is.null(subProj)) {
-    if(!is.character(subProj)){
-      stop("If not NULL, subProj must be 'character'")
+  if (!is.null(scenario)) {
+    if(!is.character(scenario)){
+      stop("If not NULL, scenario must be 'character'")
     }
-    if(!grepl("[0-9]{3}", subProj)) {
-      stop("If not NULL, subProj must contains three characters that correspond to the sub-project folder suffix like '001', '002'...'010'...'099'...'100'")
+    if(!grepl("[0-9]{3}", scenario)) {
+      stop("If not NULL, scenario must contains three characters that correspond to the scenario folder suffix like '001', '002'...'010'...'099'...'100'")
     }
-    if(!dir.exists(paste0(pathFacilities, "/subProj", subProj))) {
-      stop(paste0(pathFacilities, "/subProj", subProj, "does not exist"))
+    if(!dir.exists(paste0(pathFacilities, "/scenario", scenario))) {
+      stop(paste0(pathFacilities, "/scenario", scenario, "does not exist"))
     }
   }
   
@@ -82,7 +82,7 @@ filter_hf <- function (mainPath, country, pathTable, subProj = NULL, mostRecentO
                  accessibility_status = "HFACC"
   )
   
-  if (is.null(subProj)) {
+  if (is.null(scenario)) {
     ## Sub Project
     tempDir <- paste0(pathFacilities, "/temp")
     dir.create(tempDir)
@@ -99,34 +99,34 @@ filter_hf <- function (mainPath, country, pathTable, subProj = NULL, mostRecentO
     fileLst <- list.files(pathFacilities, recursive = TRUE)
     logTxtLst <- fileLst[grepl("selected_hf\\.txt$", fileLst)]
     logTxtLst <- logTxtLst[!grepl("temp/", logTxtLst)]
-    subProjDir <- NULL
+    scenarioDir <- NULL
     if (length(logTxtLst) > 0) {
       for (i in 1:length(logTxtLst)) {
         lines2 <- readLines(paste(pathFacilities, logTxtLst[i], sep = "/"))
         if (all(lines1 == lines2)){
-          subProjDir <- gsub("/selected_hf\\.txt$", "", logTxtLst[i])
-          message(paste("Existing sub-project:", subProjDir))
+          scenarioDir <- gsub("/selected_hf\\.txt$", "", logTxtLst[i])
+          message(paste("Existing scenario:", scenarioDir))
           break
         }
       }
     }
-    if (is.null(subProjDir)) {
-      subProjDir <- list.dirs(pathFacilities, recursive = FALSE)
-      subProjDir <- subProjDir[grepl("subProj[0-9]{3}", subProjDir)]
-      if (length(as.character(length(subProjDir) + 1)) == 1) {
-        subProjDir <- paste0("subProj00", length(subProjDir) + 1)
-      } else if (length(as.character(length(subProjDir) + 1)) == 2) {
-        subProjDir <- paste0("subProj0", length(subProjDir) + 1)
+    if (is.null(scenarioDir)) {
+      scenarioDir <- list.dirs(pathFacilities, recursive = FALSE)
+      scenarioDir <- scenarioDir[grepl("scenario[0-9]{3}", scenarioDir)]
+      if (length(as.character(length(scenarioDir) + 1)) == 1) {
+        scenarioDir <- paste0("scenario00", length(scenarioDir) + 1)
+      } else if (length(as.character(length(scenarioDir) + 1)) == 2) {
+        scenarioDir <- paste0("scenario0", length(scenarioDir) + 1)
       } else {
-        subProjDir <- paste0("subProj", length(subProjDir) + 1)
+        scenarioDir <- paste0("scenario", length(scenarioDir) + 1)
       }
-      message(paste("\nNew sub-project:", subProjDir))
-      dir.create(paste(pathFacilities, subProjDir, sep = "/"))
-      file.copy(paste(tempDir, "selected_hf.txt", sep = "/"), paste(pathFacilities, subProjDir, sep = "/"))
+      message(paste("\nNew scenario:", scenarioDir))
+      dir.create(paste(pathFacilities, scenarioDir, sep = "/"))
+      file.copy(paste(tempDir, "selected_hf.txt", sep = "/"), paste(pathFacilities, scenarioDir, sep = "/"))
     }
     unlink(tempDir, recursive = TRUE)
   } else {
-    txt <- paste0(pathFacilities, "/subProj", subProj, "/selected_hf.txt")
+    txt <- paste0(pathFacilities, "/scenario", scenario, "/selected_hf.txt")
     txt <- file(txt, open = "r")
     txtLines <- readLines(txt)
     close(txt)
@@ -138,15 +138,15 @@ filter_hf <- function (mainPath, country, pathTable, subProj = NULL, mostRecentO
       cont <- unlist(strsplit(gsub("^.*\\: ", "", txtLines[i]), ", "))
       newTib <- newTib[newTib[, colN, drop = TRUE] %in% cont, ]
     }
-    subProjDir <- paste0("subProj", subProj)
+    scenarioDir <- paste0("scenario", scenario)
   }
   
   sysTime <- Sys.time()
   outTimeFolder <- gsub("-|[[:space:]]|\\:", "", sysTime)
-  outFolder <- paste(pathFacilities, subProjDir, outTimeFolder, "raw", sep = "/")
+  outFolder <- paste(pathFacilities, scenarioDir, outTimeFolder, "raw", sep = "/")
   dir.create(outFolder, recursive = TRUE)
-  logSubProjTxt <-  paste(pathFacilities, subProjDir, outTimeFolder, "time_frame.txt", sep = "/")
-  write(paste0("Modification time of the raw Excel table: ", mtime), file = logSubProjTxt, append = TRUE)
+  logscenarioTxt <-  paste(pathFacilities, scenarioDir, outTimeFolder, "time_frame.txt", sep = "/")
+  write(paste0("Modification time of the raw Excel table: ", mtime), file = logscenarioTxt, append = TRUE)
   optionsID <- c("Most recent", "Date limit and most recent", "Closest to a specific date", "Case by case")
   
   if (mostRecentObs) {
@@ -157,7 +157,7 @@ filter_hf <- function (mainPath, country, pathTable, subProj = NULL, mostRecentO
     message(paste("\nThere are between", min(tableID), "and", max(tableID), "observations per health facility."))
     optInd <- utils::menu(optionsID, title = "\nChoose one of the following options for selecting observations")
   }
-  write(paste0("Option for selecting observations: ", optionsID[optInd]), file = logSubProjTxt, append = TRUE)
+  write(paste0("Option for selecting observations: ", optionsID[optInd]), file = logscenarioTxt, append = TRUE)
   if (optInd == 2 | optInd == 3) {
     cat("\nEnter a date formatted as following: YYYY/MM/DD")
     k <- 0
@@ -173,7 +173,7 @@ filter_hf <- function (mainPath, country, pathTable, subProj = NULL, mostRecentO
     if (is.null(isDate)) {
       stop("Invalid date (too many attemps)!")
     }
-    write(paste0("Selected date: ", as.Date(dateThr)), file = logSubProjTxt, append = TRUE)
+    write(paste0("Selected date: ", as.Date(dateThr)), file = logscenarioTxt, append = TRUE)
   }
   ids <- unique(newTib$subject_id)
   for (i in 1:length(ids)) {
@@ -198,12 +198,12 @@ filter_hf <- function (mainPath, country, pathTable, subProj = NULL, mostRecentO
         message(paste("Subject ID:", ids[i]))
         toKeep <- utils::menu(idDates, title = "Select the observation that you would like to keep:")
         toRm <- subTib[-toKeep, "external_id"]
-        write(paste0("Subject ID: ", ids[i], "; ", as.Date(subTib$date)[toKeep]), file = logSubProjTxt, append = TRUE)
+        write(paste0("Subject ID: ", ids[i], "; ", as.Date(subTib$date)[toKeep]), file = logscenarioTxt, append = TRUE)
       }
       newTib <- newTib[!newTib$external_id %in% toRm$external_id, ]
     }
   }
   write.csv(newTib, file = paste(outFolder, "health_facilities.csv", sep = "/"))
-  write(paste0(Sys.time(), ": Health facilities where filtered - sub-project folder: ", subProjDir, " - input folder: ", outTimeFolder), file = logTxt, append = TRUE)
+  write(paste0(Sys.time(), ": Health facilities where filtered - scenario folder: ", scenarioDir, " - input folder: ", outTimeFolder), file = logTxt, append = TRUE)
   cat(paste0("\n", outFolder, "/health_facilities.csv\n"))
 }
