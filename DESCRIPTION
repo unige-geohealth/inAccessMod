@@ -7,7 +7,7 @@ Authors@R: c(
     person("Fleur", "Hierink", email = "fleur.hierink@unige.ch", role = "aut"),
     person("Nicolas", "Ray", email = "nicolas.ray@unige.ch", role = "aut" )
   )
-Description: This package allows the user to easily prepare all the required layers for AccessMod. A proper folder structure is created in order to manage multi-temporal and/or sub-project data. While the functions to process health facility tables are specifically designed to handle HeRAMS data, the other ones can be used for any other project. The layer downloading, cropping, masking, resampling, exporting processes are automated to a large degree, making the preparation of the inputs quick and straightforward.
+Description: This package allows the user to easily prepare all the required layers for AccessMod. A proper folder structure is created in order to manage multi-temporal data and/or multiple analysis scenarios. While the functions to process health facility tables are specifically designed to handle HeRAMS data, the other ones can be used for any other project. The layer downloading, cropping, masking, resampling, exporting processes are automated to a large degree, making the preparation of the inputs quick and straightforward.
 Imports: 
     crsuggest,
     dplyr,
