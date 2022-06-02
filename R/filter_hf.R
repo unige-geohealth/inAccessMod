@@ -75,10 +75,9 @@ filter_hf <- function (mainPath, country, pathTable, scenario = NULL, mostRecent
   
   
   
-  variables <- c(health_facility_types = "MoSD3", 
-                 facility_ownership = "MoSD7", 
-                 functionality_status = "HFFUNCT", 
-                 facility_status = "MoSD4",
+  variables <- c(MoSD_status = "MoSD4", 
+                 building_damage = "CONDB", 
+                 functionality_status = "HFFUNCT",
                  accessibility_status = "HFACC"
   )
   
