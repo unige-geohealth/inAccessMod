@@ -83,7 +83,7 @@ set_projection <- function (mainPath, country, mostRecent = FALSE, alwaysSet = F
     } else {
       suggestedCRS <- paste(paste("EPSG:", suggestedCRS$crs_code), gsub(" .*$", "", suggestedCRS$crs_proj4))
       suggestedCRS <- c(suggestedCRS, "Other")
-      cat(paste("\nEPSG:", best, "seems to be the best projected coordinate reference for this country/country.\n"))
+      cat(paste("\nEPSG:", best, "seems to be one of the best projected coordinate references for this country.\n"))
       valid <- FALSE
       while (!valid) {
         selectedProj <- utils::menu(suggestedCRS, title = "Select projection for this project", graphics=TRUE)
