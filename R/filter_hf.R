@@ -130,11 +130,15 @@ filter_hf <- function (mainPath, country, pathTable, scenario = NULL, mostRecent
     txtLines <- readLines(txt)
     close(txt)
     for ( i in 1:length(txtLines)){
-      colN <- stringr::str_extract(txtLines[i], "^.*\\:")
-      colN <- stringr::str_to_lower(gsub(":", "", colN))
+      colN <- stringr::str_extract(txtLines[i], "^.* -> ")
+      # colN <- stringr::str_to_lower(gsub(":", "", colN))
+      colN <- gsub(" -> ", "", colN)
+ 
       colN <- gsub(" ", "_", colN)
       colN <- variables[which(names(variables) == colN)]
-      cont <- unlist(strsplit(gsub("^.*\\: ", "", txtLines[i]), ", "))
+      print(colN)
+      cont <- unlist(strsplit(gsub("^.* -> ", "", txtLines[i]), ", "))
+      print(cont)
       newTib <- newTib[newTib[, colN, drop = TRUE] %in% cont, ]
     }
     scenarioDir <- paste0("scenario", scenario)
@@ -167,7 +171,11 @@ filter_hf <- function (mainPath, country, pathTable, scenario = NULL, mostRecent
       }
       k <- k + 1
       dateThr <- readline(prompt = "Date: ")
-      isDate <- tryCatch({lubridate::is.Date(as.Date(dateThr))}, error = function(e){NULL})
+      if (!grepl("[0-9]{4}/[0-9]{2}/[0-9]{2}")) {
+        isDate <- NULL
+      } else {
+        isDate <- tryCatch({lubridate::is.Date(as.Date(dateThr))}, error = function(e){NULL})
+      }
     }
     if (is.null(isDate)) {
       stop("Invalid date (too many attemps)!")
