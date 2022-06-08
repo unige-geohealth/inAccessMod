@@ -61,7 +61,7 @@ filter_hf <- function (mainPath, country, pathTable, scenario = NULL, mostRecent
       stop("If not NULL, scenario must contains three characters that correspond to the scenario folder suffix like '001', '002'...'010'...'099'...'100'")
     }
     if(!dir.exists(paste0(pathFacilities, "/scenario", scenario))) {
-      stop(paste0(pathFacilities, "/scenario", scenario, "does not exist"))
+      stop(paste0(pathFacilities, "/scenario", scenario, " does not exist"))
     }
   }
   
@@ -137,7 +137,9 @@ filter_hf <- function (mainPath, country, pathTable, scenario = NULL, mostRecent
       colN <- gsub(" ", "_", colN)
       colN <- variables[which(names(variables) == colN)]
       print(colN)
-      cont <- unlist(strsplit(gsub("^.* -> ", "", txtLines[i]), ", "))
+      print(strsplit(gsub("^.* -> ", "", txtLines[i]), " [+] "))
+      cont <- unlist(strsplit(gsub("^.* -> ", "", txtLines[i]), " [+] "))
+      cont[grepl("^NA$", cont)] <- NA
       print(cont)
       newTib <- newTib[newTib[, colN, drop = TRUE] %in% cont, ]
     }
@@ -171,7 +173,7 @@ filter_hf <- function (mainPath, country, pathTable, scenario = NULL, mostRecent
       }
       k <- k + 1
       dateThr <- readline(prompt = "Date: ")
-      if (!grepl("[0-9]{4}/[0-9]{2}/[0-9]{2}")) {
+      if (!grepl("[0-9]{4}/[0-9]{2}/[0-9]{2}", dateThr)) {
         isDate <- NULL
       } else {
         isDate <- tryCatch({lubridate::is.Date(as.Date(dateThr))}, error = function(e){NULL})
