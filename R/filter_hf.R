@@ -48,6 +48,21 @@ filter_hf <- function (mainPath, country, pathTable, scenario = NULL, mostRecent
       stop(paste(paste(pathFacilities, file, sep = "/"), "could not be opened."))
     }
   }
+  
+  variables <- c(MoSD_status = "MoSD4", 
+                 building_damage = "CONDB", 
+                 functionality_status = "HFFUNCT",
+                 accessibility_status = "HFACC"
+  )
+  
+  for (i in 1:length(variables)) {
+    newTib[, variables[i]] <- gsub("\\:.*$", "", newTib[, variables[i]][[1]])
+  }
+  
+  newTib[newTib$MoSD4 == "Closed", variables[-1]] <- "Does not apply"
+  newTib[grepl("^Fully", newTib$CONDB), variables[-c(1:2)]] <- "Does not apply"
+  newTib[grepl("^Non", newTib$HFFUNCT), variables[-c(1:3)]] <- "Does not apply"
+  
   logTxt <- paste0(mainPath, "/", country, "/data/log.txt")
   mtime <- tryCatch({file.info(pathTable)$mtime}, error = function(e){NULL})
   if(is.null(mtime)) {
@@ -72,15 +87,7 @@ filter_hf <- function (mainPath, country, pathTable, scenario = NULL, mostRecent
   } else {
     mostRecentObs <- FALSE
   }
-  
-  
-  
-  variables <- c(MoSD_status = "MoSD4", 
-                 building_damage = "CONDB", 
-                 functionality_status = "HFFUNCT",
-                 accessibility_status = "HFACC"
-  )
-  
+
   if (is.null(scenario)) {
     ## Sub Project
     tempDir <- paste0(pathFacilities, "/temp")
@@ -130,17 +137,12 @@ filter_hf <- function (mainPath, country, pathTable, scenario = NULL, mostRecent
     txtLines <- readLines(txt)
     close(txt)
     for ( i in 1:length(txtLines)){
-      colN <- stringr::str_extract(txtLines[i], "^.* -> ")
-      # colN <- stringr::str_to_lower(gsub(":", "", colN))
-      colN <- gsub(" -> ", "", colN)
- 
+      colN <- stringr::str_extract(txtLines[i], "^.*\\:")
       colN <- gsub(" ", "_", colN)
+      colN <- gsub(":", "", colN)
       colN <- variables[which(names(variables) == colN)]
-      print(colN)
-      print(strsplit(gsub("^.* -> ", "", txtLines[i]), " [+] "))
-      cont <- unlist(strsplit(gsub("^.* -> ", "", txtLines[i]), " [+] "))
+      cont <- unlist(strsplit(gsub("^.*\\: ", "", txtLines[i]), " [+] "))
       cont[grepl("^NA$", cont)] <- NA
-      print(cont)
       newTib <- newTib[newTib[, colN, drop = TRUE] %in% cont, ]
     }
     scenarioDir <- paste0("scenario", scenario)
@@ -159,57 +161,69 @@ filter_hf <- function (mainPath, country, pathTable, scenario = NULL, mostRecent
     optInd <- 1
   } else {
     tableID <- table(newTib$subject_id)
-    message(paste("\nThere are between", min(tableID), "and", max(tableID), "observations per health facility."))
-    optInd <- utils::menu(optionsID, title = "\nChoose one of the following options for selecting observations")
-  }
-  write(paste0("Option for selecting observations: ", optionsID[optInd]), file = logscenarioTxt, append = TRUE)
-  if (optInd == 2 | optInd == 3) {
-    cat("\nEnter a date formatted as following: YYYY/MM/DD")
-    k <- 0
-    isDate <- NULL
-    while (is.null(isDate) & k < 3) {
-      if (k > 0) {
-        message("Invalid date!")
-      }
-      k <- k + 1
-      dateThr <- readline(prompt = "Date: ")
-      if (!grepl("[0-9]{4}/[0-9]{2}/[0-9]{2}", dateThr)) {
-        isDate <- NULL
-      } else {
-        isDate <- tryCatch({lubridate::is.Date(as.Date(dateThr))}, error = function(e){NULL})
-      }
+    if (min(tableID) == max(tableID) & min(tableID) == 1) {
+      optInd <- 0
+    } else if (min(tableID) != max(tableID)) {
+      message(paste("\nThere are between", min(tableID), "and", max(tableID), "observations per health facility."))
+      optInd <- utils::menu(optionsID, title = "\nChoose one of the following options for selecting observations")
+    } else {
+      message(paste("\nThere are", min(tableID), "observations per health facility."))
+      optInd <- utils::menu(optionsID, title = "\nChoose one of the following options for selecting observations")
     }
-    if (is.null(isDate)) {
-      stop("Invalid date (too many attemps)!")
-    }
-    write(paste0("Selected date: ", as.Date(dateThr)), file = logscenarioTxt, append = TRUE)
   }
-  ids <- unique(newTib$subject_id)
-  for (i in 1:length(ids)) {
-    subTib <- newTib[newTib$subject_id == ids[i], ]
-    if (nrow(subTib) > 1) {
-      idDates <- as.Date(subTib$date)
-      if (optInd == 1) {
-        rmInd <- which(order(idDates, decreasing = TRUE) != 1)
-        toRm <- subTib[rmInd, "external_id"]
-      } else if (optInd == 2) {
-        rmInd <- dateThr > idDates
-        # If at least one, let's take the most recent
-        if (sum(rmInd) > 1) {
-          rmInd <- which(order(idDates, decreasing = TRUE) != 1)
+  if (optInd == 0) {
+    message("\nOnly 1 observation per health facility")
+    write("Only 1 observation per health facility)", file = logscenarioTxt, append = TRUE)
+  } else {
+    write(paste0("Option for selecting observations: ", optionsID[optInd]), file = logscenarioTxt, append = TRUE)
+    if (optInd == 2 | optInd == 3) {
+      cat("\nEnter a date formatted as following: YYYY/MM/DD")
+      k <- 0
+      isDate <- NULL
+      while (is.null(isDate) & k < 3) {
+        if (k > 0) {
+          message("Invalid date!")
         }
-        toRm <- subTib[rmInd, "external_id"]
-      } else if (optInd == 3) {
-        diffDays <- abs(as.Date(dateThr) - idDates)
-        rmInd <- which(order(diffDays) != 1)
-        toRm <- subTib[rmInd, "external_id"]
-      } else {
-        message(paste("Subject ID:", ids[i]))
-        toKeep <- utils::menu(idDates, title = "Select the observation that you would like to keep:")
-        toRm <- subTib[-toKeep, "external_id"]
-        write(paste0("Subject ID: ", ids[i], "; ", as.Date(subTib$date)[toKeep]), file = logscenarioTxt, append = TRUE)
+        k <- k + 1
+        dateThr <- readline(prompt = "Date: ")
+        if (!grepl("[0-9]{4}/[0-9]{2}/[0-9]{2}", dateThr)) {
+          isDate <- NULL
+        } else {
+          isDate <- tryCatch({lubridate::is.Date(as.Date(dateThr))}, error = function(e){NULL})
+        }
       }
-      newTib <- newTib[!newTib$external_id %in% toRm$external_id, ]
+      if (is.null(isDate)) {
+        stop("Invalid date (too many attemps)!")
+      }
+      write(paste0("Selected date: ", as.Date(dateThr)), file = logscenarioTxt, append = TRUE)
+    }
+    ids <- unique(newTib$subject_id)
+    for (i in 1:length(ids)) {
+      subTib <- newTib[newTib$subject_id == ids[i], ]
+      if (nrow(subTib) > 1) {
+        idDates <- as.Date(subTib$date)
+        if (optInd == 1) {
+          rmInd <- which(order(idDates, decreasing = TRUE) != 1)
+          toRm <- subTib[rmInd, "external_id"]
+        } else if (optInd == 2) {
+          rmInd <- dateThr > idDates
+          # If at least one, let's take the most recent
+          if (sum(rmInd) > 1) {
+            rmInd <- which(order(idDates, decreasing = TRUE) != 1)
+          }
+          toRm <- subTib[rmInd, "external_id"]
+        } else if (optInd == 3) {
+          diffDays <- abs(as.Date(dateThr) - idDates)
+          rmInd <- which(order(diffDays) != 1)
+          toRm <- subTib[rmInd, "external_id"]
+        } else {
+          message(paste("Subject ID:", ids[i]))
+          toKeep <- utils::menu(idDates, title = "Select the observation that you would like to keep:")
+          toRm <- subTib[-toKeep, "external_id"]
+          write(paste0("Subject ID: ", ids[i], "; ", as.Date(subTib$date)[toKeep]), file = logscenarioTxt, append = TRUE)
+        }
+        newTib <- newTib[!newTib$external_id %in% toRm$external_id, ]
+      }
     }
   }
   write.csv(newTib, file = paste(outFolder, "health_facilities.csv", sep = "/"))
