@@ -193,7 +193,7 @@ filter_hf <- function (mainPath, country, pathTable, scenario = NULL, mostRecent
         }
       }
       if (is.null(isDate)) {
-        stop("Invalid date (too many attemps)!")
+        stop("Invalid date (too many attempts)!")
       }
       write(paste0("Selected date: ", as.Date(dateThr)), file = logscenarioTxt, append = TRUE)
     }
