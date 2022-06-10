@@ -1,4 +1,4 @@
-label_landcover <- function(mainPath, country, overwrite = FALSE) {
+label_landcover <- function(mainPath, country, mostRecent, overwrite = FALSE) {
   if (!is.character(mainPath)) {
     stop("mainPath must be 'character'")
   }
@@ -60,4 +60,4 @@ label_landcover <- function(mainPath, country, overwrite = FALSE) {
   write.csv(labelDf, file = landcoverTable, row.names =  FALSE)
 }
 
-label_landcover(mainPath, country, overwrite = T)
+# label_landcover(mainPath, country, overwrite = T)

@@ -47,12 +47,39 @@ download_osm <- function (x, mainPath, country, alwaysDownload = FALSE, countryN
   if (x == "roads") {
     querySQL <- "SELECT * FROM 'lines' WHERE highway IS NOT NULL"
     colName <- "highway"
+    defaultVal <- c("trunk", 
+                    "trunk_link",
+                    "primary",
+                    "primary_link",
+                    "motorway",
+                    "motorway_link",
+                    "secondary",
+                    "secondary_link",
+                    "tertiary",
+                    "tertiary_link",
+                    "road",
+                    "raceway",
+                    "residential",
+                    "living_street",
+                    "service",
+                    "track",
+                    "pedestrian",
+                    "path",
+                    "footway",
+                    "piste",
+                    "bridleway",
+                    "cycleway",
+                    "steps",
+                    "unclassified",
+                    "bridge")
   }else if (x == "waterLines") {
     querySQL <- "SELECT * FROM 'lines' WHERE waterway IS NOT NULL"
     colName <- "waterway"
+    defaltVal <- NULL
   }else{
     querySQL <- "SELECT * FROM 'multipolygons' WHERE natural IS NOT NULL"
     colName <- "natural"
+    defautlVal <- NULL
   }
   sysTime <- Sys.time()
   timeFolder <- gsub("-|[[:space:]]|\\:", "", sysTime)
@@ -75,7 +102,7 @@ download_osm <- function (x, mainPath, country, alwaysDownload = FALSE, countryN
                   download_directory = pathFolder,
                   force_download = TRUE)
   }
-  shpCat <- select_categories(shp, colName)
+  shpCat <- select_categories(shp, colName, defaultVal)
   shp <- shpCat[[1]]
   categ <- shpCat[[2]]
   shapeName <- gsub("\\.gpkg$", "", list.files(pathFolder)[grepl("\\.gpkg$", list.files(pathFolder))])

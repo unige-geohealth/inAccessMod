@@ -5,19 +5,28 @@
 #' @param columnName character; the column name corresponding to the attribute used for filtering the shapefile
 #' @return A list of length 2; the first element is a \code{sf} object and the second element is the selected attribute values
 #' @export
-select_categories <- function (sfObject, columnName) {
+select_categories <- function (sfObject, columnName, defaultVal) {
   sfDataFrame <- sfObject
   sf::st_geometry(sfDataFrame) <- NULL
   categories <- unique(sfDataFrame[, columnName])
   nCat <- 1:length(categories)
   indCat <- paste(paste0("\n", nCat, ": ", categories))
   cat(indCat)
-  cat("\n\nEnter all the indices that correspond to categories you want to keep.\nOn the same line separated by a space, or just skip to select all categories.\n")
+  if (!is.null(defaultVal)) {
+    cat("\n\nEnter all the indices that correspond to categories you want to keep.\nOn the same line separated by a space, \njust skip to select all categories, or enter 0 to keep all OSM official categories.\n")
+  } else {
+    cat("\n\nEnter all the indices that correspond to categories you want to keep.\nOn the same line separated by a space, or just skip to select all categories.\n")
+  }
   selInd <- readline(prompt = "Selection: ")
   selInd <- as.numeric(unlist(strsplit(x = selInd, split=" ")))
   if (length(selInd) != 0) {
-    categ <- categories[selInd]
-    sfObject <- subset(sfObject,eval(parse(text=columnName)) %in% categ)
+    if (selInd == 0) {
+      categ <- defaultVal
+      sfObject <- subset(sfObject,eval(parse(text=columnName)) %in% defaultVal)
+    } else {
+      categ <- categories[selInd]
+      sfObject <- subset(sfObject,eval(parse(text=columnName)) %in% categ)
+    }
   } else {
     categ <- categories
   }
