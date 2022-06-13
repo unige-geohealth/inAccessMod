@@ -9,14 +9,13 @@ select_categories <- function (sfObject, columnName, defaultClasses, classes) {
   sfDataFrame <- sfObject
   sf::st_geometry(sfDataFrame) <- NULL
   categories <- unique(sfDataFrame[, columnName])
-  nCat <- 1:length(categories)
-  indCat <- paste(paste0("\n", nCat, ": ", categories))
-  cat(indCat)
   if (defaultClasses) {
     categ <- classes
     sfObject <- subset(sfObject,eval(parse(text=columnName)) %in% categ)
-    
   } else {
+    nCat <- 1:length(categories)
+    indCat <- paste(paste0("\n", nCat, ": ", categories))
+    cat(indCat)
     cat("\n\nEnter all the indices that correspond to categories you want to keep.\nOn the same line separated by a space, or just skip to select all categories.\n")
     selInd <- readline(prompt = "Selection: ")
     selInd <- as.numeric(unlist(strsplit(x = selInd, split=" ")))
