@@ -11,9 +11,14 @@
 #' @param countryName logical; should the country name be used to match with the \code{osm.pbf} file? If FALSE, it is the extent
 #' of the boundary shapefile that is matched with the \code{osm.pbf} file.
 #' @param mostRecent logical; should the most recent boundary shapefile be selected? If FALSE and if there are multiple
-#' available inputs, the user is interactively asked to select the input based on file creation time.
+#' available inputs, the user is interactively asked to select the input based on file creation time. Ignored if countryName is TRUE.
+#' @param defaultClasses logical; should only the default classes be kept? If not, the user is interactively asked to select the categories
+#' they want to keep. For 'roads', default classes are: trunk, trunk_link, primary, primary_link, 
+#' motorway, motorway_link, secondary, secondary_link, tertiary, tertiary_link, road, raceway, residential, 
+#' living_street, service, track, pedestrian, path, footway, piste, bridleway, cycleway, steps, unclassified and bridge. For waterLines and naturalPolygons, 
+#' default classes are river and water, respectively.    
 #' @export
-download_osm <- function (x, mainPath, country, alwaysDownload = FALSE, countryName = TRUE, mostRecent = NULL) {
+download_osm <- function (x, mainPath, country, alwaysDownload = FALSE, countryName = TRUE, mostRecent = NULL, defaultClasses = TRUE) {
   if (!is.character(mainPath)) {
     stop("mainPath must be 'character'")
   }
@@ -37,6 +42,9 @@ download_osm <- function (x, mainPath, country, alwaysDownload = FALSE, countryN
       stop("mostRecent must be NULL or 'logical'")
     }
   }
+  if(!is.logical(defaultClasses)){
+    stop("defaultClasses must 'logical'")
+  }
   pathFolder <- paste0(mainPath, "/", country, "/data/v", stringr::str_to_title(x))
   folders <- check_exists(pathFolder, "raw", layer = TRUE)
   if (!is.null(folders)) {
@@ -47,7 +55,7 @@ download_osm <- function (x, mainPath, country, alwaysDownload = FALSE, countryN
   if (x == "roads") {
     querySQL <- "SELECT * FROM 'lines' WHERE highway IS NOT NULL"
     colName <- "highway"
-    defaultVal <- c("trunk", 
+    classes <- c("trunk", 
                     "trunk_link",
                     "primary",
                     "primary_link",
@@ -75,11 +83,11 @@ download_osm <- function (x, mainPath, country, alwaysDownload = FALSE, countryN
   }else if (x == "waterLines") {
     querySQL <- "SELECT * FROM 'lines' WHERE waterway IS NOT NULL"
     colName <- "waterway"
-    defaltVal <- NULL
+    classes <- "river"
   }else{
     querySQL <- "SELECT * FROM 'multipolygons' WHERE natural IS NOT NULL"
     colName <- "natural"
-    defautlVal <- NULL
+    classes <- "water"
   }
   sysTime <- Sys.time()
   timeFolder <- gsub("-|[[:space:]]|\\:", "", sysTime)
@@ -102,7 +110,7 @@ download_osm <- function (x, mainPath, country, alwaysDownload = FALSE, countryN
                   download_directory = pathFolder,
                   force_download = TRUE)
   }
-  shpCat <- select_categories(shp, colName, defaultVal)
+  shpCat <- select_categories(shp, colName, defaultClasses, classes)
   shp <- shpCat[[1]]
   categ <- shpCat[[2]]
   shapeName <- gsub("\\.gpkg$", "", list.files(pathFolder)[grepl("\\.gpkg$", list.files(pathFolder))])

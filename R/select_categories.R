@@ -5,30 +5,32 @@
 #' @param columnName character; the column name corresponding to the attribute used for filtering the shapefile
 #' @return A list of length 2; the first element is a \code{sf} object and the second element is the selected attribute values
 #' @export
-select_categories <- function (sfObject, columnName, defaultVal) {
+select_categories <- function (sfObject, columnName, defaultClasses, classes) {
   sfDataFrame <- sfObject
   sf::st_geometry(sfDataFrame) <- NULL
   categories <- unique(sfDataFrame[, columnName])
   nCat <- 1:length(categories)
   indCat <- paste(paste0("\n", nCat, ": ", categories))
   cat(indCat)
-  if (!is.null(defaultVal)) {
-    cat("\n\nEnter all the indices that correspond to categories you want to keep.\nOn the same line separated by a space, \njust skip to select all categories, or enter 0 to keep all OSM official categories.\n")
+  if (defaultClasses) {
+    categ <- classes
+    sfObject <- subset(sfObject,eval(parse(text=columnName)) %in% categ)
+    
   } else {
     cat("\n\nEnter all the indices that correspond to categories you want to keep.\nOn the same line separated by a space, or just skip to select all categories.\n")
-  }
-  selInd <- readline(prompt = "Selection: ")
-  selInd <- as.numeric(unlist(strsplit(x = selInd, split=" ")))
-  if (length(selInd) != 0) {
-    if (selInd == 0) {
-      categ <- defaultVal
-      sfObject <- subset(sfObject,eval(parse(text=columnName)) %in% defaultVal)
+    selInd <- readline(prompt = "Selection: ")
+    selInd <- as.numeric(unlist(strsplit(x = selInd, split=" ")))
+    if (length(selInd) != 0) {
+      if (0 %in% selInd) {
+        message("\nNot valid index: 0; all categories will be kept.")
+        categ <- categories
+      } else {
+        categ <- categories[selInd]
+        sfObject <- subset(sfObject,eval(parse(text=columnName)) %in% categ)
+      }
     } else {
-      categ <- categories[selInd]
-      sfObject <- subset(sfObject,eval(parse(text=columnName)) %in% categ)
+      categ <- categories
     }
-  } else {
-    categ <- categories
   }
   return(list(sfObject, categ))
 }
