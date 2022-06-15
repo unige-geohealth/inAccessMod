@@ -113,6 +113,10 @@ download_osm <- function (x, mainPath, country, alwaysDownload = FALSE, countryN
   shpCat <- select_categories(shp, colName, defaultClasses, classes)
   shp <- shpCat[[1]]
   categ <- shpCat[[2]]
+  if (x == "roads") {
+    classLab <- data.frame(class = seq(1000,1000+length(categ)-1), highway = categ)
+    shp$class <- classLab$class[match(shp$highway, classLab$highway)]
+  }
   shapeName <- gsub("\\.gpkg$", "", list.files(pathFolder)[grepl("\\.gpkg$", list.files(pathFolder))])
   sf::st_write(shp, paste0(pathFolder, "/v", stringr::str_to_title(x), "_", shapeName, ".shp"), append=FALSE) # Save the layer
   logTxt <- paste0(mainPath, "/", country, "/data/log.txt")
