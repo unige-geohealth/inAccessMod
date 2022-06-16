@@ -40,10 +40,10 @@ filter_hf_2 <- function (mainPath, country, pathTable, scenario = NULL, mostRece
   if (!dir.exists(paste0(pathFacilities))) {
     stop(paste(pathFacilities, " does not exist. Run the initiate_project function."))
   }
-  newTib <- tryCatch({readxl::read_excel(pathTable, skip = 1, sheet = 2)}, error = function(e){NULL})
-  if (is.null(newTib)) {
+  herams <- tryCatch({readxl::read_excel(pathTable, skip = 1, sheet = 2)}, error = function(e){NULL})
+  if (is.null(herams)) {
     if (yn == 1) {
-      newTib <- inAccMod::fictitious_herams_data
+      herams <- inAccMod::fictitious_herams_data
     } else {
       stop(paste(paste(pathFacilities, file, sep = "/"), "could not be opened."))
     }
@@ -120,20 +120,26 @@ filter_hf_2 <- function (mainPath, country, pathTable, scenario = NULL, mostRece
   for ( i in 1:length(txtLines)){
     print(txtLines[i])
     #############################
-    colN <- stringr::str_extract(txtLines[i], "^[A-z]*")
-
-    cols <- inAccMod::col_correspondence[names(inAccMod::col_correspondence) == colN]
-
-    vals <- unlist(strsplit(gsub("^.*\\: ", "", txtLines[i]), " [+] "))
-    print(vals)
-    for (i in unlist(cols)) {
-      print(i)
+    if (grepl("Not relevant", txtLines[i])) {
+      next
     }
+    vals <- unlist(strsplit(gsub("^.*\\: ", "", txtLines[i]), " [+] "))
+    colN <- stringr::str_extract(txtLines[i], "^[A-z]*")
+    colN <- unlist(inAccMod::col_correspondence[names(inAccMod::col_correspondence) == colN])
+    condMat1 <- matrix(NA, nrow = nrow(herams), ncol = length(colN))
+    for (i in 1:length(colN)) {
+      condMat2 <- matrix(NA, nrow = nrow(herams), ncol = length(vals))
+      for (j in 1:length(vals)) {
+        condMat2[, j] <- grepl(vals[j], herams[, colN[i], drop = TRUE], ignore.case = TRUE)
+      }
+      condMat1[, i] <- apply(condMat2, 1, any)
+    }
+    
     # colN <- gsub(":", "", colN)
     # colN <- variables[which(names(variables) == colN)]
     # cont <- unlist(strsplit(gsub("^.*\\: ", "", txtLines[i]), " [+] "))
     # cont[grepl("^NA$", cont)] <- NA
-    # newTib <- newTib[newTib[, colN, drop = TRUE] %in% cont, ]
+    # herams <- herams[herams[, colN, drop = TRUE] %in% cont, ]
     #############################
   }
   stop_quietly("Bye bye")
@@ -150,7 +156,7 @@ filter_hf_2 <- function (mainPath, country, pathTable, scenario = NULL, mostRece
     cat("For each facility, the most recent observation is kept.\n")
     optInd <- 1
   } else {
-    tableID <- table(newTib$subject_id)
+    tableID <- table(herams$subject_id)
     if (min(tableID) == max(tableID) & min(tableID) == 1) {
       optInd <- 0
     } else if (min(tableID) != max(tableID)) {
@@ -187,9 +193,9 @@ filter_hf_2 <- function (mainPath, country, pathTable, scenario = NULL, mostRece
       }
       write(paste0("Selected date: ", as.Date(dateThr)), file = logscenarioTxt, append = TRUE)
     }
-    ids <- unique(newTib$subject_id)
+    ids <- unique(herams$subject_id)
     for (i in 1:length(ids)) {
-      subTib <- newTib[newTib$subject_id == ids[i], ]
+      subTib <- herams[herams$subject_id == ids[i], ]
       if (nrow(subTib) > 1) {
         idDates <- as.Date(subTib$date)
         if (optInd == 1) {
@@ -212,11 +218,11 @@ filter_hf_2 <- function (mainPath, country, pathTable, scenario = NULL, mostRece
           toRm <- subTib[-toKeep, "external_id"]
           write(paste0("Subject ID: ", ids[i], "; ", as.Date(subTib$date)[toKeep]), file = logscenarioTxt, append = TRUE)
         }
-        newTib <- newTib[!newTib$external_id %in% toRm$external_id, ]
+        herams <- herams[!herams$external_id %in% toRm$external_id, ]
       }
     }
   }
-  write.csv(newTib, file = paste(outFolder, "health_facilities.csv", sep = "/"))
+  write.csv(herams, file = paste(outFolder, "health_facilities.csv", sep = "/"))
   write(paste0(Sys.time(), ": Health facilities where filtered - scenario folder: ", scenarioDir, " - input folder: ", outTimeFolder), file = logTxt, append = TRUE)
   cat(paste0("\n", outFolder, "/health_facilities.csv\n"))
 }
