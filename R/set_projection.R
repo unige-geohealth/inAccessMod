@@ -49,7 +49,7 @@ set_projection <- function (mainPath, country, mostRecent = FALSE, alwaysSet = F
   # Get the admin boundaries
   pathBorder <- paste0(mainPath, "/", country, "/data/vBorders")
   if (!dir.exists(pathBorder)) {
-    stop(paste(pathBorder,"does not exist. Run the initiate_project function first or check the input parameters."))
+    stop(paste(pathBorder, "does not exist. Run the initiate_project function first or check the input parameters."))
   }
   folders <- check_exists(pathBorder, "raw", layer = TRUE)
   if (is.null(folders)) {

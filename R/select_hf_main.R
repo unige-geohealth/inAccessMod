@@ -6,7 +6,7 @@
 select_hf_main <- function(attLst, stopFiltering) {
   for (i in 1:length(attLst)) {
     if (!stopFiltering) {
-      cat(paste0("\n", gsub("_", " ", names(attLst)[i]), ":\n"))
+      cat(paste0("\n", gsub("_", " ", attLst[[i]]$question), ":\n"))
       categories <- attLst[[i]]$categories
       instructions <- "Enter all the indices that correspond to the values you want to keep."
       selInd <- select_hf_classes(categories, instructions)

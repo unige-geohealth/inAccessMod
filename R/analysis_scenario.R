@@ -1,7 +1,7 @@
 #' Analysis scenario selection (HeRAMS data)
 #'
 #' Interactive selection of the health facility attributes to determine the analysis scenario for the accessibility modelling
-#' @param hf_attributes list; interal data with all the available attribute values
+#' @param hf_attributes list; internal data with all the available attribute values
 #' @details Selection is sequential and is based on 1) the status, 2) the operationality and 3) the service availability. For operationality
 #' and service availability, selection based on barriers/impairment can be made when impaired facilities are selected.
 #' @export
@@ -43,13 +43,13 @@ analysis_scenario <- function (hf_attributes) {
     instructions <- "Enter all the indices that correspond to pillars you would like to focus on."
     selInd <- select_hf_classes(pillarNames, instructions)
     if (is.null(selInd)) {
-      pillars <- hf_attributes$Services
+      pillars <- inAccMod::hf_attributes$Services
     } else {
-      pillars <- hf_attributes$Services[selInd]
+      pillars <- inAccMod::hf_attributes$Services[selInd]
     }
     for (i in 1:length(pillars)) {
       message(paste("\nCategory selection for", gsub("_", " ", names(pillars)[i])))
-      categoryNames <- gsub("_", " ", names(pillars[[i]]))
+      categoryNames <- stringr::str_to_title(gsub("_", " ", names(pillars[[i]])))
       instructions <- "Enter all the indices that correspond to the pillar categories you would like to focus on."
       selInd <- select_hf_classes(categoryNames, instructions)
       if (is.null(selInd)) {
