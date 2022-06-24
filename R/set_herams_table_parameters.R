@@ -8,6 +8,7 @@ set_HeRAMS_table_parameters <- function (tableParam) {
   for (i in 1:length(tableParam)){
     cat(paste0("\n", gsub("_", " ", names(tableParam)[i]), ": ", tableParam[[i]]))
   }
+  
   yn <- utils::menu(c("YES", "NO"), title = "\n\nWould you like to modify any value ?")
   if (yn == 1) {
     for (i in 1:length(tableParam)) {
