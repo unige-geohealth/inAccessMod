@@ -1,6 +1,6 @@
 #' Filter health facilities
 #'
-#' Filter the HeRAMS health facility raw table based on a set of variables and export a table that contains only 
+#' Filter the HeRAMS health facility raw table for different analysis scenario and export a table that contains only 
 #' the selected facilities.
 #' @param mainPath character; the parent directory of the country folder
 #' @param country character; the country folder name
@@ -9,8 +9,9 @@
 #' The criteria for selection are those of the specified scenario. If NULL, an interactive selection by attribute is run in the console.
 #' @param mostRecentObs logical; should the most recent observation per health facility be taken into account? If NULL or FALSE, 
 #' the user is asked to choose among four methods for selection based on time observation (most recent, date limit and most recent, closest to a specific date or case by case).
+#' @param barriers logical; should the facilities also be filtered on the causes of possible impairment (e.g. service not available).
 #' @details The selection is recorded within a text file (selected_hf.txt) stored in the scenario folder. Different
-#' selection criteria create new scenario folders. In the same scenario folder different 'raw' sub-folders may be created
+#' analysis scenario create new scenario folders. In the same scenario folder different 'raw' sub-folders may be created
 #' depending on the original Excel document modification time, and the selection of observations based on time. 
 #' @export
 filter_hf <- function (mainPath, country, pathTable, scenario = NULL, mostRecentObs = NULL, barriers = TRUE) {
