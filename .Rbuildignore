@@ -1,2 +1,4 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
+^\./R/analysis_scenario$
+^\./R/create_service_list$

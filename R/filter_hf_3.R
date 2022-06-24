@@ -65,7 +65,7 @@ filter_hf_3 <- function (mainPath, country, pathTable, scenario = NULL, mostRece
 
   # Get column code and label
   defaultCodeColumns <- HeRAMS_table_parameters()
-  codeColumns <- set_HeRAMS_variables(defaultCodeColumns)
+  codeColumns <- set_HeRAMS_table_parameters(defaultCodeColumns)
   # Get values that stop the questionnaire
   defaultStopLst <- HeRAMS_stop_filtering()
   stopLst <- set_HeRAMS_stop(defaultStopLst)
@@ -88,8 +88,8 @@ filter_hf_3 <- function (mainPath, country, pathTable, scenario = NULL, mostRece
   
   # Get the columns where the questionnaire may have stopped
   colStop <- NULL
-  for (var in names(stopLst)) {
-    colStop <- c(colStop, unlist(codeColumns)[grep(var, names(unlist(codeColumns)))])
+  for (varX in names(stopLst)) {
+    colStop <- c(colStop, unlist(codeColumns)[grep(varX, names(unlist(codeColumns)))])
   }
   
   # From and to which column the questionnaire can be stopped
@@ -98,13 +98,14 @@ filter_hf_3 <- function (mainPath, country, pathTable, scenario = NULL, mostRece
   
   # Adding "does not apply" value when questionnaire has stopped
   for (i in 1:length(names(stopLst))) {
-    var <- names(stopLst)[i]
-    colCode <- codeColumns[[var]]
-    varStop <- stopLst[[var]]
+    varX <- names(stopLst)[i]
+    colCode <- codeColumns[[varX]]
+    varStop <- stopLst[[varX]]
     remainCols <- remainCols[!grepl(colCode, remainCols)]
     if (any(is.na(tibCode[, colCode, drop = TRUE]))) {
-      cat("\nValues for the following facilities are missing.\n")
-      print(tibTxt[is.na(tibCode[, colCode, drop = TRUE]), c(1:10)])
+      message(paste0("\n", gsub("_", " ", varX)))
+      cat("Values for the following facilities are missing.\n")
+      print(tibTxt[is.na(tibCode[, colCode, drop = TRUE]), c(1:10, grep(colCode, tibCode))])
       yn <- utils::menu(c("Ignore these facilities", "Exit the script and solve the issue manually"), title = "Select an option.")
       if (yn == 2) {
         stop_quietly("You exit the script.")
@@ -145,7 +146,6 @@ filter_hf_3 <- function (mainPath, country, pathTable, scenario = NULL, mostRece
     tempDir <- paste0(pathFacilities, "/temp")
     dir.create(tempDir)
     for (i in 1:length(codeColumns)) {
-      print(tibTxt)
       # Look if there is a perfect match
       varCol <- colnames(tibTxt)[grep(paste0("^", codeColumns[[i]], "$"), colnames(tibTxt))]
       # If not (e.g. suffix element)
@@ -159,6 +159,10 @@ filter_hf_3 <- function (mainPath, country, pathTable, scenario = NULL, mostRece
         newTib <- HeRAMS_table_subset(tibT = tibTxt, tibC = tibCode, varCol = varCol, stopQuest = TRUE, codeName = codeName, stopLst = stopLst, tempDir = tempDir, barriers = barriers, suffix = codeColumns$Barrier_suffix, impairmentValues = impairmentValues)
         tibTxt <- newTib[[1]]
         tibCode <- newTib[[2]]
+        stopFiltering <- tryCatch(newTib[[3]], error = function(e) FALSE)
+        if (stopFiltering) {
+          break
+        }
       } else {
         # Services
         message("\n\nEssential health services")
@@ -215,7 +219,7 @@ filter_hf_3 <- function (mainPath, country, pathTable, scenario = NULL, mostRece
     if (length(logTxtLst) > 0) {
       for (i in 1:length(logTxtLst)) {
         lines2 <- readLines(paste(pathFacilities, logTxtLst[i], sep = "/"))
-        if (all(lines1 == lines2)){
+        if (all(lines1 %in% lines2) & all(lines2 %in% lines1)){
           scenarioDir <- gsub("/selected_hf\\.txt$", "", logTxtLst[i])
           message(paste("Existing scenario:", scenarioDir))
           break
@@ -247,7 +251,6 @@ filter_hf_3 <- function (mainPath, country, pathTable, scenario = NULL, mostRece
       colN <- gsub(" -> ", "", colN)
       cont <- unlist(strsplit(gsub("^.* -> ", "", txtLines[i]), " [+] "))
       cont[grepl("^NA$", cont)] <- NA
-      print(cont)
       cond1 <- grepl(paste0("^", colN, "$"), cols)
       if (!any(cond1)) {
         cond2 <- grepl(paste0("^", colN, substr(codeColumns$Barrier_suffix, 2, nchar(codeColumns$Barrier_suffix)), "$"), cols)
