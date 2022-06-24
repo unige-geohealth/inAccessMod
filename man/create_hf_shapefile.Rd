@@ -12,7 +12,7 @@ create_hf_shapefile(
   epsg = NULL,
   rmNA = NULL,
   rmOut = NULL,
-  subProj = NULL
+  scenario = NULL
 )
 }
 \arguments{
@@ -33,8 +33,8 @@ asked whether they want to remove them or not.}
 \item{rmOut}{logical; should the health facilities falling outside of the country be removed? If NULL or FALSE the user is 
 interactively asked whether they want to remove them or not.}
 
-\item{subProj}{character; a string of three characters that correspond to the sub-project folder suffix like '001', '002'...'010'...'099'...'100'
-If NULL, the user is interactively asked to choose the sub-project from the available ones.}
+\item{scenario}{character; a string of three characters that correspond to the scenario folder suffix like '001', '002'...'010'...'099'...'100'
+If NULL, the user is interactively asked to choose the scenario from the available ones.}
 }
 \description{
 Create a point shapefile of health facilities based on a pre-processed HeRAMS health facility table obtained with the

@@ -13,7 +13,7 @@
 #' selection criteria create new scenario folders. In the same scenario folder different 'raw' sub-folders may be created
 #' depending on the original Excel document modification time, and the selection of observations based on time. 
 #' @export
-filter_hf_3 <- function (mainPath, country, pathTable, scenario = NULL, mostRecentObs = NULL, barriers = TRUE) {
+filter_hf <- function (mainPath, country, pathTable, scenario = NULL, mostRecentObs = NULL, barriers = TRUE) {
   if (!is.character(mainPath)) {
     stop("mainPath must be 'character'")
   }

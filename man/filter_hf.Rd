@@ -4,7 +4,14 @@
 \alias{filter_hf}
 \title{Filter health facilities}
 \usage{
-filter_hf(mainPath, country, pathTable, subProj = NULL, mostRecentObs = NULL)
+filter_hf(
+  mainPath,
+  country,
+  pathTable,
+  scenario = NULL,
+  mostRecentObs = NULL,
+  barriers = TRUE
+)
 }
 \arguments{
 \item{mainPath}{character; the parent directory of the country folder}
@@ -13,8 +20,8 @@ filter_hf(mainPath, country, pathTable, subProj = NULL, mostRecentObs = NULL)
 
 \item{pathTable}{character; path to the HeRAMS Excel Table}
 
-\item{subProj}{character; a string of three characters that correspond to the sub-project folder suffix like '001', '002'...'010'...'099'...'100'
-The criteria for selection are those of the specified sub-project. If NULL, an interactive selection by attribute is run in the console.}
+\item{scenario}{character; a string of three characters that correspond to the scenario folder suffix like '001', '002'...'010'...'099'...'100'
+The criteria for selection are those of the specified scenario. If NULL, an interactive selection by attribute is run in the console.}
 
 \item{mostRecentObs}{logical; should the most recent observation per health facility be taken into account? If NULL or FALSE, 
 the user is asked to choose among four methods for selection based on time observation (most recent, date limit and most recent, closest to a specific date or case by case).}
@@ -24,7 +31,7 @@ Filter the HeRAMS health facility raw table based on a set of variables and expo
 the selected facilities.
 }
 \details{
-The selection is recorded within a text file (selected_hf.txt) stored in the sub-project folder. Different
-selection criteria create new sub-project folders. In the same sub-project folder different 'raw' sub-folders may be created
+The selection is recorded within a text file (selected_hf.txt) stored in the scenario folder. Different
+selection criteria create new scenario folders. In the same scenario folder different 'raw' sub-folders may be created
 depending on the original Excel document modification time, and the selection of observations based on time.
 }

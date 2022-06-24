@@ -4,7 +4,7 @@
 \alias{select_categories}
 \title{Select By Attribute}
 \usage{
-select_categories(sfObject, columnName)
+select_categories(sfObject, columnName, defaultClasses, classes)
 }
 \arguments{
 \item{sfObject}{\code{sf} object}
