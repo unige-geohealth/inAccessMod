@@ -7,14 +7,14 @@
 #' @param pathTable character; path to the HeRAMS Excel Table
 #' @param scenario character; a string of three characters that correspond to the scenario folder suffix like '001', '002'...'010'...'099'...'100'
 #' The criteria for selection are those of the specified scenario. If NULL, an interactive selection by attribute is run in the console.
+#' @param barriers logical; should the facilities also be filtered on the causes of possible impairment (e.g. service not available).
 #' @param mostRecentObs logical; should the most recent observation per health facility be taken into account? If NULL or FALSE, 
 #' the user is asked to choose among four methods for selection based on time observation (most recent, date limit and most recent, closest to a specific date or case by case).
-#' @param barriers logical; should the facilities also be filtered on the causes of possible impairment (e.g. service not available).
 #' @details The selection is recorded within a text file (selected_hf.txt) stored in the scenario folder. Different
 #' analysis scenario create new scenario folders. In the same scenario folder different 'raw' sub-folders may be created
 #' depending on the original Excel document modification time, and the selection of observations based on time. 
 #' @export
-filter_hf <- function (mainPath, country, pathTable, scenario = NULL, mostRecentObs = NULL, barriers = TRUE) {
+filter_hf <- function (mainPath, country, pathTable, scenario = NULL, barriers = TRUE, mostRecentObs = NULL) {
   if (!is.character(mainPath)) {
     stop("mainPath must be 'character'")
   }

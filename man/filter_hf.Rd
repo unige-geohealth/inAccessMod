@@ -9,8 +9,8 @@ filter_hf(
   country,
   pathTable,
   scenario = NULL,
-  mostRecentObs = NULL,
-  barriers = TRUE
+  barriers = TRUE,
+  mostRecentObs = NULL
 )
 }
 \arguments{
@@ -23,10 +23,10 @@ filter_hf(
 \item{scenario}{character; a string of three characters that correspond to the scenario folder suffix like '001', '002'...'010'...'099'...'100'
 The criteria for selection are those of the specified scenario. If NULL, an interactive selection by attribute is run in the console.}
 
+\item{barriers}{logical; should the facilities also be filtered on the causes of possible impairment (e.g. service not available).}
+
 \item{mostRecentObs}{logical; should the most recent observation per health facility be taken into account? If NULL or FALSE, 
 the user is asked to choose among four methods for selection based on time observation (most recent, date limit and most recent, closest to a specific date or case by case).}
-
-\item{barriers}{logical; should the facilities also be filtered on the causes of possible impairment (e.g. service not available).}
 }
 \description{
 Filter the HeRAMS health facility raw table for different analysis scenario and export a table that contains only 
