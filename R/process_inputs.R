@@ -76,7 +76,7 @@ process_inputs <- function (mainPath, country, selectedInputs = NULL, mostRecent
     }
   }
   if (!is.null(gridRes)) {
-    if (!is.numeric(gridRes) & newRes > 0) {
+    if (!is.numeric(gridRes) & gridRes > 0) {
       stop("gridRes must be NULL or a real positive number'")
     }
   }
