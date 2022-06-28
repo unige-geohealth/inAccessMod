@@ -15,7 +15,7 @@ knitr::opts_chunk$set(
 ```
 
 ```{r setup}
-library(inAccMod)
+library(inAccessMod)
 ```
 
 ### Description
@@ -27,23 +27,23 @@ First, we make sure that the devtools package installed on our computer.
 if (!require("devtools")) install.packages("devtools")
 ```
 
-Then we use its *install_github* function to download and install the **inAccMod** package from its github repository.
+Then we use its *install_github* function to download and install the **inAccessMod** package from its github repository.
 
 ```{r install, eval=FALSE}
-devtools::install_github("ptimoner/inAccMod")
+devtools::install_github("ptimoner/inAccessMod")
 ```
 
 Once it is installed, we can load the package in order to make its functions directly available.
 
 ```{r library, message=FALSE}
-library(inAccMod)
+library(inAccessMod)
 ```
 
 ### Initiate Project
 With the *initiate_project* function, we can select the country and automatically, the ISO 3166-1 alpha-3 country code is stored in a config.txt file and the directory main structure for the project is created. This function also creates a log.txt file that will record and track the main operations related to the project. We will see that the final structure arises when downloading and processing the data with the corresponding functions, and it allows multiple ’raw’ inputs and multiple ’processed’ outputs for each input. This can be useful when performing different analyses for the same country (e.g. when we have updated data) or using different processing parameters. To initiate the project, the only parameter we need to provide is the path where the project, namely the country folder will be created.
 
 ```{r initiate, eval=FALSE}
-mainPath <- "C:/inAccMod/tutorial"
+mainPath <- "C:/inAccessMod/tutorial"
 initiate_project(mainPath)
 ```
 
@@ -98,7 +98,7 @@ HeRAMS data table may include multiple responses for the same health facility an
 Let's see an example with the fictitious example data. The following command shows the the six first rows of the table and some of the main variables.
 
 ```{r fictitious}
-inAccMod::fictitious_herams_data_txt[1:6, c("last_synced", "subject_id", "date", "MoSD4", "CONDB", "HFFUNCT", "HFACC", "MoSDGPS_SQ001", "MoSDGPS_SQ002")]
+inAccessMod::fictitious_herams_data_txt[1:6, c("last_synced", "subject_id", "date", "MoSD4", "CONDB", "HFFUNCT", "HFACC", "MoSDGPS_SQ001", "MoSDGPS_SQ002")]
 ```
 
 
@@ -205,7 +205,7 @@ The following function allows to process any input layer and copy it to its corr
 process_inputs(mainPath, country, selectedInputs = "All", mostRecent = TRUE, alwaysProcess = TRUE, defaultMethods = TRUE, changeRes = TRUE, newRes = 100, popCorrection = TRUE, gridRes = 3000)
 ```
 
-Let's have a loot at the log.txt file
+Let's have a look at the log.txt file
 
 ![](log.png)
 

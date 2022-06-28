@@ -45,9 +45,9 @@ filter_hf <- function (mainPath, country, pathTable, scenario = NULL, barriers =
   
   if (is.null(tibTxt) | is.null(tibCode) | is.null(tibTxtNames)) {
     if (yn == 1) {
-      tibTxt <- inAccMod::fictitious_herams_data_txt
-      tibCode <- inAccMod::fictitious_herams_data_code
-      tibTxtNames <- inAccMod::fictitious_herams_data_txt_colnames
+      tibTxt <- inAccessMod::fictitious_herams_data_txt
+      tibCode <- inAccessMod::fictitious_herams_data_code
+      tibTxtNames <- inAccessMod::fictitious_herams_data_txt_colnames
     } else {
       stop(paste(pathTable, "could not be opened."))
     }

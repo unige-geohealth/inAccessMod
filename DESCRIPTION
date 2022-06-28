@@ -1,4 +1,4 @@
-Package: inAccMod
+Package: inAccessMod
 Type: Package
 Title: Get and prepare the required inputs for AccessMod
 Version: 0.0.1.0
