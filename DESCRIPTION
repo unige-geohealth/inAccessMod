@@ -14,14 +14,15 @@ Imports:
     exactextractr,
     fasterize,
     fs,
-    gdalUtils,
+    gdalUtils (>= 2.0.3.2),
     lubridate,
     osmextract,
     purrr,
     raster,
     RCurl,
     readxl,
-    rgeoboundaries,
+    rgdal,
+    rgeoboundaries (>= 0.0.0.9000),
     rgeos,
     sf,
     sp,
@@ -37,3 +38,6 @@ Suggests:
     knitr,
     rmarkdown
 VignetteBuilder: knitr
+Remotes:  
+    wmgeolab/rgeoboundaries,
+    gearslaboratory/gdalUtils
