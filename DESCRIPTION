@@ -24,6 +24,7 @@ Imports:
     rgdal,
     rgeoboundaries (>= 0.0.0.9000),
     rgeos,
+    rmarkdown,
     sf,
     sp,
     stringi,
@@ -35,9 +36,8 @@ Depends:
     R (>= 4.1.3)
 LazyData: true
 Suggests: 
-    knitr,
-    rmarkdown
+    knitr
 VignetteBuilder: knitr
-Remotes:  
+Remotes: 
     wmgeolab/rgeoboundaries,
     gearslaboratory/gdalUtils
