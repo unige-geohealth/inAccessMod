@@ -38,7 +38,7 @@ download_population <- function (mainPath, country, alwaysDownload = FALSE) {
     # Get directories
     folderLst <- RCurl::getURL(pathFTP, verbose = FALSE, ftp.use.epsv = TRUE, dirlistonly = TRUE)
     print(folderLst)
-    folderLst <- unlist(strsplit(x = gsub("\\r\\n", " ", folderLst), split=" "))
+    folderLst <- unlist(strsplit(x = gsub("\\r\\n", " ", folderLst[1]), split=" "))
     print(folderLst)
     stop("TESTING...")
     # While we don't exit the function
