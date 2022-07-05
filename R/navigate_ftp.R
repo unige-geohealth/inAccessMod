@@ -22,11 +22,7 @@ navigate_ftp <- function (folderLst, iso, pathFTP, pathFTP0) {
         pathFTP <- paste0(pathFTP,"../")
         message(paste(iso, "is not available in this dataset."))
       }else{
-        if (!pathFTP == pathFTP0) {
-          folderLst <- c(folderLst, "PREVIOUS DIRECTORY", "EXIT FUNCTION")
-        }else{
-          folderLst <- c(folderLst, "EXIT FUNCTION")
-        }
+        folderLst <- c(folderLst, "PREVIOUS DIRECTORY", "EXIT FUNCTION")
         folderNb <- utils::menu(folderLst, title="\nSelect folder (type the corresponding number or zero to get back to the root directory)?")
         if (folderNb == length(folderLst)) {
           return(NULL)
