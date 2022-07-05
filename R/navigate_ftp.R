@@ -42,12 +42,14 @@ navigate_ftp <- function (folderLst, iso, pathFTP, pathFTP0) {
     }
     gc()
     folderLst <- RCurl::getURL(pathFTP, verbose=FALSE, ftp.use.epsv = TRUE, dirlistonly = TRUE)
-    folderLst <- unlist(strsplit(x = gsub("\\r\\n", " ", folderLst), split=" "))
+    folderLst <- unlist(strsplit(x = gsub("\\r|\\n", " ", folderLst), split=" "))
+    folderLst <- folderLst[!folderLst == ""]
     if (length(folderLst) == 0) {
       message("Empty folder!")
       pathFTP <- pathFTP0
       folderLst <- RCurl::getURL(pathFTP, verbose=FALSE, ftp.use.epsv = TRUE, dirlistonly = TRUE)
-      folderLst <- unlist(strsplit(x = gsub("\\r\\n", " ", folderLst), split=" "))
+      folderLst <- unlist(strsplit(x = gsub("\\r|\\n", " ", folderLst), split=" "))
+      folderLst <- folderLst[!folderLst == ""]
     }
   }
   return(list(folderLst, pathFTP))
