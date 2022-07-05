@@ -40,7 +40,9 @@ library(inAccessMod)
 ```
 
 ### Initiate Project
-With the *initiate_project* function, we can select the country and automatically, the ISO 3166-1 alpha-3 country code is stored in a config.txt file and the directory main structure for the project is created. This function also creates a log.txt file that will record and track the main operations related to the project. We will see that the final structure arises when downloading and processing the data with the corresponding functions, and it allows multiple ’raw’ inputs and multiple ’processed’ outputs for each input. This can be useful when performing different analyses for the same country (e.g. when we have updated data) or using different processing parameters. To initiate the project, the only parameter we need to provide is the path where the project, namely the country folder will be created.
+With the *initiate_project* function, we can select the country and automatically, the ISO 3166-1 alpha-3 country code is stored in a config.txt file and the directory main structure for the project is created. This function also creates a log.txt file that will record and track the main operations related to the project. We will see that the final structure arises when downloading and processing the data with the corresponding functions, and it allows multiple ’raw’ inputs and multiple ’processed’ outputs for each input. This can be useful when performing different analyses for the same country (e.g. when we have updated data) or using different processing parameters. While all usual inputs can be automatically downloaded using this package (except the health facilities), we still can add data manually. For instance we would like to use a different population raster than the ones provided by WorldPop which is the population raster server used here, we could use the *copy_input* function to copy any input downloaded manually into an appropriate sub-folder for further processing.
+
+To initiate the project, the only parameter we need to provide is the path where the project, namely the country folder will be created.
 
 ```{r initiate, eval=FALSE}
 mainPath <- "C:/inAccessMod/tutorial"
@@ -80,7 +82,9 @@ The function also has projected the boundary shapefile and we can observe how th
 
 ### Filter the health facilities and create a point shapefile
 
-Now, let's filter the health facilities from our raw health facility table with the *filter_hf*  function and create a point shapefile of the filtered facilities with the *create_hf_facilities* function. This section is compatible with the HeRAMS Excel tables. If we are not working with HeRAMS data, we can just skip this part and use the *copy_input* function to copy a health facility shapefile into an appropriate sub-folder (it will copy the input to e.g. /vFacilities/20220524103021/raw).
+This section is only compatible with the HeRAMS Excel tables. If we are not working with HeRAMS data, we can just skip this part and use the *copy_input* function to copy a health facility shapefile into an appropriate sub-folder (it will copy the input to e.g. /vFacilities/20220524103021/raw).
+
+If we are working with HeRAMS data, let's filter the health facilities from our raw health facility table with the *filter_hf*  function and create a point shapefile of the filtered facilities with the *create_hf_facilities* function. 
 
 The function *filter_hf* requires the main project folder and the country folder name. Besides, it also requires the path to the raw Excel table (if NULL, we are asked whether we want to take fictitious example data from Switzerland). Three other parameters are optional: scenario, barriers and mostRecentObs.
 
