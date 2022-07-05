@@ -52,7 +52,7 @@ HeRAMS_table_subset <- function (tibT, tibC, varCol, stopQuest = TRUE, codeName 
         resps <- NULL
         for (j in 1:length(colBarriers)) {
           resp <- tibT[, colBarriers[j], drop = TRUE]
-          resp <- resp[complete.cases(resp)]
+          resp[!complete.cases(resp)] <- "Empty response"
           resps <- c(resps, resp)
         }
         categories <- unique(resps)
@@ -62,12 +62,13 @@ HeRAMS_table_subset <- function (tibT, tibC, varCol, stopQuest = TRUE, codeName 
         } else {
           categories <- categories[selInd]
         }
+        categories[categories == "Empty response"] <- NA
         # As there are different columns that can contain the value
         condMat1 <- matrix(NA, nrow = nrow(tibT), ncol = length(colBarriers))
         for (j in 1:length(colBarriers)) {
           condMat2 <- matrix(NA, nrow = nrow(tibT), ncol = length(categories))
           for (k in 1:length(categories)) {
-            condMat2[, k] <- categories[k] == tibT[, colBarriers[j], drop = TRUE]
+            condMat2[, k] <- categories[k] %in% tibT[, colBarriers[j], drop = TRUE]
           }
           condMat1[, j] <- apply(condMat2, 1, any)
         }
