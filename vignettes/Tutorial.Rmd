@@ -86,18 +86,24 @@ This section is only compatible with the HeRAMS Excel tables. If we are not work
 
 If we are working with HeRAMS data, let's filter the health facilities from our raw health facility table with the *filter_hf*  function and create a point shapefile of the filtered facilities with the *create_hf_facilities* function. 
 
-The function *filter_hf* requires the main project folder and the country folder name. Besides, it also requires the path to the raw Excel table (if NULL, we are asked whether we want to take fictitious example data from Switzerland). Three other parameters are optional: scenario, barriers and mostRecentObs.
+The function *filter_hf* requires the main project folder and the country folder name. Besides, it also requires the path to the raw Excel table (if NULL, we are asked whether we want to take fictitious example data from Switzerland). Three other parameters are optional: scenario, mostRecentObs, barriers, partners, and defaultParameters
 
 To understand these parameters, let's see how this function works.
 
 #### scenario
 Based on a set of pre-defined table parameters (we are asked whether we would like to modify them when running the function or not), we are interactively asked to select the health facilities that we want to keep based on available attribute values. After a first filter on main information (e.g. health facility type) and operationality (status, building condition, functionality and accessibility), we are asked whether we would like to focus on specific health services. The overall information regarding the analysis scenario is recorded in a text file (selected_hf.txt) which should not be modified manually. A new scenario folder is created for any new set of selection criteria. The first time this function is run, a first scenario folder is created. The next times, we have two options: 1) We leave the scenario parameter NULL; we will be then interactively asked to select the health facility based on specific attributes, and if the selection criteria are identical than in any previous run, the corresponding scenario folder will be used as output folder. If not, a new scenario will be created. 2) We specify an already created scenario folder, and the function will apply the selection criteria linked with this scenario.
 
+#### mostRecentObs
+This logical parameter indicates whether we would like to take into account the most recent observation for each health facility when we have multiple responses. If mostRecentObs = FALSE, we can interactively select among three options, 1) most recent, 2) date limit (the most recent before a specific date), or case by case. The selected option is recorded in a text file (time_frame.txt) which should not be modified manually.
+
 #### barriers
 This logical parameter indicates whether we would like to also filter the health facilities on the causes of possible impairment such as dysfunctionality, unavailable services usually provided, etc. when impaired facilities are selected.
 
-#### mostRecentObs
-HeRAMS data table may include multiple responses for the same health facility and this parameter will define which response is going to be taken into account. If *mostRecentObs* is TRUE, all the most recent observation for each facility will be considered. If FALSE or NULL, we are interactively asked to choose between the following options: "Most recent", "Date limit and most recent", "Closest to a specific date", "Case by case". If we select the option 2 or 3, we have to specify a date. In option 2, the algorithm removes the observation prior to the date limit, and takes the most recent one if there still are more than one observation. The selected option is recorded in a text file (time_frame.txt) which should not be modified manually.
+#### partners
+This logical parameter indicates whether we would like to also filter the health facilities on the different possible supporting partners, when it applies.
+
+#### defaultParameters
+This logical parameter indicates whether the function should use the default HeRAMS table parameters for (column names, key code values, etc.). If is set to FALSE, we can interactively modify them. To access the default values, use HeRAMS_table_parameters, HeRAMS_impairment_values, HeRAMS_partnership_values, HeRAMS_stop_filtering().
 
 Let's see an example with the fictitious example data. The following command shows the the six first rows of the table and some of the main variables.
 
