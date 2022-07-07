@@ -10,6 +10,8 @@ HeRAMS_table_parameters <- function() {
     Building_condition = "CONDB", 
     Functionality = "HFFUNCT",
     Accessibility = "HFACC",
+    Partner_support = "HFSUP1",
+    Partners = "HFSUP3_SQ[0-9]{3}",
     Services = "QHeRAMS[0-9]{3}",
     Barrier_suffix = "x_[0-9]"
   )

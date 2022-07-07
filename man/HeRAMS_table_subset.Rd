@@ -13,8 +13,10 @@ HeRAMS_table_subset(
   stopLst = NULL,
   tempDir,
   barriers,
-  suffix,
-  impairmentValues
+  codeColumns,
+  impairmentValues,
+  partners,
+  partnershipValues
 )
 }
 \arguments{
@@ -31,6 +33,11 @@ HeRAMS_table_subset(
 \item{stopLst}{list; list with the values for different attributes that stops the questionnaire.}
 
 \item{tempDir}{character; temporary folder.}
+
+\item{barriers}{logical; should the filtering process take into account the causes/barriers if there is an impairment (e.g., service partially available)}
+
+\item{partnershipValues}{character; values that indicate that there is partner support. 
+Has to be compatible with regular expression (regex).}
 
 \item{impairValues}{character; values that indicate that there is an impairment (e.g., service partially available). 
 Has to be compatible with regular expression (regex).}

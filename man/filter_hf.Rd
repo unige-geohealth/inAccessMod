@@ -10,7 +10,9 @@ filter_hf(
   pathTable,
   scenario = NULL,
   barriers = TRUE,
-  mostRecentObs = NULL
+  partners = TRUE,
+  mostRecentObs = NULL,
+  defaultParameters = TRUE
 )
 }
 \arguments{
@@ -25,8 +27,12 @@ The criteria for selection are those of the specified scenario. If NULL, an inte
 
 \item{barriers}{logical; should the facilities also be filtered on the causes of possible impairment (e.g. service not available).}
 
+\item{partners}{logical; should the facilities also be filtered on the different possible supporting partners}
+
 \item{mostRecentObs}{logical; should the most recent observation per health facility be taken into account? If NULL or FALSE, 
-the user is asked to choose among four methods for selection based on time observation (most recent, date limit and most recent, closest to a specific date or case by case).}
+the user is asked to choose among four methods for selection based on time observation (most recent, date limit or case by case).}
+
+\item{defaultParameters}{logical; should the default HeRAMS table parameters (e.g. column names) be used? If not, the user is able to modify it.}
 }
 \description{
 Filter the HeRAMS health facility raw table for different analysis scenario and export a table that contains only 

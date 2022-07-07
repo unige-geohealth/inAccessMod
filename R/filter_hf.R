@@ -8,13 +8,15 @@
 #' @param scenario character; a string of three characters that correspond to the scenario folder suffix like '001', '002'...'010'...'099'...'100'
 #' The criteria for selection are those of the specified scenario. If NULL, an interactive selection by attribute is run in the console.
 #' @param barriers logical; should the facilities also be filtered on the causes of possible impairment (e.g. service not available).
+#' @param partners logical; should the facilities also be filtered on the different possible supporting partners
 #' @param mostRecentObs logical; should the most recent observation per health facility be taken into account? If NULL or FALSE, 
-#' the user is asked to choose among four methods for selection based on time observation (most recent, date limit and most recent, closest to a specific date or case by case).
+#' the user is asked to choose among four methods for selection based on time observation (most recent, date limit or case by case).
+#' @param defaultParameters logical; should the default HeRAMS table parameters (e.g. column names) be used? If not, the user is able to modify it.
 #' @details The selection is recorded within a text file (selected_hf.txt) stored in the scenario folder. Different
 #' analysis scenario create new scenario folders. In the same scenario folder different 'raw' sub-folders may be created
 #' depending on the original Excel document modification time, and the selection of observations based on time. 
 #' @export
-filter_hf <- function (mainPath, country, pathTable, scenario = NULL, barriers = TRUE, mostRecentObs = NULL) {
+filter_hf <- function (mainPath, country, pathTable, scenario = NULL, barriers = TRUE, partners = TRUE, mostRecentObs = NULL, defaultParameters = TRUE) {
   if (!is.character(mainPath)) {
     stop("mainPath must be 'character'")
   }
@@ -66,17 +68,32 @@ filter_hf <- function (mainPath, country, pathTable, scenario = NULL, barriers =
 
   # Get column code and label
   defaultCodeColumns <- HeRAMS_table_parameters()
-  codeColumns <- set_HeRAMS_table_parameters(defaultCodeColumns)
-  # Get values that stop the questionnaire
   defaultStopLst <- HeRAMS_stop_filtering()
-  stopLst <- set_HeRAMS_stop(defaultStopLst)
+  # Get values that indicate that there is a partner support
+  defaultPartnership <- HeRAMS_partnership_values()
+  if (!defaultParameters) {
+    codeColumns <- set_HeRAMS_table_parameters(defaultCodeColumns)
+    stopLst <- set_HeRAMS_stop(defaultStopLst)
+    partnershipValues <- set_HeRAMS_key_values(defaultPartnership, "Values that indicate that there is a partner support")
+  } else {
+    codeColumns <- defaultCodeColumns
+    stopLst <- defaultStopLst
+    partnershipValues <- defaultPartnership
+  }
+ 
   if (barriers) {
   # Get values that indicate that there is an impairment
     defaultImpairmentValues <- HeRAMS_impairment_values()
-    impairmentValues <- set_HeRAMS_impairment_values(defaultImpairmentValues)
+    if (!defaultParameters) {
+      impairmentValues <- set_HeRAMS_key_values(defaultImpairmentValues, "Values that indicate that there is an impairment")
+    } else {
+      impairmentValues <- defaultImpairmentValues
+    }
   } else {
     impairmentValues <- NULL
   }
+  
+
   
   # All columns taken into account
   cols <- NULL
@@ -86,7 +103,6 @@ filter_hf <- function (mainPath, country, pathTable, scenario = NULL, barriers =
     }
     cols <- c(cols, colnames(tibTxt)[grep(codeColumns[[i]], colnames(tibTxt))])
   }
-  
   # Get the columns where the questionnaire may have stopped
   colStop <- NULL
   for (varX in names(stopLst)) {
@@ -102,6 +118,9 @@ filter_hf <- function (mainPath, country, pathTable, scenario = NULL, barriers =
     varX <- names(stopLst)[i]
     colCode <- codeColumns[[varX]]
     varStop <- stopLst[[varX]]
+    if (grepl("\\|", varStop)) {
+      varStop <- unlist(strsplit(varStop, split = "\\|"))
+    }
     remainCols <- remainCols[!grepl(colCode, remainCols)]
     if (any(is.na(tibCode[, colCode, drop = TRUE]))) {
       message(paste0("\n", gsub("_", " ", varX)))
@@ -112,9 +131,9 @@ filter_hf <- function (mainPath, country, pathTable, scenario = NULL, barriers =
         stop_quietly("You exit the script.")
       }
     }
-    if (sum(tibCode[, colCode, drop = TRUE] == varStop) > 0) {
-      tibCode[tibCode[, colCode, drop = TRUE] == varStop, remainCols] <- "Does not apply (questionnaire was stopped before)"
-      tibTxt[tibCode[, colCode, drop = TRUE] == varStop, remainCols] <- "Does not apply (questionnaire was stopped before)"
+    if (sum(tibCode[, colCode, drop = TRUE] %in% varStop) > 0) {
+      tibCode[tibCode[, colCode, drop = TRUE] %in% varStop, remainCols] <- "Does not apply (questionnaire was stopped before)"
+      tibTxt[tibCode[, colCode, drop = TRUE] %in% varStop, remainCols] <- "Does not apply (questionnaire was stopped before)"
     }
   }
   
@@ -142,10 +161,97 @@ filter_hf <- function (mainPath, country, pathTable, scenario = NULL, barriers =
   } else {
     mostRecentObs <- FALSE
   }
+  
+  tempDir <- paste0(pathFacilities, "/temp")
+  dir.create(tempDir)
+  
+  logscenarioTxt <-  paste(tempDir, "time_frame.txt", sep = "/")
+  write(paste0("Modification time of the raw Excel table: ", mtime), file = logscenarioTxt, append = TRUE)
+  optionsID <- c("Most recent", "Date limit", "Case by case")
+  if (mostRecentObs) {
+    cat("For each facility, the most recent observation is kept.\n")
+    optInd <- 1
+  } else {
+    tableID <- table(tibTxt$subject_id)
+    if (min(tableID) == max(tableID) & min(tableID) == 1) {
+      optInd <- 0
+    } else if (min(tableID) != max(tableID)) {
+      message(paste("\nThere are between", min(tableID), "and", max(tableID), "observations per health facility."))
+      optInd <- utils::menu(optionsID, title = "\nChoose one of the following options for selecting observations")
+    } else {
+      message(paste("\nThere are", min(tableID), "observations per health facility."))
+      optInd <- utils::menu(optionsID, title = "\nChoose one of the following options for selecting observations")
+    }
+  }
+  if (optInd == 0) {
+    message("\nOnly 1 observation per health facility")
+    write("Only 1 observation per health facility)", file = logscenarioTxt, append = TRUE)
+  } else {
+    write(paste0("Option for selecting observations: ", optionsID[optInd]), file = logscenarioTxt, append = TRUE)
+    if (optInd == 2) {
+      cat("\nEnter a date formatted as following: YYYY/MM/DD")
+      k <- 0
+      isDate <- NULL
+      while (is.null(isDate) & k < 3) {
+        if (k > 0) {
+          message("Invalid date!")
+        }
+        k <- k + 1
+        dateThr <- readline(prompt = "Date: ")
+        if (!grepl("[0-9]{4}/[0-9]{2}/[0-9]{2}", dateThr)) {
+          isDate <- NULL
+        } else {
+          isDate <- tryCatch({lubridate::is.Date(as.Date(dateThr))}, error = function(e){NULL})
+        }
+      }
+      if (is.null(isDate)) {
+        stop("Invalid date (too many attempts)!")
+      }
+      write(paste0("Selected date: ", as.Date(dateThr)), file = logscenarioTxt, append = TRUE)
+    }
+    ids <- unique(tibTxt$subject_id)
+    for (i in 1:length(ids)) {
+      subTib <- tibTxt[tibTxt$subject_id == ids[i], ]
+      if (nrow(subTib) > 1) {
+        idDates <- as.Date(subTib$date)
+        if (optInd == 1) {
+          rmInd <- which(order(idDates, decreasing = TRUE) != 1)
+          toRm <- subTib[rmInd, "external_id"]
+        } else if (optInd == 2) {
+          # Which ones should be removed
+          rmInd <- dateThr < idDates
+          # If there are nothing left
+          if (nrow(subTib[!rmInd, ]) == 0) {
+            # Remove all
+            toRm <- subTib[, "external_id"]
+          } else {
+            # If there are some left
+            subSubTib <- subTib[!rmInd, ]
+            # If multiple, remove the ones that are not the most recent
+            if (nrow(subSubTib) > 1) {
+              idDates <- as.Date(subSubTib$date)
+              rmInd <- which(order(idDates, decreasing = TRUE) != 1)
+              toRm <- subSubTib[rmInd, "external_id"]
+            } else {
+              # If only one, remove the other ones
+              toRm <- subTib[rmInd, "external_id"]
+            }
+          }
+        } else {
+          message(paste("Subject ID:", ids[i]))
+          toKeep <- utils::menu(idDates, title = "Select the observation that you would like to keep:")
+          toRm <- subTib[-toKeep, "external_id"]
+          write(paste0("Subject ID: ", ids[i], "; ", as.Date(subTib$date)[toKeep]), file = logscenarioTxt, append = TRUE)
+        }
+        tibTxt <- tibTxt[!tibTxt$external_id %in% toRm$external_id, ]
+        tibCode <- tibCode[!tibCode$external_id %in% toRm$external_id, ]
+      }
+    }
+  }
+  
   if (is.null(scenario)) {
     ## Sub Project
-    tempDir <- paste0(pathFacilities, "/temp")
-    dir.create(tempDir)
+
     for (i in 1:length(codeColumns)) {
       # Look if there is a perfect match
       varCol <- colnames(tibTxt)[grep(paste0("^", codeColumns[[i]], "$"), colnames(tibTxt))]
@@ -153,11 +259,12 @@ filter_hf <- function (mainPath, country, pathTable, scenario = NULL, barriers =
       if (length(varCol) == 0) {
         next
       }
+
       # If only one match (main info or operationality columns)
       if (length(varCol) == 1) {
         codeName <- names(codeColumns)[i]
         message(paste0("\n", gsub("_", " ", codeName)))
-        newTib <- HeRAMS_table_subset(tibT = tibTxt, tibC = tibCode, varCol = varCol, stopQuest = TRUE, codeName = codeName, stopLst = stopLst, tempDir = tempDir, barriers = barriers, suffix = codeColumns$Barrier_suffix, impairmentValues = impairmentValues)
+        newTib <- HeRAMS_table_subset(tibT = tibTxt, tibC = tibCode, varCol = varCol, stopQuest = TRUE, codeName = codeName, stopLst = stopLst, tempDir = tempDir, barriers = barriers, codeColumns = codeColumns, impairmentValues = impairmentValues, partners, partnershipValues = partnershipValues)
         tibTxt <- newTib[[1]]
         tibCode <- newTib[[2]]
         stopFiltering <- tryCatch(newTib[[3]], error = function(e) FALSE)
@@ -165,7 +272,11 @@ filter_hf <- function (mainPath, country, pathTable, scenario = NULL, barriers =
           break
         }
       } else {
-        # Services
+        # If deliberately removed from columns to be considered (see cols variable above)
+        if (all(grepl(codeColumns$Partners, varCol))) {
+          next
+        }
+        # If not, has to be services
         message("\n\nEssential health services")
         yn <- utils::menu(c("YES", "NO"), title = paste("\nWould you like to filter the health facilities on specific health services ?"))
         if (yn == 1) {
@@ -204,7 +315,7 @@ filter_hf <- function (mainPath, country, pathTable, scenario = NULL, barriers =
               subSubVarCol <- subVarCol[ind]
               message(paste0("\n", colnames(tibTxtNames)[grep(paste0("^", subSubVarCol, "$"), tibTxtNames[1, ])]))
               subSubVarCol <- subVarCol[ind]
-              newTib <- HeRAMS_table_subset(tibT = tibTxt, tibC = tibCode, varCol = subSubVarCol, stopQuest = FALSE, codeName = NULL, stopLst = NULL, tempDir = tempDir, barriers = barriers, suffix = codeColumns$Barrier_suffix, impairmentValues = impairmentValues)
+              newTib <- HeRAMS_table_subset(tibT = tibTxt, tibC = tibCode, varCol = subSubVarCol, stopQuest = FALSE, codeName = NULL, stopLst = NULL, tempDir = tempDir, barriers = barriers, codeColumns = codeColumns, impairmentValues = impairmentValues, partners, partnershipValues = partnershipValues)
               tibTxt <- newTib[[1]]
               tibCode <- newTib[[2]]
             }
@@ -230,9 +341,9 @@ filter_hf <- function (mainPath, country, pathTable, scenario = NULL, barriers =
     if (is.null(scenarioDir)) {
       scenarioDir <- list.dirs(pathFacilities, recursive = FALSE)
       scenarioDir <- scenarioDir[grepl("scenario[0-9]{3}", scenarioDir)]
-      if (length(as.character(length(scenarioDir) + 1)) == 1) {
+      if ((length(scenarioDir) + 1) < 9) {
         scenarioDir <- paste0("scenario00", length(scenarioDir) + 1)
-      } else if (length(as.character(length(scenarioDir) + 1)) == 2) {
+      } else if ((length(scenarioDir) + 1) < 99) {
         scenarioDir <- paste0("scenario0", length(scenarioDir) + 1)
       } else {
         scenarioDir <- paste0("scenario", length(scenarioDir) + 1)
@@ -241,38 +352,34 @@ filter_hf <- function (mainPath, country, pathTable, scenario = NULL, barriers =
       dir.create(paste(pathFacilities, scenarioDir, sep = "/"))
       file.copy(paste(tempDir, "selected_hf.txt", sep = "/"), paste(pathFacilities, scenarioDir, sep = "/"))
     }
-    unlink(tempDir, recursive = TRUE)
   } else {
     txt <- paste0(pathFacilities, "/scenario", scenario, "/selected_hf.txt")
     txt <- file(txt, open = "r")
     txtLines <- readLines(txt)
     close(txt)
-    for ( i in 1:length(txtLines)){
+    for (i in 1:length(txtLines)) {
       colN <- stringr::str_extract(txtLines[i], "^.* -> ")
       colN <- gsub(" -> ", "", colN)
       cont <- unlist(strsplit(gsub("^.* -> ", "", txtLines[i]), " [+] "))
       cont[grepl("^NA$", cont)] <- NA
       cond1 <- grepl(paste0("^", colN, "$"), cols)
-      if (!any(cond1)) {
-        cond2 <- grepl(paste0("^", colN, substr(codeColumns$Barrier_suffix, 2, nchar(codeColumns$Barrier_suffix)), "$"), cols)
-        if (!any(cond2)) {
-          stop("NOT RECOGNIZED COLUMN")
-        }
-        if (sum(cond2) > 0) {
-          indCol <- which(cond2)
-          condMat1 <- matrix(NA, nrow = nrow(tibTxt), ncol = sum(cond2))
-          for (j in indCol) {
-            condMat2 <- matrix(NA, nrow = nrow(tibTxt), ncol = length(cont))
-            for (k in 1:length(cont)) {
-              condMat2[, k] <- cont[k] == tibTxt[, indCol[j], drop = TRUE]
-            }
-            condMat1[, j] <- apply(condMat2, 1, any)
+      if (sum(cond1) == 0) {
+        stop("NOT RECOGNIZED COLUMN !")
+      } else if (sum(cond1) > 1) {
+        # print("HELLO")
+        indCol <- which(cond1)
+        condMat1 <- matrix(NA, nrow = nrow(tibTxt), ncol = sum(cond1))
+        for (j in 1:length(indCol)) {
+          condMat2 <- matrix(NA, nrow = nrow(tibTxt), ncol = length(cont))
+          for (k in 1:length(cont)) {
+            condMat2[, k] <- cont[k] %in% tibTxt[, cols[indCol][j], drop = TRUE]
           }
-          tibTxt <- tibTxt[apply(condMat1, 1, any, na.rm = TRUE), ]
+          condMat1[, j] <- apply(condMat2, 1, any)
         }
+        tibTxt <- tibTxt[apply(condMat1, 1, any, na.rm = TRUE), ]
       } else {
-          tibTxt <- tibTxt[tibTxt[, colN, drop = TRUE] %in% cont, ]
-      }
+        tibTxt <- tibTxt[tibTxt[, colN, drop = TRUE] %in% cont, ]
+      } 
     }
     scenarioDir <- paste0("scenario", scenario)
   }
@@ -280,79 +387,8 @@ filter_hf <- function (mainPath, country, pathTable, scenario = NULL, barriers =
   outTimeFolder <- gsub("-|[[:space:]]|\\:", "", sysTime)
   outFolder <- paste(pathFacilities, scenarioDir, outTimeFolder, "raw", sep = "/")
   dir.create(outFolder, recursive = TRUE)
-  logscenarioTxt <-  paste(pathFacilities, scenarioDir, outTimeFolder, "time_frame.txt", sep = "/")
-  write(paste0("Modification time of the raw Excel table: ", mtime), file = logscenarioTxt, append = TRUE)
-  optionsID <- c("Most recent", "Date limit and most recent", "Closest to a specific date", "Case by case")
-  if (mostRecentObs) {
-    cat("For each facility, the most recent observation is kept.\n")
-    optInd <- 1
-  } else {
-    tableID <- table(tibTxt$subject_id)
-    if (min(tableID) == max(tableID) & min(tableID) == 1) {
-      optInd <- 0
-    } else if (min(tableID) != max(tableID)) {
-      message(paste("\nThere are between", min(tableID), "and", max(tableID), "observations per health facility."))
-      optInd <- utils::menu(optionsID, title = "\nChoose one of the following options for selecting observations")
-    } else {
-      message(paste("\nThere are", min(tableID), "observations per health facility."))
-      optInd <- utils::menu(optionsID, title = "\nChoose one of the following options for selecting observations")
-    }
-  }
-  if (optInd == 0) {
-    message("\nOnly 1 observation per health facility")
-    write("Only 1 observation per health facility)", file = logscenarioTxt, append = TRUE)
-  } else {
-    write(paste0("Option for selecting observations: ", optionsID[optInd]), file = logscenarioTxt, append = TRUE)
-    if (optInd == 2 | optInd == 3) {
-      cat("\nEnter a date formatted as following: YYYY/MM/DD")
-      k <- 0
-      isDate <- NULL
-      while (is.null(isDate) & k < 3) {
-        if (k > 0) {
-          message("Invalid date!")
-        }
-        k <- k + 1
-        dateThr <- readline(prompt = "Date: ")
-        if (!grepl("[0-9]{4}/[0-9]{2}/[0-9]{2}", dateThr)) {
-          isDate <- NULL
-        } else {
-          isDate <- tryCatch({lubridate::is.Date(as.Date(dateThr))}, error = function(e){NULL})
-        }
-      }
-      if (is.null(isDate)) {
-        stop("Invalid date (too many attempts)!")
-      }
-      write(paste0("Selected date: ", as.Date(dateThr)), file = logscenarioTxt, append = TRUE)
-    }
-    ids <- unique(tibTxt$subject_id)
-    for (i in 1:length(ids)) {
-      subTib <- tibTxt[tibTxt$subject_id == ids[i], ]
-      if (nrow(subTib) > 1) {
-        idDates <- as.Date(subTib$date)
-        if (optInd == 1) {
-          rmInd <- which(order(idDates, decreasing = TRUE) != 1)
-          toRm <- subTib[rmInd, "external_id"]
-        } else if (optInd == 2) {
-          rmInd <- dateThr > idDates
-          # If at least one, let's take the most recent
-          if (sum(rmInd) > 1) {
-            rmInd <- which(order(idDates, decreasing = TRUE) != 1)
-          }
-          toRm <- subTib[rmInd, "external_id"]
-        } else if (optInd == 3) {
-          diffDays <- abs(as.Date(dateThr) - idDates)
-          rmInd <- which(order(diffDays) != 1)
-          toRm <- subTib[rmInd, "external_id"]
-        } else {
-          message(paste("Subject ID:", ids[i]))
-          toKeep <- utils::menu(idDates, title = "Select the observation that you would like to keep:")
-          toRm <- subTib[-toKeep, "external_id"]
-          write(paste0("Subject ID: ", ids[i], "; ", as.Date(subTib$date)[toKeep]), file = logscenarioTxt, append = TRUE)
-        }
-        tibTxt <- tibTxt[!tibTxt$external_id %in% toRm$external_id, ]
-      }
-    }
-  }
+  file.copy(paste(tempDir, "time_frame.txt", sep = "/"), paste(pathFacilities, scenarioDir, outTimeFolder, sep = "/"))
+  unlink(tempDir, recursive = TRUE)
   write.csv(tibTxt, file = paste(outFolder, "health_facilities.csv", sep = "/"))
   write(paste0(Sys.time(), ": Health facilities where filtered - scenario folder: ", scenarioDir, " - input folder: ", outTimeFolder), file = logTxt, append = TRUE)
   cat(paste0("\n", outFolder, "/health_facilities.csv\n"))
