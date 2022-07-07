@@ -80,7 +80,6 @@ HeRAMS_table_subset <- function (tibT, tibC, varCol, stopQuest = TRUE, codeName 
       }
     }
   }
-  
   # Check if they are possible barriers
   if (barriers) {
     colBarriers <- colnames(tibT)[grep(paste0(varCol, codeColumns$Barrier_suffix), colnames(tibT))]

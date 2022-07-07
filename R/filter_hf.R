@@ -93,8 +93,6 @@ filter_hf <- function (mainPath, country, pathTable, scenario = NULL, barriers =
     impairmentValues <- NULL
   }
   
-
-  
   # All columns taken into account
   cols <- NULL
   for (i in 1:length(codeColumns)) {
@@ -380,6 +378,10 @@ filter_hf <- function (mainPath, country, pathTable, scenario = NULL, barriers =
       } else {
         tibTxt <- tibTxt[tibTxt[, colN, drop = TRUE] %in% cont, ]
       } 
+    }
+    if (nrow(tibTxt) == 0) {
+      unlink(tempDir, recursive = TRUE)
+      stop_quietly(paste("The process has stopped has the number of remaining observations is 0. \nTry to modifiy the time option for selecting observations for scenario", scenario, "."))
     }
     scenarioDir <- paste0("scenario", scenario)
   }

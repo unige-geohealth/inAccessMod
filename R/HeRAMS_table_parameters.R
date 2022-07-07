@@ -8,6 +8,7 @@ HeRAMS_table_parameters <- function() {
     Ownership = "MoSD7",
     Health_facility_status = "MoSD4", 
     Building_condition = "CONDB", 
+    Equipment_condition = "CONDE",
     Functionality = "HFFUNCT",
     Accessibility = "HFACC",
     Partner_support = "HFSUP1",
