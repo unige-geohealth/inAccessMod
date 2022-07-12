@@ -46,9 +46,8 @@ download_boundaries <- function (mainPath, country, adminLevel, alwaysDownload =
   if (is.null(border)) {
     stop("No available shapefile from geoBoundaries for this country. You might have to download it manually.\n\n")
   }
-  if (adminLevelTry < 0) {
-    adminLevelTry <- 0
-  }
+
+  adminLevelTry <- adminLevelTry + 1
   sysTime <- Sys.time()
   timeFolder <- gsub("-|[[:space:]]|\\:", "", sysTime)
   dir.create(paste0(pathBorder, "/", timeFolder, "/raw"), recursive = TRUE)
