@@ -8,8 +8,9 @@
 select_folder <- function (x, msg) {
   n <- 1:length(x)
   indInput <- paste(paste0("\n", n, ": ", x))
+  cat(paste0("\n", msg, "\n"))
   cat(indInput)
-  cat(paste0("\n\n", msg, "\n"))
+  cat("\n\n")
   selInd <- readline(prompt = "Selection: ")
   selInd <- as.numeric(unlist(strsplit(x = selInd, split = " ")))
   if (length(selInd) != 0) {

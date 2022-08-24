@@ -20,7 +20,6 @@ label_landcover <- function(mainPath, country, mostRecent, overwrite = FALSE, de
   if (!is.logical(mostRecent)){
     stop("mostRecent must be 'logical'")
   }
-  
   # Check directory
   pathLandcover <- paste0(mainPath, "/", country, "/data/rLandcover")
   folders <- check_exists(pathLandcover, "processed", layer = TRUE)
@@ -68,7 +67,6 @@ label_landcover <- function(mainPath, country, mostRecent, overwrite = FALSE, de
   val <- terra::values(landcover)[,1]
   val <- unique(val[!is.na(val)])
   val <- val[order(val)]
-  
   if (defaultLabels) {
     labelDf <- landcoverLabels[landcoverLabels$class %in% val, ]
     labelDf <- labelDf[order(labelDf$class), ]  
