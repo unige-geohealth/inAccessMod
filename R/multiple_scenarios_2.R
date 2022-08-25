@@ -131,12 +131,15 @@ prep_multi_ts <- function (mergedLandcover, scenarioFolder, standardFolders = TR
     if (!all(vMode %in% c("WALKING", "MOTORIZED", "BICYCLING"))) {
       stop(paste0(xls[i], ": mode can only be 'WALKING' 'MOTORIZED' or 'BICYCLING'."))
     }
-    # Reclass
-    xlsi$class <- subsDf$to[match(xlsi$class, subsDf$from)]
+    # # Reclass
+    # xlsi$class <- subsDf$to[match(xlsi$class, subsDf$from)]
+    # xlsi <- xlsi[order(xlsi$class), ]
+    # xlsi$class
     xlsLst[[i]] <- xlsi
   }
   # Reclass landcover
-  newLandcover <- terra::subst(landcover, from = subsDf$from, to = subsDf$to)
+  # newLandcover <- terra::subst(landcover, from = subsDf$from, to = subsDf$to)
+  newLandcover <- landcover
   if (is.null(tsRootFolder)) {
     dirLst <- list.dirs(paste(mainPath, country, "data", sep = "/"), recursive = FALSE)
     if (any(grepl("zToAccessMod", dirLst))) {
@@ -259,9 +262,8 @@ multi_ts <- function (standardFolders = TRUE, mainPath = NULL, country = NULL, t
     xlsFound <- c(xlsFound, file.exists(xls[i]))
   }
   if (any(!xlsFound)) {
-    stop(paste0("Scenarios indicated in the zones_ts_xlsx table does not match with the available travel scenario tables."))
+    stop(paste0("Scenarios indicated in the zones_ts_xlsx table are missing or do not match with the available travel scenario tables."))
   }
-  finalScenario <- readxl::read_excel(xls[1])
   colN <- colnames(zoneScenario)[1]
   borders <- tryCatch({sf::st_read(inputFolder, "vBorders")}, error = function(e) NULL)
   if (is.null(borders)) {
@@ -271,12 +273,19 @@ multi_ts <- function (standardFolders = TRUE, mainPath = NULL, country = NULL, t
   if (is.null(newLandcover)) {
     stop(paste0(inputFolder, "/original_merged_landcover.tif does not exist or could not be opened. Run the 'prep_multi_ts' function first."))
   }
-  rastLst <- vector("list", length(scenarios))
-  for (i in 1:length(scenarios)) {
-    zones <- zoneScenario[, colN][zoneScenario$Scenario == scenarios[i]]
-    newShp <- borders[as.data.frame(borders)[, colN] %in% zones, ]
+  rastLst <- vector("list", nrow(zoneScenario))
+  scenarioLst <- vector("list", nrow(zoneScenario))
+  for (i in 1:nrow(zoneScenario)) {
+    zone <- zoneScenario[i, 1, drop = TRUE]
+    scenario <- zoneScenario[i, 2, drop = TRUE]
+    newShp <- borders[as.data.frame(borders)[, colN] %in% zone, ]
     newRas <- terra::mask(newLandcover, as(newShp, "SpatVector"))
-    newSc <- read.csv(paste0(folder, "/ts", scenarios[i],".csv"))
+    # plot(newRas)
+    # plot(st_geometry(newShp), add =TRUE)
+    scenarioTable <- readxl::read_excel(paste0(inputFolder, "/", scenario,".xlsx"))
+    scenarioTable$label <- paste0(scenarioTable$label, "_", scenario)
+    scenarioLst[[i]] <- scenario
+    
     matchClass <- plyr::match_df(newSc, finalScenario, on = c("label", "speed", "mode"))[, 1]
     noMatch <- newSc[!newSc$class %in% matchClass, ]
     if (nrow(noMatch) == 0) {
