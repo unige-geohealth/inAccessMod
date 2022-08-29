@@ -4,7 +4,7 @@ library(readxl)
 library(writexl)
 library(tibble)
 
-inputFolder <- "C:/Users/timoner/Documents/GeoHealth/HeRAMS/SWITZERLAND/multi_ts"
+inputFolder <- "C:/SWITZERLAND/multi_ts"
 adminLayerName <- "vBorders"
 landcoverFile <- "mergedLandcover.img"
 
