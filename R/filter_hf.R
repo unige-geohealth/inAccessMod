@@ -241,8 +241,8 @@ filter_hf <- function (mainPath, country, pathTable, scenario = NULL, barriers =
           toRm <- subTib[-toKeep, "external_id"]
           write(paste0("Subject ID: ", ids[i], "; ", as.Date(subTib$date)[toKeep]), file = logscenarioTxt, append = TRUE)
         }
-        tibTxt <- tibTxt[!tibTxt$external_id %in% toRm$external_id, ]
-        tibCode <- tibCode[!tibCode$external_id %in% toRm$external_id, ]
+        tibTxt <- tibTxt[!tibTxt$external_id %in% toRm, ]
+        tibCode <- tibCode[!tibCode$external_id %in% toRm, ]
       }
     }
   }
