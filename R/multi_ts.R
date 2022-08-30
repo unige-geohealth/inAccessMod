@@ -1,7 +1,10 @@
 #' Multiple travel scenarios
 #'
 #' Function that allows to handle different travel scenarios for different administrative units. It creates an updated 
-#' merged landcover and an updated travel scenario table.
+#' merged landcover and an updated travel scenario table. The required inputs are an administrative shapefile, a merged landcover
+#' imported from AccessMod, and an Excel (or CSV) table for each travel scenario. The function requires a folder that only
+#' contains the required inputs. When running the function, the user is asked to select the attribute table column of 
+#' the shapefile that refers to each administrative unit, and then to select the travel scenario for each administrative unit.
 #' @param inputFolder character; the path to the input folder, which must contains an administrative unit shapefile, a merged 
 #' landcover imported from AccessMod and an Excel or CSV table for each travel scenario.
 #' @param adminLayerName character; the name of the administrative unit layer (without extension)
