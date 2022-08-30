@@ -74,7 +74,7 @@ filter_hf <- function (mainPath, country, pathTable, scenario = NULL, barriers =
   if (!defaultParameters) {
     codeColumns <- set_HeRAMS_table_parameters(defaultCodeColumns)
     stopLst <- set_HeRAMS_stop(defaultStopLst)
-    partnershipValues <- set_HeRAMS_key_values(defaultPartnership, "Values that indicate that there is a partner support")
+    partnershipValues <- set_HeRAMS_key_values(defaultPartnership, "Values that indicate that there is a partner support\n")
   } else {
     codeColumns <- defaultCodeColumns
     stopLst <- defaultStopLst
