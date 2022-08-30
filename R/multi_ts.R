@@ -27,7 +27,7 @@
 #' \item Reclassification (sequentially, taking into account the last value assigned for the scenario of the previous unit)
 #' \item Append the administrative unit name (or code) to the classes' labels
 #' \item Landcover raster clip and reclassification of the raster values (consistent with the previous reclassification)
-#' \item Save the new raster, save the new table (in a list)
+#' \item Save the new raster (in a temporary directory), save the new table (in a list)
 #' }
 #' \item Merging of the rasters of each unit (in case of overlap, the values get priority in the same order as the arguments), and merging of the tables of each unit.
 #' \item Writing the final raster, the final table, and the table that relates the different administrative units and the different travel scenarios. The final number of classes are N-classes x N-units.
