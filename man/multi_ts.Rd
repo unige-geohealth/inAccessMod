@@ -16,10 +16,20 @@ landcover imported from AccessMod and an Excel or CSV table for each travel scen
 }
 \description{
 Function that allows to handle different travel scenarios for different administrative units. It creates an updated 
-merged landcover and an updated travel scenario table.
+merged landcover and an updated travel scenario table. The required inputs are an administrative shapefile, a merged landcover
+imported from AccessMod, and an Excel (or CSV) table for each travel scenario. The function requires a folder that only
+contains the required inputs. When running the function, the user is asked to select the attribute table column of 
+the shapefile that refers to each administrative unit, and then to select the travel scenario for each administrative unit.
 }
 \details{
-The function main steps are the following:
+An output folder called ‘out’ is created within the input folder, as well as a subfolder whose name 
+is based on the system time that contains three outputs (e.g. ./out/20220826104842):
+\itemize{
+\item The updated landcover raster
+\item The updated travel scenario table
+\item A table that relates the different administrative units to the different travel scenarios
+}
+The function works are the following:
 \itemize{
 \item Check of the tables that are in the input folder: missing data, column names, values available for all landcover classes, values for the "mode" column, only one value per class, and speed in numerical format and positive or equal to zero.
 \item Console printing of the shapefile attribute table, and selection of the column used to determine the administrative unit. 
