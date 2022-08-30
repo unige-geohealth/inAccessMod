@@ -34,12 +34,6 @@
 #' }
 #' @export
 multi_ts <- function (inputFolder, adminLayerName, landcoverFile) {
-  requiredPckgs <- c("terra", "sf", "readxl", "writexl", "tibble")
-  for (i in 1:length(requiredPckgs)) {
-    if (!requiredPckgs[i] %in% rownames(installed.packages())) {
-      stop(paste(requiredPckgs[i], "package is missing."))
-    }
-  }
   if (!is.character(inputFolder)) {
     stop("inputFolder must be 'character'")
   }
