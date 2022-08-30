@@ -1,39 +1,28 @@
-## Title: functions that allows to create one landcover raster and one travel scenario table that account for different 
-## travel scenarios for different administrative units. 
-## Author: Pablo Timoner, (pablo.timoner@unige.ch)
-## Date: 26-08-2022
-## Institute: Institute for Environmental Sciences & Institute of Global Health
-## University: University of Geneva
-
-check_ts_table <- function (xlsi, xlsiFile, vLc) {
-  xlsi <- xlsi[complete.cases(xlsi), ]
-  if (!all(colnames(xlsi) == c("class", "label", "speed", "mode"))) {
-    stop(paste0(xlsiFile, ": column names must be 'class', 'label', 'speed' and 'mode'"))
-  }
-  vLci <- xlsi[, "class", drop = TRUE]
-  if (!all(vLc %in% vLci)) {
-    missVLc <- vLc[!vLc %in% vLci]
-    missVLc <- paste(missVLc, collapse = ", ")
-    stop(paste0(xlsiFile, ": Missing information for landcover value(s) ", missVLc))
-  }
-  vLcDupl <- vLci[duplicated(vLci)]
-  if (length(vLcDupl) > 0) {
-    stop(paste0(xlsiFile, ": Duplicated landcover class: ", vLcDupl))
-  }
-  vSpeed <- xlsi[, "speed", drop = TRUE]
-  if (!is.numeric(vSpeed)) {
-    stop(paste0(xlsiFile, ": Speed column has to be numeric."))
-  }
-  if (any(vSpeed < 0)) {
-    stop(paste0(xlsiFile, ": Speed can only be positive or equal to zero."))
-  }
-  vMode <- xlsi[, "mode", drop = TRUE]
-  if (!all(vMode %in% c("WALKING", "MOTORIZED", "BICYCLING"))) {
-    stop(paste0(xlsiFile, ": mode can only be 'WALKING' 'MOTORIZED' or 'BICYCLING'."))
-  }
-  return(0)
-}
-
+#' Multiple travel scenarios
+#'
+#' Function that allows to handle different travel scenarios for different administrative units. It creates an updated 
+#' merged landcover and an updated travel scenario table.
+#' @param inputFolder character; the path to the input folder, which must contains an administrative unit shapefile, a merged 
+#' landcover imported from AccessMod and an Excel or CSV table for each travel scenario.
+#' @param adminLayerName character; the name of the administrative unit layer (without extension)
+#' @param landcoverFile character; the file name of the original merged landcover (with extension)
+#' @details The function main steps are the following:
+#' \begin{itemize}
+#' \item Check of the tables that are in the input folder: missing data, column names, values available for all landcover classes, values for the "mode" column, only one value per class, and speed in numerical format and positive or equal to zero.
+#' \item Console printing of the shapefile attribute table, and selection of the column used to determine the administrative unit. 
+#' \item Interactive selection of the scenario (based on the table names) for each administrative unit,  and creation of a table that relates the units and the scenarios.
+#' \item Loop over each administrative unit
+#' \begin{itemize}
+#' \item Copy of the corresponding travel scenario table
+#' \item Reclassification (sequentially, taking into account the last value assigned for the scenario of the previous unit)
+#' \item Append the administrative unit name (or code) to the classes' labels
+#' \item Landcover raster clip and reclassification of the raster values (consistent with the previous reclassification)
+#' \item Save the new raster (in a list), save the new table (in a list)
+#' \end{itemize}
+#' \item Merging of the rasters of each unit (in case of overlap, the values get priority in the same order as the arguments), and merging of the tables of each unit.
+#' \item Writing the final raster, the final table, and the table that relates the different administrative units and the different travel scenarios. The final number of classes are N-classes x N-units.
+#' \end{itemize}
+#' @export
 multi_ts <- function (inputFolder, adminLayerName, landcoverFile) {
   requiredPckgs <- c("terra", "sf", "readxl", "writexl", "tibble")
   for (i in 1:length(requiredPckgs)) {
