@@ -104,7 +104,7 @@ multi_ts <- function (inputFolder, adminLayerName, landcoverFile) {
     cat(paste("\nProcessing zone:", zone))
     scenario <- zoneScenario[i, 2, drop = TRUE]
     subAdmin <- admin[as.data.frame(admin)[, colUnit] %in% zone, ]
-    maskedLc <- terra::mask(landcover, as(subAdmin, "SpatVector"))
+    maskedLc <- terra::mask(landcover, as(subAdmin, "SpatVector"), overwrite = TRUE)
     ts <- xlsLst[[scenario]]
     nClass <- nrow(ts)
     oldClass <- ts$class
