@@ -4,6 +4,7 @@
 #' @param xlsi \code{tibble}; travel scenario table
 #' @param xlsiFile character; travel scenario file path
 #' @param vLc numeric vector; unique values of the merged landcover raster
+#' @export
 check_ts_table <- function (xlsi, xlsiFile, vLc) {
   xlsi <- xlsi[complete.cases(xlsi), ]
   if (!all(colnames(xlsi) == c("class", "label", "speed", "mode"))) {
