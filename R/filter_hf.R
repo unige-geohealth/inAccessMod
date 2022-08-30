@@ -161,7 +161,7 @@ filter_hf <- function (mainPath, country, pathTable, scenario = NULL, barriers =
   }
   tempDir <- paste0(pathFacilities, "/temp")
   if (dir.exists(tempDir)) {
-    unlink(tempDir)
+    unlink(tempDir, recursive = TRUE)
   }
   dir.create(tempDir)
   logscenarioTxt <-  paste(tempDir, "time_frame.txt", sep = "/")

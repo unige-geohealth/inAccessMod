@@ -27,7 +27,7 @@
 #' \item Reclassification (sequentially, taking into account the last value assigned for the scenario of the previous unit)
 #' \item Append the administrative unit name (or code) to the classes' labels
 #' \item Landcover raster clip and reclassification of the raster values (consistent with the previous reclassification)
-#' \item Save the new raster (in a list), save the new table (in a list)
+#' \item Save the new raster, save the new table (in a list)
 #' }
 #' \item Merging of the rasters of each unit (in case of overlap, the values get priority in the same order as the arguments), and merging of the tables of each unit.
 #' \item Writing the final raster, the final table, and the table that relates the different administrative units and the different travel scenarios. The final number of classes are N-classes x N-units.
@@ -96,7 +96,11 @@ multi_ts <- function (inputFolder, adminLayerName, landcoverFile) {
     sc <- utils::menu(scenarios, title = paste("\nWhich scenario for", zoneScenario[i, 1], "?"))
     zoneScenario[i, 2] <- scenarios[sc]
   }
-  rastLst <- vector("list", nrow(zoneScenario))
+  tempDir <- paste0(inputFolder, "/temp")
+  if (dir.exists(tempDir)) {
+    unlink(tempDir, recursive = TRUE)
+  }
+  dir.create(tempDir)
   scenarioLst <- vector("list", nrow(zoneScenario))
   classVal <- 0
   for (i in 1:nrow(zoneScenario)) {
@@ -114,21 +118,19 @@ multi_ts <- function (inputFolder, adminLayerName, landcoverFile) {
     ts$label <- paste0(ts$label, "_", zone)
     scenarioLst[[i]] <- ts
     newRas <- terra::subst(maskedLc, from = oldClass, to = newClass)
-    rastLst[[i]] <- newRas
+    terra::writeRaster(newRas, file = paste0(tempDir, "/zone", i, ".tif"))
   }
-  message("\nMerging...")
-  finalLandcover <- do.call(terra::merge, rastLst)
-  finalScenario <- do.call(rbind, scenarioLst)
+  allRast <- paste0(tempDir, "/zone", 1:nrow(zoneScenario), ".tif")
   sysTime <- Sys.time()
   timeFolder <- gsub("-|[[:space:]]|\\:", "", sysTime)
   outFolder <- paste0(inputFolder, "/out/", timeFolder)
   dir.create(outFolder, recursive = TRUE)
-  message("Writing new merged landcover raster...")
-  terra::writeRaster(finalLandcover, filename = paste(outFolder, "multi_ts_merged_landcover.tif", sep = "/"))
-  message("Writing new travel scenario table...")
+  message("\nMerging and writing ouptuts...")
+  terra::writeRaster(landcover, file = paste(outFolder, "multi_ts_merged_landcover.tif", sep = "/"), overwrite = TRUE, filetype = "GTiff")
+  gdalUtils::mosaic_rasters(gdalfile = allRast, dst_dataset = paste(outFolder, "multi_ts_merged_landcover.tif", sep = "/"), of="GTiff", verbose = FALSE)
+  finalScenario <- do.call(rbind, scenarioLst)
   writexl::write_xlsx(finalScenario, path = paste(outFolder, "multi_ts.xlsx", sep = "/"), col_names = TRUE)  
-  message("Writing travel scenarios/zones relationship table...")
-  writexl::write_xlsx(zoneScenario, path = paste(outFolder, "zones_ts.xlsx", sep = "/"), col_names = TRUE)  
-  cat(paste("Output folder:", outFolder))
-  return(NULL)
+  writexl::write_xlsx(zoneScenario, path = paste(outFolder, "zones_ts.xlsx", sep = "/"), col_names = TRUE)
+  unlink(tempDir, recursive = TRUE)
+  message(paste("Output folder:", outFolder, "\n"))
 }
