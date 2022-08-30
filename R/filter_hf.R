@@ -215,6 +215,9 @@ filter_hf <- function (mainPath, country, pathTable, scenario = NULL, barriers =
         if (optInd == 1) {
           rmInd <- which(order(idDates, decreasing = TRUE) != 1)
           toRm <- subTib[rmInd, "external_id"]
+          print(class(toRm))
+          print(toRm$external_id)
+          print(toRm[, "external_id"])
         } else if (optInd == 2) {
           # Which ones should be removed
           rmInd <- dateThr < idDates

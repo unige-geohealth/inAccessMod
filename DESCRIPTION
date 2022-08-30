@@ -29,6 +29,7 @@ Imports:
     sp,
     stringi,
     stringr,
+    tibble,
     utils,
     writexl
 RoxygenNote: 7.1.2

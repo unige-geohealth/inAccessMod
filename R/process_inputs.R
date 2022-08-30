@@ -126,6 +126,7 @@ process_inputs <- function (mainPath, country, selectedInputs = NULL, mostRecent
   if (length(selectedFolders) < 1) {
     stop_quietly("No more input to be processed!")
   }
+  message("Boundary shapefile...")
   border <- get_boundaries(mainPath, country, "processed", mostRecent)
   if ("rPopulation" %in% selectedFolders) {
     process_pop(mainPath, country, border, epsg, mostRecent, defaultMethods, changeRes, newRes, popCorrection, gridRes)
