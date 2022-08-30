@@ -215,9 +215,6 @@ filter_hf <- function (mainPath, country, pathTable, scenario = NULL, barriers =
         if (optInd == 1) {
           rmInd <- which(order(idDates, decreasing = TRUE) != 1)
           toRm <- subTib[rmInd, "external_id"]
-          print(class(toRm))
-          print(toRm$external_id)
-          print(toRm[, "external_id"])
         } else if (optInd == 2) {
           # Which ones should be removed
           rmInd <- dateThr < idDates
@@ -244,7 +241,9 @@ filter_hf <- function (mainPath, country, pathTable, scenario = NULL, barriers =
           toRm <- subTib[-toKeep, "external_id"]
           write(paste0("Subject ID: ", ids[i], "; ", as.Date(subTib$date)[toKeep]), file = logscenarioTxt, append = TRUE)
         }
-        tibTxt <- tibTxt[!tibTxt$external_id %in% toRm, ]      }
+        tibTxt <- tibTxt[!tibTxt$external_id %in% toRm, ]
+        tibCode <- tibCode[!tibCode$external_id %in% toRm, ]     
+      }
     }
   }
   
