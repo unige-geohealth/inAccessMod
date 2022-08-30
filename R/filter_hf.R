@@ -159,10 +159,11 @@ filter_hf <- function (mainPath, country, pathTable, scenario = NULL, barriers =
   } else {
     mostRecentObs <- FALSE
   }
-  
   tempDir <- paste0(pathFacilities, "/temp")
+  if (dir.exists(tempDir)) {
+    unlink(tempDir)
+  }
   dir.create(tempDir)
-  
   logscenarioTxt <-  paste(tempDir, "time_frame.txt", sep = "/")
   write(paste0("Modification time of the raw Excel table: ", mtime), file = logscenarioTxt, append = TRUE)
   optionsID <- c("Most recent", "Date limit", "Case by case")
