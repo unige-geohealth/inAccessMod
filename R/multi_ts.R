@@ -6,8 +6,14 @@
 #' landcover imported from AccessMod and an Excel or CSV table for each travel scenario.
 #' @param adminLayerName character; the name of the administrative unit layer (without extension)
 #' @param landcoverFile character; the file name of the original merged landcover (with extension)
-#' @return NULL; a raster and an Excel table are written in an output folder created within the input folder.
-#' @details The function main steps are the following:
+#' @details An output folder called ‘out’ is created within the input folder, as well as a subfolder whose name 
+#' is based on the system time that contains three outputs (e.g. ./out/20220826104842):
+#' \itemize{
+#' \item The updated landcover raster
+#' \item The updated travel scenario table
+#' \item A table that relates the different administrative units to the different travel scenarios
+#' }
+#' The function works are the following:
 #' \itemize{
 #' \item Check of the tables that are in the input folder: missing data, column names, values available for all landcover classes, values for the "mode" column, only one value per class, and speed in numerical format and positive or equal to zero.
 #' \item Console printing of the shapefile attribute table, and selection of the column used to determine the administrative unit. 
