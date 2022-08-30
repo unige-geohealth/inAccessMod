@@ -9,7 +9,7 @@
 #' landcover imported from AccessMod and an Excel or CSV table for each travel scenario.
 #' @param adminLayerName character; the name of the administrative unit layer (without extension)
 #' @param landcoverFile character; the file name of the original merged landcover (with extension)
-#' @details An output folder called ‘out’ is created within the input folder, as well as a subfolder whose name 
+#' @details An output folder called out is created within the input folder, as well as a subfolder whose name 
 #' is based on the system time that contains three outputs (e.g. ./out/20220826104842):
 #' \itemize{
 #' \item The updated landcover raster

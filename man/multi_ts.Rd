@@ -22,7 +22,7 @@ contains the required inputs. When running the function, the user is asked to se
 the shapefile that refers to each administrative unit, and then to select the travel scenario for each administrative unit.
 }
 \details{
-An output folder called ‘out’ is created within the input folder, as well as a subfolder whose name 
+An output folder called out is created within the input folder, as well as a subfolder whose name 
 is based on the system time that contains three outputs (e.g. ./out/20220826104842):
 \itemize{
 \item The updated landcover raster
