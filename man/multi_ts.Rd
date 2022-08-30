@@ -20,19 +20,15 @@ merged landcover and an updated travel scenario table.
 }
 \details{
 The function main steps are the following:
-\begin{itemize}
-\item Check of the tables that are in the input folder: missing data, column names, values available for all landcover classes, values for the "mode" column, only one value per class, and speed in numerical format and positive or equal to zero.
-\item Console printing of the shapefile attribute table, and selection of the column used to determine the administrative unit. 
-\item Interactive selection of the scenario (based on the table names) for each administrative unit,  and creation of a table that relates the units and the scenarios.
-\item Loop over each administrative unit
-\begin{itemize}
-\item Copy of the corresponding travel scenario table
-\item Reclassification (sequentially, taking into account the last value assigned for the scenario of the previous unit)
-\item Append the administrative unit name (or code) to the classes' labels
-\item Landcover raster clip and reclassification of the raster values (consistent with the previous reclassification)
-\item Save the new raster (in a list), save the new table (in a list)
-\end{itemize}
-\item Merging of the rasters of each unit (in case of overlap, the values get priority in the same order as the arguments), and merging of the tables of each unit.
-\item Writing the final raster, the final table, and the table that relates the different administrative units and the different travel scenarios. The final number of classes are N-classes x N-units.
-\end{itemize}
+* Check of the tables that are in the input folder: missing data, column names, values available for all landcover classes, values for the "mode" column, only one value per class, and speed in numerical format and positive or equal to zero.
+* Console printing of the shapefile attribute table, and selection of the column used to determine the administrative unit. 
+* Interactive selection of the scenario (based on the table names) for each administrative unit,  and creation of a table that relates the units and the scenarios.
+* Loop over each administrative unit
++ Copy of the corresponding travel scenario table
++ Reclassification (sequentially, taking into account the last value assigned for the scenario of the previous unit)
++ Append the administrative unit name (or code) to the classes' labels
++ Landcover raster clip and reclassification of the raster values (consistent with the previous reclassification)
++ Save the new raster (in a list), save the new table (in a list)
+* Merging of the rasters of each unit (in case of overlap, the values get priority in the same order as the arguments), and merging of the tables of each unit.
+* Writing the final raster, the final table, and the table that relates the different administrative units and the different travel scenarios. The final number of classes are N-classes x N-units.
 }
