@@ -46,7 +46,13 @@ multi_ts <- function (inputFolder, adminLayerName, landcoverFile) {
   if (!is.character(landcoverFile)) {
     stop("landcoverFile must be 'character'")
   }
-  admin <- sf::st_read(inputFolder, adminLayerName)
+  admin <- sf::st_read(inputFolder, adminLayerName, options = "ENCODING=UTF-8")
+  colClasses <- lapply(sf::st_drop_geometry(admin), class)
+  for (i in 1:length(colClasses)) {
+    if (colClasses[i] == "character") {
+      admin[[i]] <- iconv(admin[[i]], to = "UTF-8")
+    }
+  }
   landcover <- terra::rast(paste(inputFolder, landcoverFile, sep = "/"))
   vLc <- terra::values(landcover)[,1]
   vLc <- unique(vLc[!is.na(vLc)])
@@ -76,15 +82,15 @@ multi_ts <- function (inputFolder, adminLayerName, landcoverFile) {
   xlsNames <- gsub("\\.xls|\\.xlsx|\\.csv", "", xlsNames)
   names(xlsLst) <- xlsNames
   cols <- colnames(admin)
-  print(as.data.frame(admin))
+  print(sf::st_drop_geometry(admin))
   colUnit <- utils::menu(cols, title = "\nSelect the column that you would like to use for referring to the different administrative units.")
-  adminUnits <- unique(as.data.frame(admin)[, colUnit])
+  adminUnits <- unique(admin[[colUnit]])
   if (length(adminUnits) == 1) {
     stop("Selected column have only one value.")
   }
   adminUnits <- adminUnits[order(adminUnits)]
   zoneScenario <- data.frame(Zone = adminUnits, scenario = NA)
-  colnames(zoneScenario)[1] <- colnames(as.data.frame(admin))[colUnit]
+  colnames(zoneScenario)[1] <- colnames(sf::st_drop_geometry(admin))[colUnit]
   scenarios <- gsub(paste0(inputFolder, "|/|\\.xls|\\.xlsx|\\.csv"), "", xls)
   for (i in 1:nrow(zoneScenario)) {
     sc <- utils::menu(scenarios, title = paste("\nWhich scenario for", zoneScenario[i, 1], "?"))
@@ -101,7 +107,7 @@ multi_ts <- function (inputFolder, adminLayerName, landcoverFile) {
     zone <- zoneScenario[i, 1, drop = TRUE]
     cat(paste("\nProcessing zone:", zone))
     scenario <- zoneScenario[i, 2, drop = TRUE]
-    subAdmin <- admin[as.data.frame(admin)[, colUnit] %in% zone, ]
+    subAdmin <- admin[admin[[colUnit]] %in% zone, ]
     maskedLc <- terra::mask(landcover, as(subAdmin, "SpatVector"), overwrite = TRUE)
     ts <- xlsLst[[scenario]]
     nClass <- nrow(ts)
