@@ -46,13 +46,8 @@ multi_ts <- function (inputFolder, adminLayerName, landcoverFile) {
   if (!is.character(landcoverFile)) {
     stop("landcoverFile must be 'character'")
   }
-  admin <- sf::st_read(inputFolder, adminLayerName, options = "ENCODING=UTF-8")
-  colClasses <- lapply(sf::st_drop_geometry(admin), class)
-  for (i in 1:length(colClasses)) {
-    if (colClasses[i] == "character") {
-      admin[[i]] <- iconv(admin[[i]], to = "UTF-8")
-    }
-  }
+
+  admin <- sf::st_read(inputFolder, adminLayerName)
   landcover <- terra::rast(paste(inputFolder, landcoverFile, sep = "/"))
   vLc <- terra::values(landcover)[,1]
   vLc <- unique(vLc[!is.na(vLc)])
