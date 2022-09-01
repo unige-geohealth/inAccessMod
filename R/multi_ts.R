@@ -78,7 +78,7 @@ multi_ts <- function (inputFolder, adminLayerName, landcoverFile) {
   names(xlsLst) <- xlsNames
   cols <- colnames(admin)
   print(sf::st_drop_geometry(admin))
-  colUnit <- utils::menu(cols, title = "\nSelect the column that you would like to use for referring to the different administrative units.")
+  colUnit <- utils::menu(cols, title = "\nSelect the column (WITH NO SPECIAL CHARACTER LIKE APOSTROPHES, ACCENTS, etc.) that you would like to use for referring to the different administrative units.")
   adminUnits <- unique(admin[[colUnit]])
   if (length(adminUnits) == 1) {
     stop("Selected column have only one value.")
