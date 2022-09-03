@@ -1,10 +1,13 @@
-#' Multiple travel scenarios
+#' Multiple travel scenarios (alternative to multi_ts)
 #'
-#' Function that allows to handle different travel scenarios for different administrative units. It creates an updated 
-#' merged landcover and an updated travel scenario table. The required inputs are an administrative shapefile, a merged landcover
+#' Function that allows to handle different travel scenarios for different administrative units. It is faster than multi_ts and
+#' recommended when the outputs of this latter can not be well processed in AccessMod. It creates an updated 
+#' merged landcover and an updated travel scenario table (potentially much smaller that the one created by multi_ts). 
+#' As for multi_ts, the required inputs are an administrative shapefile, a merged landcover
 #' imported from AccessMod, and an Excel (or CSV) table for each travel scenario. The function requires a folder that only
 #' contains the required inputs. When running the function, the user is asked to select the attribute table column of 
-#' the shapefile that refers to each administrative unit, and then to select the travel scenario for each administrative unit.
+#' the shapefile that refers to each administrative unit (with no special character), and then to select the travel scenario for each administrative unit.
+#' When modifying a scenario, the user must re-run the function and should not modify the outputs directly.
 #' @param inputFolder character; the path to the input folder, which must contains an administrative unit shapefile, a merged 
 #' landcover imported from AccessMod and an Excel or CSV table for each travel scenario.
 #' @param adminLayerName character; the name of the administrative unit layer (without extension)
@@ -21,19 +24,19 @@
 #' \item Check of the tables that are in the input folder: missing data, column names, values available for all landcover classes, values for the "mode" column, only one value per class, and speed in numerical format and positive or equal to zero.
 #' \item Console printing of the shapefile attribute table, and selection of the column used to determine the administrative unit. 
 #' \item Interactive selection of the scenario (based on the table names) for each administrative unit,  and creation of a table that relates the units and the scenarios.
-#' \item Loop over each administrative unit
+#' \item Loop over each scenario
 #' \itemize{
-#' \item Copy of the corresponding travel scenario table
-#' \item Reclassification (sequentially, taking into account the last value assigned for the scenario of the previous unit)
-#' \item Append the administrative unit name (or code) to the classes' labels
-#' \item Landcover raster clip and reclassification of the raster values (consistent with the previous reclassification)
-#' \item Save the new raster (in a temporary directory), save the new table (in a list)
+#' \item Landcover raster clip based on the administrative units that are related to the scenario i.
+#' \item Check if the scenario i has entries that are identical to entries from already processed scenarios
+#' \item Creation of new classes if necessary
+#' \item Reclassification of the raster depending on the two previous point
+#' \item Update of the final travel scenario table
 #' }
-#' \item Merging of the rasters of each unit (in case of overlap, the values get priority in the same order as the arguments), and merging of the tables of each unit.
-#' \item Writing the final raster, the final table, and the table that relates the different administrative units and the different travel scenarios. The final number of classes are N-classes x N-units.
+#' \item Merging of the rasters
+#' \item Writing the final raster, the final table, and the table that relates the different administrative units and the different travel scenarios..
 #' }
 #' @export
-multi_ts <- function (inputFolder, adminLayerName, landcoverFile) {
+multi_ts_fast <- function (inputFolder, adminLayerName, landcoverFile) {
   if (!is.character(inputFolder)) {
     stop("inputFolder must be 'character'")
   }
@@ -48,6 +51,7 @@ multi_ts <- function (inputFolder, adminLayerName, landcoverFile) {
   }
   admin <- sf::st_read(inputFolder, adminLayerName)
   landcover <- terra::rast(paste(inputFolder, landcoverFile, sep = "/"))
+  # admin$shapeName <- paste0("Admin", 1:nrow(admin))
   vLc <- terra::values(landcover)[, 1]
   vLc <- unique(vLc[!is.na(vLc)])
   vLc <- vLc[order(vLc)]
@@ -95,26 +99,42 @@ multi_ts <- function (inputFolder, adminLayerName, landcoverFile) {
     unlink(tempDir, recursive = TRUE)
   }
   dir.create(tempDir)
-  scenarioLst <- vector("list", nrow(zoneScenario))
-  classVal <- 0
-  for (i in 1:nrow(zoneScenario)) {
-    zone <- zoneScenario[i, 1, drop = TRUE]
-    cat(paste("\nProcessing zone:", zone))
-    scenario <- zoneScenario[i, 2, drop = TRUE]
-    subAdmin <- admin[admin[[colUnit]] %in% zone, ]
-    maskedLc <- terra::mask(landcover, as(subAdmin, "SpatVector"), overwrite = TRUE)
-    ts <- xlsLst[[scenario]]
-    nClass <- nrow(ts)
-    oldClass <- ts$class
-    newClass <- (classVal + 1):(classVal + nClass)
-    ts$class <- newClass
-    classVal <- classVal + nClass
-    ts$label <- paste0(ts$label, "_", zone)
-    scenarioLst[[i]] <- ts
-    newRas <- terra::subst(maskedLc, from = oldClass, to = newClass)
-    terra::writeRaster(newRas, file = paste0(tempDir, "/zone", i, ".tif"))
+  finalScenario <- xlsLst[[1]]
+  finalScenario$newlabel <- character(nrow(finalScenario))
+  finalScenario$newclass <- character(nrow(finalScenario))
+  for (i in 1:length(xlsLst)) {
+    message(names(xlsLst)[i])
+    # Units for this scenario
+    zones <- zoneScenario[, 1][zoneScenario$scenario == names(xlsLst)[i]]
+    newShp <- admin[as.data.frame(admin)[, colUnit] %in% zones, ]
+    newRas <- terra::mask(landcover, as(newShp, "SpatVector"))
+    # Get this scenario
+    newSc <- xlsLst[[i]]
+    # If first 
+    if (i == 1) {
+      newVal <- 1:nrow(newSc)
+      newRas <- terra::subst(newRas, from = newSc$class, to = newVal)
+      terra::writeRaster(newRas, file = paste0(tempDir, "/scenario", i, ".tif"))
+      finalScenario$newclass <- newVal
+      finalScenario$newlabel <- paste0(finalScenario$label, "_", i)
+    } else {
+      matchClass <- plyr::match_df(newSc, finalScenario, on = c("label", "speed", "mode"))[, 1]
+      noMatch <- newSc[!newSc$class %in% matchClass, ]
+      recode <- plyr::match_df(finalScenario, newSc, on = c("label", "speed", "mode"))[, c("class", "newclass")]
+      if (nrow(noMatch) > 0) {
+        lastVal <- finalScenario$newclass[length(finalScenario$newclass)]
+        newVal <- (lastVal + 1):(lastVal + nrow(noMatch))
+        noMatchRecode <- data.frame(class = noMatch$class, newclass = newVal)
+        recode <- rbind(recode, noMatchRecode)
+        noMatch$newclass <- newVal
+        noMatch$newlabel <- paste0(noMatch$label, "_", i)
+        finalScenario <- rbind(finalScenario, noMatch)
+      }
+      newRas <- terra::subst(newRas, from = recode$class, to = recode$newclass)
+      terra::writeRaster(newRas, file = paste0(tempDir, "/scenario", i, ".tif"))
+    }
   }
-  allRast <- paste0(tempDir, "/zone", 1:nrow(zoneScenario), ".tif")
+  allRast <- paste0(tempDir, "/scenario", 1:length(xlsLst), ".tif")
   sysTime <- Sys.time()
   timeFolder <- gsub("-|[[:space:]]|\\:", "", sysTime)
   outFolder <- paste0(inputFolder, "/out/", timeFolder)
@@ -122,15 +142,14 @@ multi_ts <- function (inputFolder, adminLayerName, landcoverFile) {
   message("\nMerging and writing ouptuts...")
   terra::writeRaster(landcover, file = paste(outFolder, "multi_ts_merged_landcover.tif", sep = "/"), overwrite = TRUE, filetype = "GTiff")
   gdalUtils::mosaic_rasters(gdalfile = allRast, dst_dataset = paste(outFolder, "multi_ts_merged_landcover.tif", sep = "/"), of="GTiff", verbose = FALSE)
-  finalScenario <- do.call(rbind, scenarioLst)
   
-  # finalScenario2 <- finalScenario
-  # finalScenario2$label <- paste0("label_", 1:nrow(finalScenario2))
-  # writexl::write_xlsx(finalScenario2, path = paste(outFolder, "multi_ts2.xlsx", sep = "/"), col_names = TRUE) 
+  finalScenario <- finalScenario[, c(6, 5, 3, 4)]
+  colnames(finalScenario) <- c("class", "label", "speed", "mode")
+  finalScenario$speed <- as.integer(finalScenario$speed)
+  finalScenario$class <- as.integer(finalScenario$class)
   
   writexl::write_xlsx(finalScenario, path = paste(outFolder, "multi_ts.xlsx", sep = "/"), col_names = TRUE)  
   writexl::write_xlsx(zoneScenario, path = paste(outFolder, "zones_ts.xlsx", sep = "/"), col_names = TRUE)
   unlink(tempDir, recursive = TRUE)
   message(paste("Output folder:", outFolder, "\n"))
-  message("If the outputs can not be well processed in AccessMod, try to use multi_ts_fast().")
 }
