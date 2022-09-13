@@ -8,7 +8,7 @@
 #' interactively asked whether they want to process it again or not.
 #' @export
 to_process <- function (path, alwaysProcess) {
-  prFiles <- list.files(gsub("raw", "processed", path), recursive = TRUE, pattern = "*.tif|*.shp")
+  prFiles <- list.files(gsub("raw", "processed", path), recursive = TRUE, pattern = "\\.tif|\\.shp")
   if (length(prFiles) > 0) {
     if (!alwaysProcess) {
       inputName <- gsub("/raw$", "", gsub("^.*/data/", "", path))

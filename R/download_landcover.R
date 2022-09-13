@@ -119,7 +119,7 @@ download_landcover <- function (mainPath, country, alwaysDownload = FALSE, mostR
       utils::download.file(urls[i], destfile = paste0(tmpFolder, "/", codeFiles[i], ".tif"), mode = "wb")
     }
     cat(paste0("Creating a mosaic with the downloaded rasters...\n"))
-    files <- list.files(tmpFolder, pattern = "*.tif", full.names=TRUE)
+    files <- list.files(tmpFolder, pattern = "\\.tif", full.names=TRUE)
     # Gdal mosaic
     gdalUtils::mosaic_rasters(gdalfile = files, dst_dataset = paste0(pathLandcover, "/", country, awsLCSuffix, ".tif"), of="GTiff")
     write(paste0(Sys.time(), ": Multiple landcover tiles downloaded and mosaicked - Input folder ", timeFolder), file = logTxt, append = TRUE)
