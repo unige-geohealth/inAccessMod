@@ -114,12 +114,16 @@ filter_hf <- function (mainPath, country, pathTable, scenario = NULL, barriers =
   # Adding "does not apply" value when questionnaire has stopped
   for (i in 1:length(names(stopLst))) {
     varX <- names(stopLst)[i]
+    message(varX)
     colCode <- codeColumns[[varX]]
     varStop <- stopLst[[varX]]
     if (grepl("\\|", varStop)) {
       varStop <- unlist(strsplit(varStop, split = "\\|"))
     }
     remainCols <- remainCols[!grepl(colCode, remainCols)]
+    if (varX == "Functionality") {
+      remainCols <- remainCols[!grepl(codeColumns[["Equipment_condition"]], remainCols)]
+    }
     if (any(is.na(tibCode[, colCode, drop = TRUE]))) {
       message(paste0("\n", gsub("_", " ", varX)))
       cat("Values for the following facilities are missing.\n")
@@ -134,7 +138,6 @@ filter_hf <- function (mainPath, country, pathTable, scenario = NULL, barriers =
       tibTxt[tibCode[, colCode, drop = TRUE] %in% varStop, remainCols] <- "Does not apply (questionnaire was stopped before)"
     }
   }
-  
   logTxt <- paste0(mainPath, "/", country, "/data/log.txt")
   mtime <- tryCatch({file.info(pathTable)$mtime}, error = function(e){NULL})
   if(is.null(mtime)) {
@@ -263,9 +266,7 @@ filter_hf <- function (mainPath, country, pathTable, scenario = NULL, barriers =
       if (length(varCol) == 1) {
         codeName <- names(codeColumns)[i]
         message(paste0("\n", gsub("_", " ", codeName)))
-        print("H1")
         newTib <- HeRAMS_table_subset(tibT = tibTxt, tibC = tibCode, varCol = varCol, stopQuest = TRUE, codeName = codeName, stopLst = stopLst, tempDir = tempDir, barriers = barriers, codeColumns = codeColumns, impairmentValues = impairmentValues, partners, partnershipValues = partnershipValues)
-        print("H2")
         tibTxt <- newTib[[1]]
         tibCode <- newTib[[2]]
         stopFiltering <- tryCatch(newTib[[3]], error = function(e) FALSE)
@@ -367,7 +368,6 @@ filter_hf <- function (mainPath, country, pathTable, scenario = NULL, barriers =
       if (sum(cond1) == 0) {
         stop("NOT RECOGNIZED COLUMN !")
       } else if (sum(cond1) > 1) {
-        # print("HELLO")
         indCol <- which(cond1)
         condMat1 <- matrix(NA, nrow = nrow(tibTxt), ncol = sum(cond1))
         for (j in 1:length(indCol)) {
