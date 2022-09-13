@@ -67,14 +67,14 @@ filter_hf <- function (mainPath, country, pathTable, scenario = NULL, barriers =
   }
 
   # Get column code and label
-  defaultCodeColumns <- HeRAMS_table_parameters()
-  defaultStopLst <- HeRAMS_stop_filtering()
+  defaultCodeColumns <- inAccessMod::HeRAMS_table_parameters()
+  defaultStopLst <- inAccessMod::HeRAMS_stop_filtering()
   # Get values that indicate that there is a partner support
-  defaultPartnership <- HeRAMS_partnership_values()
+  defaultPartnership <- inAccessMod::HeRAMS_partnership_values()
   if (!defaultParameters) {
-    codeColumns <- set_HeRAMS_table_parameters(defaultCodeColumns)
-    stopLst <- set_HeRAMS_stop(defaultStopLst)
-    partnershipValues <- set_HeRAMS_key_values(defaultPartnership, "Values that indicate that there is a partner support\n")
+    codeColumns <- inAccessMod::set_HeRAMS_table_parameters(defaultCodeColumns)
+    stopLst <- inAccessMod::set_HeRAMS_stop(defaultStopLst)
+    partnershipValues <- inAccessMod::set_HeRAMS_key_values(defaultPartnership, "Values that indicate that there is a partner support\n")
   } else {
     codeColumns <- defaultCodeColumns
     stopLst <- defaultStopLst
@@ -83,9 +83,9 @@ filter_hf <- function (mainPath, country, pathTable, scenario = NULL, barriers =
  
   if (barriers) {
   # Get values that indicate that there is an impairment
-    defaultImpairmentValues <- HeRAMS_impairment_values()
+    defaultImpairmentValues <- inAccessMod::HeRAMS_impairment_values()
     if (!defaultParameters) {
-      impairmentValues <- set_HeRAMS_key_values(defaultImpairmentValues, "Values that indicate that there is an impairment")
+      impairmentValues <- inAccessMod::set_HeRAMS_key_values(defaultImpairmentValues, "Values that indicate that there is an impairment")
     } else {
       impairmentValues <- defaultImpairmentValues
     }
@@ -263,7 +263,9 @@ filter_hf <- function (mainPath, country, pathTable, scenario = NULL, barriers =
       if (length(varCol) == 1) {
         codeName <- names(codeColumns)[i]
         message(paste0("\n", gsub("_", " ", codeName)))
+        print("H1")
         newTib <- HeRAMS_table_subset(tibT = tibTxt, tibC = tibCode, varCol = varCol, stopQuest = TRUE, codeName = codeName, stopLst = stopLst, tempDir = tempDir, barriers = barriers, codeColumns = codeColumns, impairmentValues = impairmentValues, partners, partnershipValues = partnershipValues)
+        print("H2")
         tibTxt <- newTib[[1]]
         tibCode <- newTib[[2]]
         stopFiltering <- tryCatch(newTib[[3]], error = function(e) FALSE)
