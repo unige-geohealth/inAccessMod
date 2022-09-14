@@ -171,9 +171,11 @@ create_hf_shapefile <- function (mainPath, country, mostRecentBoundaries = TRUE,
     write.table(df[!inter[, 1]], paste(hfFolder, "coordinates_outside.txt", sep = "/"))
     message(paste("\nYou can access the removed HFs at:\n", paste(hfFolder, "coordinates_outside.txt", sep = "/"), "\n"))
   }
-  shp <- sf::st_as_sf(pts[inter[, 1], ])
+  # shp <- sf::st_as_sf(pts[inter[, 1], c("external_id", "workspace_id", "date", "MoSD3", "HFNAME")])
+  shp <- pts[inter[, 1], -1]
   cat("\nSaving the HFs' shapefile...\n")
-  sf::st_write(shp, paste(hfFolder, "health_facilities.shp", sep = "/"), append = FALSE)
+  rgdal::writeOGR(shp, paste(hfFolder, "health_facilities.shp", sep = "/"), layer = "hf", driver = "ESRI Shapefile", overwrite_layer = TRUE)
+  # sf::st_write(shp, paste(hfFolder, "health_facilities.shp", sep = "/"), append = FALSE)
   inputFolder <- stringr::str_extract(hfFolder, "scenario[0-9]{3}/[0-9]{14}")
   write(paste0(Sys.time(), ": Health facility shapefile created - Input folder: ", inputFolder), fi = logTxt, append = TRUE)
 }
