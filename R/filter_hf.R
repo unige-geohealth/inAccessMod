@@ -114,7 +114,6 @@ filter_hf <- function (mainPath, country, pathTable, scenario = NULL, barriers =
   # Adding "does not apply" value when questionnaire has stopped
   for (i in 1:length(names(stopLst))) {
     varX <- names(stopLst)[i]
-    message(varX)
     colCode <- codeColumns[[varX]]
     varStop <- stopLst[[varX]]
     if (grepl("\\|", varStop)) {
