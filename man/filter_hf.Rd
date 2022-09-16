@@ -9,10 +9,19 @@ filter_hf(
   country,
   pathTable,
   scenario = NULL,
-  barriers = TRUE,
-  partners = TRUE,
   mostRecentObs = NULL,
-  defaultParameters = TRUE
+  defaultParameters = TRUE,
+  type = TRUE,
+  ownership = FALSE,
+  status = TRUE,
+  building = FALSE,
+  equipment = FALSE,
+  functionality = FALSE,
+  accessibility = FALSE,
+  support = FALSE,
+  services = FALSE,
+  partners = FALSE,
+  barriers = FALSE
 )
 }
 \arguments{
@@ -25,14 +34,32 @@ filter_hf(
 \item{scenario}{character; a string of three characters that correspond to the scenario folder suffix like '001', '002'...'010'...'099'...'100'
 The criteria for selection are those of the specified scenario. If NULL, an interactive selection by attribute is run in the console.}
 
-\item{barriers}{logical; should the facilities also be filtered on the causes of possible impairment (e.g. service not available).}
-
-\item{partners}{logical; should the facilities also be filtered on the different possible supporting partners}
-
 \item{mostRecentObs}{logical; should the most recent observation per health facility be taken into account? If NULL or FALSE, 
 the user is asked to choose among four methods for selection based on time observation (most recent, date limit or case by case).}
 
 \item{defaultParameters}{logical; should the default HeRAMS table parameters (e.g. column names) be used? If not, the user is able to modify it.}
+
+\item{type}{logical; should the facilities be filtered based on their types.}
+
+\item{ownership}{logical; should the facilities be filtered based on their ownership.}
+
+\item{status}{logical; should the facilities be filtered based on their status.}
+
+\item{building}{logical; should the facilities be filtered based on the building condition.}
+
+\item{equipment}{logical; should the facilities be filtered based on the equipment condition.}
+
+\item{functionality}{logical; should the facilities be filtered based on their functionality.}
+
+\item{accessibility}{logical; should the facilities be filtered based on their accessibility.}
+
+\item{support}{logical; should the facilities be filtered based on whether they receive support from partners.}
+
+\item{services}{logical; should the facilities be filtered based on health services information.}
+
+\item{partners}{logical; should the facilities also be filtered on the different possible supporting partners (ignored if support is FALSE)}
+
+\item{barriers}{logical; should the facilities also be filtered on the causes of possible impairment (e.g. service not available).}
 }
 \description{
 Filter the HeRAMS health facility raw table for different analysis scenario and export a table that contains only 

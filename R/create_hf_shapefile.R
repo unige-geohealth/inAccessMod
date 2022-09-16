@@ -79,57 +79,62 @@ create_hf_shapefile <- function (mainPath, country, mostRecentBoundaries = TRUE,
   scenarioDirs <- list.dirs(pathFacilities, recursive = FALSE)
   scenarioDirs <- scenarioDirs[grepl("scenario", scenarioDirs)]
   if (is.null(scenario)) {
-    if (length(scenarioDirs) == 0) {
-      stop("Filtered health facility table is missing. Run the filter_hf function.")
-    }
-    scenario <- stringr::str_extract(scenarioDirs, "scenario[0-9]{3}$")
-    if (length(scenario) > 1) {
-      scenario <- c(scenario, "VIEW")
-      subInd <- utils::menu(scenario, title = "Select the scenario or the VIEW option to see the selected HFs for each scenario.")
-      while (subInd == length(scenario)) {
-        for (i in 1:(length(scenario)-1)) {
-          message(scenario[i])
-          cat(paste(readLines(paste(pathFacilities, scenario[i], "selected_hf.txt", sep = "/")), collapse = "\n"))
-          readline(prompt="Press [enter] to continue")
-        }
-        subInd <- utils::menu(scenario, title = "Select the scenario or the VIEW option to see the selected HFs for each scenario.")
-      }
-      scenario <- scenarioDirs[subInd]
-    } else {
-      scenario <- scenarioDirs
-    }
+    scenario <- select_scenario(scenarioDirs)
+    # if (length(scenarioDirs) == 0) {
+    #   stop("Filtered health facility table is missing. Run the filter_hf function.")
+    # }
+    # scenario <- stringr::str_extract(scenarioDirs, "scenario[0-9]{3}$")
+    # if (length(scenario) > 1) {
+    #   scenario <- c(scenario, "VIEW")
+    #   subInd <- utils::menu(scenario, title = "Select the scenario or the VIEW option to see the selected HFs for each scenario.")
+    #   while (subInd == length(scenario)) {
+    #     for (i in 1:(length(scenario)-1)) {
+    #       message(scenario[i])
+    #       cat(paste(readLines(paste(pathFacilities, scenario[i], "selected_hf.txt", sep = "/")), collapse = "\n"))
+    #       readline(prompt="Press [enter] to continue")
+    #     }
+    #     subInd <- utils::menu(scenario, title = "Select the scenario or the VIEW option to see the selected HFs for each scenario.")
+    #   }
+    #   scenario <- scenarioDirs[subInd]
+    # } else {
+    #   scenario <- scenarioDirs
+    # }
   } else {
     scenario <- paste0("scenario", scenario)
     scenario <- scenarioDirs[grepl(scenario, scenarioDirs)]
   }
-  scenarioTime <- list.dirs(scenario, recursive = FALSE)
-  scenarioTime <- scenarioTime[grepl("[0-9]{14}", scenarioTime)]
-  scenarioTime <- stringr::str_extract(scenarioTime, "[0-9]{14}")
-  scenarioTimeForm <- paste0(substr(scenarioTime, 1, 4), "-", substr(scenarioTime, 5, 6), "-", substr(scenarioTime, 7, 8), " ", substr(scenarioTime, 9, 10), ":", substr(scenarioTime, 11, 12), ":", substr(scenarioTime, 13, 14), " CEST")
-  if (length(scenarioTime) > 1) {
-    scenarioTimeForm <- c(scenarioTimeForm, "VIEW")
-    subInd <- utils::menu(scenarioTimeForm, title = "Select the filtered table time creation or the VIEW option to see the selection parameters for each time.")
-    while (subInd == length(scenarioTimeForm)) {
-      for (i in 1:(length(scenarioTimeForm)-1)) {
-        message(scenarioTimeForm[i])
-        cat(paste(readLines(paste(scenario, scenarioTime[i], "time_frame.txt", sep = "/")), collapse = "\n"))
-        readline(prompt="Press [enter] to continue")
-      }
-      subInd <- utils::menu(scenarioTimeForm, title = "Select the filtered table time creation or the VIEW option to see the selection parameters for each time.")
-    }
-    scenarioTime <- scenarioTime[subInd]
-  }
+  scenarioTime <- select_scenarioTime(scenario)
+  # scenarioTime <- list.dirs(scenario, recursive = FALSE)
+  # scenarioTime <- scenarioTime[grepl("[0-9]{14}", scenarioTime)]
+  # scenarioTime <- stringr::str_extract(scenarioTime, "[0-9]{14}")
+  # scenarioTimeForm <- paste0(substr(scenarioTime, 1, 4), "-", substr(scenarioTime, 5, 6), "-", substr(scenarioTime, 7, 8), " ", substr(scenarioTime, 9, 10), ":", substr(scenarioTime, 11, 12), ":", substr(scenarioTime, 13, 14), " CEST")
+  # if (length(scenarioTime) > 1) {
+  #   scenarioTimeForm <- c(scenarioTimeForm, "VIEW")
+  #   subInd <- utils::menu(scenarioTimeForm, title = "Select the filtered table time creation or the VIEW option to see the selection parameters for each time.")
+  #   while (subInd == length(scenarioTimeForm)) {
+  #     for (i in 1:(length(scenarioTimeForm)-1)) {
+  #       message(scenarioTimeForm[i])
+  #       cat(paste(readLines(paste(scenario, scenarioTime[i], "time_frame.txt", sep = "/")), collapse = "\n"))
+  #       readline(prompt="Press [enter] to continue")
+  #     }
+  #     subInd <- utils::menu(scenarioTimeForm, title = "Select the filtered table time creation or the VIEW option to see the selection parameters for each time.")
+  #   }
+  #   scenarioTime <- scenarioTime[subInd]
+  # }
   hfFolder <- paste(scenario, scenarioTime, "raw", sep = "/")
-  filesCsv <- list.files(hfFolder)[grepl("\\.csv$", list.files(hfFolder))]
+  filesCsv <- list.files(hfFolder)[grepl("health_facilities.csv$", list.files(hfFolder))]
+  if (length(filesCsv) == 0) {
+    stop("health_facilities.csv is missing. Run the filter_hf function first.")
+  }
   multiMsg <- "Select the CSV table that you would like to process."
   if (length(filesCsv) > 1) {
     fileInd <- utils::menu(filesCsv, multiMsg)
-    fi <- filesShp[fileInd]
+    fi <- filesCsv[fileInd]
   }else{
     fi <- filesCsv
   }
   df <- read.csv(paste(hfFolder, fi, sep = "/"))
-  xy <- data.frame(Lat = df[, "MoSDGPS_SQ002", drop = TRUE], Lon = df[, "MoSDGPS_SQ001", drop = TRUE])
+  xy <- data.frame(Lat = df[, "GPS_002", drop = TRUE], Lon = df[, "GPS_001", drop = TRUE])
   if (nrow(xy[complete.cases(xy), ]) == 0) {
     stop_quietly(paste("Coordinates are not available! Add them manually in the CSV file:\n", paste(hfFolder, fi, sep = "/")))
   }
@@ -137,7 +142,7 @@ create_hf_shapefile <- function (mainPath, country, mostRecentBoundaries = TRUE,
     message(paste("Coordinates are missing for the following facilities:"))
     cat("\n")
     dfNA <- df[!complete.cases(xy), ]
-    print(dfNA[, c("external_id", "workspace_id", "date", "MoSD3", "HFNAME")])
+    print(dfNA[, c("extern_id", "worksp_id", "date", "MoSD3", "NAME")])
     if (rmNA) {
       yn <- 2
     } else {
@@ -157,7 +162,7 @@ create_hf_shapefile <- function (mainPath, country, mostRecentBoundaries = TRUE,
   if (!all(inter[, 1])) {
     interOutside <- TRUE
     message("The follwing HFs are outside the country boundaries:")
-    print(df[!inter, c("external_id", "workspace_id", "date", "MoSD3", "HFNAME")])
+    print(df[!inter, c("extern_id", "worksp_id", "date", "MoSD3", "NAME")])
     if (rmOut) {
       yn <- 2
     } else {
@@ -171,11 +176,11 @@ create_hf_shapefile <- function (mainPath, country, mostRecentBoundaries = TRUE,
     write.table(df[!inter[, 1]], paste(hfFolder, "coordinates_outside.txt", sep = "/"))
     message(paste("\nYou can access the removed HFs at:\n", paste(hfFolder, "coordinates_outside.txt", sep = "/"), "\n"))
   }
-  # shp <- sf::st_as_sf(pts[inter[, 1], c("external_id", "workspace_id", "date", "MoSD3", "HFNAME")])
-  shp <- pts[inter[, 1], -1]
-  cat("\nSaving the HFs' shapefile...\n")
-  rgdal::writeOGR(shp, paste(hfFolder, "health_facilities.shp", sep = "/"), layer = "hf", driver = "ESRI Shapefile", overwrite_layer = TRUE)
-  # sf::st_write(shp, paste(hfFolder, "health_facilities.shp", sep = "/"), append = FALSE)
+  # shp <- pts[inter[, 1], -1]
+  shp <- sf::st_as_sf(pts[inter[, 1], -1])
+  cat("Saving the HFs' shapefile...\n")
+  # rgdal::writeOGR(shp, paste(hfFolder, "health_facilities.shp", sep = "/"), layer = "hf", driver = "ESRI Shapefile", overwrite_layer = TRUE)
+  sf::st_write(shp, paste(hfFolder, "health_facilities.shp", sep = "/"), append = FALSE)
   inputFolder <- stringr::str_extract(hfFolder, "scenario[0-9]{3}/[0-9]{14}")
   write(paste0(Sys.time(), ": Health facility shapefile created - Input folder: ", inputFolder), fi = logTxt, append = TRUE)
 }

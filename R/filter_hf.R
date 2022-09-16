@@ -7,16 +7,38 @@
 #' @param pathTable character; path to the HeRAMS Excel Table
 #' @param scenario character; a string of three characters that correspond to the scenario folder suffix like '001', '002'...'010'...'099'...'100'
 #' The criteria for selection are those of the specified scenario. If NULL, an interactive selection by attribute is run in the console.
-#' @param barriers logical; should the facilities also be filtered on the causes of possible impairment (e.g. service not available).
-#' @param partners logical; should the facilities also be filtered on the different possible supporting partners
 #' @param mostRecentObs logical; should the most recent observation per health facility be taken into account? If NULL or FALSE, 
 #' the user is asked to choose among four methods for selection based on time observation (most recent, date limit or case by case).
 #' @param defaultParameters logical; should the default HeRAMS table parameters (e.g. column names) be used? If not, the user is able to modify it.
+#' @param type logical; should the facilities be filtered based on their types.
+#' @param ownership logical; should the facilities be filtered based on their ownership.
+#' @param status logical; should the facilities be filtered based on their status.
+#' @param building logical; should the facilities be filtered based on the building condition.
+#' @param equipment logical; should the facilities be filtered based on the equipment condition.
+#' @param functionality logical; should the facilities be filtered based on their functionality.
+#' @param accessibility logical; should the facilities be filtered based on their accessibility.
+#' @param support logical; should the facilities be filtered based on whether they receive support from partners.
+#' @param services logical; should the facilities be filtered based on health services information.
+#' @param partners logical; should the facilities also be filtered on the different possible supporting partners (ignored if support is FALSE)
+#' @param barriers logical; should the facilities also be filtered on the causes of possible impairment (e.g. service not available).
 #' @details The selection is recorded within a text file (selected_hf.txt) stored in the scenario folder. Different
 #' analysis scenario create new scenario folders. In the same scenario folder different 'raw' sub-folders may be created
 #' depending on the original Excel document modification time, and the selection of observations based on time. 
 #' @export
-filter_hf <- function (mainPath, country, pathTable, scenario = NULL, barriers = TRUE, partners = TRUE, mostRecentObs = NULL, defaultParameters = TRUE) {
+filter_hf <- function (mainPath, country, pathTable, scenario = NULL, mostRecentObs = NULL, 
+                       defaultParameters = TRUE,
+                       type = TRUE,
+                       ownership = FALSE,
+                       status = TRUE,
+                       building = FALSE,
+                       equipment = FALSE,
+                       functionality = FALSE,
+                       accessibility = FALSE,
+                       support = FALSE,
+                       services = FALSE,
+                       partners = FALSE,
+                       barriers = FALSE) {
+
   if (!is.character(mainPath)) {
     stop("mainPath must be 'character'")
   }
@@ -249,10 +271,14 @@ filter_hf <- function (mainPath, country, pathTable, scenario = NULL, barriers =
       }
     }
   }
-  
+  if (!support & partners) {
+    partners = FALSE
+    message("\nsupport = FALSE; partners argument is ignored")
+  }
   if (is.null(scenario)) {
     ## Sub Project
-
+    # Position of parameter in the HeRAMS_table_parameters
+    posParam <- c(1, 2, 3, 4, 5, 6, 7, 8)
     for (i in 1:length(codeColumns)) {
       # Look if there is a perfect match
       varCol <- colnames(tibTxt)[grep(paste0("^", codeColumns[[i]], "$"), colnames(tibTxt))]
@@ -260,69 +286,100 @@ filter_hf <- function (mainPath, country, pathTable, scenario = NULL, barriers =
       if (length(varCol) == 0) {
         next
       }
-
       # If only one match (main info or operationality columns)
       if (length(varCol) == 1) {
-        codeName <- names(codeColumns)[i]
-        message(paste0("\n", gsub("_", " ", codeName)))
-        newTib <- HeRAMS_table_subset(tibT = tibTxt, tibC = tibCode, varCol = varCol, stopQuest = TRUE, codeName = codeName, stopLst = stopLst, tempDir = tempDir, barriers = barriers, codeColumns = codeColumns, impairmentValues = impairmentValues, partners, partnershipValues = partnershipValues)
-        tibTxt <- newTib[[1]]
-        tibCode <- newTib[[2]]
-        stopFiltering <- tryCatch(newTib[[3]], error = function(e) FALSE)
-        if (stopFiltering) {
-          break
+        go <- FALSE
+        if (i == posParam[1] & type) {
+          go <- TRUE
+        }
+        if (i == posParam[2] & ownership) {
+          go <- TRUE
+        }
+        if (i == posParam[3] & status) {
+          go <- TRUE
+        }
+        if (i == posParam[4] & building) {
+          print("FOUR")
+          go <- TRUE
+        }
+        if (i == posParam[5] & equipment) {
+          go <- TRUE
+        }
+        if (i == posParam[6] & functionality) {
+          go <- TRUE
+        }
+        if (i == posParam[7] & accessibility) {
+          go <- TRUE
+        }
+        if (i == posParam[8] & support) {
+          go <- TRUE
+        }
+        if (go) {
+          codeName <- names(codeColumns)[i]
+          message(paste0("\n", gsub("_", " ", codeName)))
+          newTib <- HeRAMS_table_subset(tibT = tibTxt, tibC = tibCode, varCol = varCol, stopQuest = TRUE, codeName = codeName, stopLst = stopLst, tempDir = tempDir, barriers = barriers, codeColumns = codeColumns, impairmentValues = impairmentValues, partners, partnershipValues = partnershipValues)
+          tibTxt <- newTib[[1]]
+          tibCode <- newTib[[2]]
+          stopFiltering <- tryCatch(newTib[[3]], error = function(e) FALSE)
+          if (stopFiltering) {
+            break
+          }
         }
       } else {
-        # If deliberately removed from columns to be considered (see cols variable above)
+        # Skip partner name columns
         if (all(grepl(codeColumns$Partners, varCol))) {
           next
         }
         # If not, has to be services
-        message("\n\nEssential health services")
-        yn <- utils::menu(c("YES", "NO"), title = paste("\nWould you like to filter the health facilities on specific health services ?"))
-        if (yn == 1) {
-          pillars <- c("General clinical and emergency care services",
-                       "Child health and nutrition",
-                       "Communicable diseases",
-                       "Sexual and reproductive health",
-                       "Noncommunicable diseases")
-          nCat <- 1:length(pillars)
-          indCat <- paste(paste0("\n", nCat, ": ", pillars))
-          cat(indCat)
-          cat(paste("\n\nEnter all the indices that correspond to the pillars that include the services you would like to focus.\nOn the same line separated by a space, or just skip to select all options.\n"))
-          selInd <- readline(prompt = "Selection: ")
-          selInd <- as.numeric(unlist(strsplit(x = selInd, split=" ")))
-          if (length(selInd) == 0){
-            selInd <- nCat
-          }
-          for (j in selInd){
-            message(paste("\nPillar: ", pillars[j]))
-            subVarCol <- varCol[grepl(paste0(j, "[0-9]{2}"), varCol)]
-            
-            pillarServices <- NULL
-            for (k in 1:length(subVarCol)) {
-              pillarServices <- c(pillarServices, colnames(tibTxtNames)[grep(paste0("^", subVarCol[k], "$"), tibTxtNames[1, ])])
-            }
-            nCat <- 1:length(pillarServices)
-            indCat <- paste(paste0("\n", nCat, ": ", pillarServices))
+        if (services) {
+          message("\n\nEssential health services")
+          yn <- utils::menu(c("YES", "NO"), title = paste("\nWould you like to filter the health facilities on specific health services ?"))
+          if (yn == 1) {
+            pillars <- c("General clinical and emergency care services",
+                         "Child health and nutrition",
+                         "Communicable diseases",
+                         "Sexual and reproductive health",
+                         "Noncommunicable diseases")
+            nCat <- 1:length(pillars)
+            indCat <- paste(paste0("\n", nCat, ": ", pillars))
             cat(indCat)
-            cat(paste("\n\nEnter all the indices that correspond to the services you would like to focus.\nOn the same line separated by a space, or just skip to select all options.\n"))
+            cat(paste("\n\nEnter all the indices that correspond to the pillars that include the services you would like to focus on.\nOn the same line separated by a space, or just skip to select all options.\n"))
             selInd <- readline(prompt = "Selection: ")
             selInd <- as.numeric(unlist(strsplit(x = selInd, split=" ")))
             if (length(selInd) == 0){
               selInd <- nCat
             }
-            for (ind in selInd) {
-              subSubVarCol <- subVarCol[ind]
-              message(paste0("\n", colnames(tibTxtNames)[grep(paste0("^", subSubVarCol, "$"), tibTxtNames[1, ])]))
-              subSubVarCol <- subVarCol[ind]
-              newTib <- HeRAMS_table_subset(tibT = tibTxt, tibC = tibCode, varCol = subSubVarCol, stopQuest = FALSE, codeName = NULL, stopLst = NULL, tempDir = tempDir, barriers = barriers, codeColumns = codeColumns, impairmentValues = impairmentValues, partners, partnershipValues = partnershipValues)
-              tibTxt <- newTib[[1]]
-              tibCode <- newTib[[2]]
+            for (j in selInd){
+              message(paste("\nPillar: ", pillars[j]))
+              subVarCol <- varCol[grepl(paste0(j, "[0-9]{2}"), varCol)]
+              pillarServices <- NULL
+              for (k in 1:length(subVarCol)) {
+                pillarServices <- c(pillarServices, colnames(tibTxtNames)[grep(paste0("^", subVarCol[k], "$"), tibTxtNames[1, ])])
+              }
+              nCat <- 1:length(pillarServices)
+              indCat <- paste(paste0("\n", nCat, ": ", pillarServices))
+              cat(indCat)
+              cat(paste("\n\nEnter all the indices that correspond to the services you would like to focus on.\nOn the same line separated by a space, or just skip to select all options.\n"))
+              selInd <- readline(prompt = "Selection: ")
+              selInd <- as.numeric(unlist(strsplit(x = selInd, split=" ")))
+              if (length(selInd) == 0){
+                selInd <- nCat
+              }
+              for (ind in selInd) {
+                subSubVarCol <- subVarCol[ind]
+                message(paste0("\n", colnames(tibTxtNames)[grep(paste0("^", subSubVarCol, "$"), tibTxtNames[1, ])]))
+                subSubVarCol <- subVarCol[ind]
+                newTib <- HeRAMS_table_subset(tibT = tibTxt, tibC = tibCode, varCol = subSubVarCol, stopQuest = FALSE, codeName = NULL, stopLst = NULL, tempDir = tempDir, barriers = barriers, codeColumns = codeColumns, impairmentValues = impairmentValues, partners, partnershipValues = partnershipValues)
+                tibTxt <- newTib[[1]]
+                tibCode <- newTib[[2]]
+              }
             }
           }
         }
       }
+    }
+    if (!file.exists(paste(tempDir, "selected_hf.txt", sep = "/"))){
+      write("All facilities", file = paste(tempDir, "selected_hf.txt", sep = "/"))
     }
     lines1 <- readLines(paste(tempDir, "selected_hf.txt", sep = "/"))
     fileLst <- list.files(pathFacilities, recursive = TRUE)
@@ -358,28 +415,30 @@ filter_hf <- function (mainPath, country, pathTable, scenario = NULL, barriers =
     txt <- file(txt, open = "r")
     txtLines <- readLines(txt)
     close(txt)
-    for (i in 1:length(txtLines)) {
-      colN <- stringr::str_extract(txtLines[i], "^.* -> ")
-      colN <- gsub(" -> ", "", colN)
-      cont <- unlist(strsplit(gsub("^.* -> ", "", txtLines[i]), " [+] "))
-      cont[grepl("^NA$", cont)] <- NA
-      cond1 <- grepl(paste0("^", colN, "$"), cols)
-      if (sum(cond1) == 0) {
-        stop("NOT RECOGNIZED COLUMN !")
-      } else if (sum(cond1) > 1) {
-        indCol <- which(cond1)
-        condMat1 <- matrix(NA, nrow = nrow(tibTxt), ncol = sum(cond1))
-        for (j in 1:length(indCol)) {
-          condMat2 <- matrix(NA, nrow = nrow(tibTxt), ncol = length(cont))
-          for (k in 1:length(cont)) {
-            condMat2[, k] <- cont[k] %in% tibTxt[, cols[indCol][j], drop = TRUE]
+    if (!(txtLines)[1] == "All facilities") {
+      for (i in 1:length(txtLines)) {
+        colN <- stringr::str_extract(txtLines[i], "^.* -> ")
+        colN <- gsub(" -> ", "", colN)
+        cont <- unlist(strsplit(gsub("^.* -> ", "", txtLines[i]), " [+] "))
+        cont[grepl("^NA$", cont)] <- NA
+        cond1 <- grepl(paste0("^", colN, "$"), cols)
+        if (sum(cond1) == 0) {
+          stop("NOT RECOGNIZED COLUMN !")
+        } else if (sum(cond1) > 1) {
+          indCol <- which(cond1)
+          condMat1 <- matrix(NA, nrow = nrow(tibTxt), ncol = sum(cond1))
+          for (j in 1:length(indCol)) {
+            condMat2 <- matrix(NA, nrow = nrow(tibTxt), ncol = length(cont))
+            for (k in 1:length(cont)) {
+              condMat2[, k] <- cont[k] %in% tibTxt[, cols[indCol][j], drop = TRUE]
+            }
+            condMat1[, j] <- apply(condMat2, 1, any)
           }
-          condMat1[, j] <- apply(condMat2, 1, any)
-        }
-        tibTxt <- tibTxt[apply(condMat1, 1, any, na.rm = TRUE), ]
-      } else {
-        tibTxt <- tibTxt[tibTxt[, colN, drop = TRUE] %in% cont, ]
-      } 
+          tibTxt <- tibTxt[apply(condMat1, 1, any, na.rm = TRUE), ]
+        } else {
+          tibTxt <- tibTxt[tibTxt[, colN, drop = TRUE] %in% cont, ]
+        } 
+      }
     }
     if (nrow(tibTxt) == 0) {
       unlink(tempDir, recursive = TRUE)
@@ -393,6 +452,9 @@ filter_hf <- function (mainPath, country, pathTable, scenario = NULL, barriers =
   dir.create(outFolder, recursive = TRUE)
   file.copy(paste(tempDir, "time_frame.txt", sep = "/"), paste(pathFacilities, scenarioDir, outTimeFolder, sep = "/"))
   unlink(tempDir, recursive = TRUE)
+  tibTxt <- abbr_col_names(tibTxt)
+  dfColnames <- data.frame(code = colnames(tibTxt), label = colnames(tibTxtNames))
+  write.csv(dfColnames, file = paste(outFolder, "column_codes.csv", sep = "/"))
   write.csv(tibTxt, file = paste(outFolder, "health_facilities.csv", sep = "/"))
   write(paste0(Sys.time(), ": Health facilities where filtered - scenario folder: ", scenarioDir, " - input folder: ", outTimeFolder), file = logTxt, append = TRUE)
   cat(paste0("\n", outFolder, "/health_facilities.csv\n"))
