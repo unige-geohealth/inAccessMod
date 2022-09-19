@@ -67,11 +67,58 @@ create_hf_shapefile_multi <- function (mainPath, country, scenario = NULL, servi
                "Communicable diseases",
                "Sexual and reproductive health",
                "Noncommunicable diseases")
-  selInd <- utils::menu(pillars, title = "Select the pillar that includes the health service you would like to focus on.")
+  selInd <- utils::menu(pillars, title = "\nSelect the pillar that includes the health service you would like to focus on.")
   pillarServices <- colCodes$label[grepl(paste0("^QH", selInd, "[0-9]{2}$"), colCodes$code)]
   selInd <- utils::menu(pillarServices, title = "Select the health service you would like to focus on.")
   print(selInd)
   code <- colCodes$code[colCodes$label == pillarServices[selInd]]
   print(code)
-  print(unique(shp[, code, drop = TRUE]))
+  responses <- unique(shp[, code, drop = TRUE])
+  accessLst <- vector("list", 3L)
+  names(accessLst) <- c("no access", "partial access", "full access")
+  message(paste("Service:", pillarServices[selInd]))
+  message(paste("HeRAMS column code:", code))
+  for (i in 1:length(accessLst)) {
+    categories <- c(responses, "NONE", "CANCEL THE FILTERING PROCESS")
+    nCat <- 1:length(categories)
+    indCat <- paste(paste0("\n", nCat, ": ", categories))
+    cat(indCat)
+    cat(paste0("\n\nSelect the responses that correspond to '", names(accessLst)[i], "'", "\nOn the same line separated by a space."))
+    k <- 0
+    while (k < 3) {
+      selInd <- readline(prompt = "Selection: ")
+      selInd <- as.numeric(unlist(strsplit(x = selInd, split=" ")))
+      if (length(selInd) == 1) {
+        if (selInd == length(categories)) {
+          stop_quietly("You canceled the filtering process.")
+        } else if (selInd == (length(categories) - 1)) {
+          break
+        } else {
+          if (selInd %in% nCat) {
+            accessLst[[i]] <- categories[selInd]
+            responses <- responses[!responses %in% categories[selInd]]
+            break
+          } else {
+            message("\nInvalid selection!")
+            k <- k + 1
+          }
+        }
+      } else {
+        if (any(selInd %in% c(length(categories), (length(categories) - 1)))) {
+          message("\nInvalid selection!")
+          k <- k + 1
+        } else if (all(selInd %in% nCat)) {
+          accessLst[[i]] <- categories[selInd]
+          responses <- responses[!responses %in% categories[selInd]]
+          break
+        } else {
+          message("\nInvalid selection!")
+          k <- k + 1
+        }
+      }
+    }
+  }
+  for (i in 1:length(accessLst)) {
+    print(i)
+  }
 }

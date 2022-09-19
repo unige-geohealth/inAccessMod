@@ -29,7 +29,6 @@ select_hf_classes <- function (categories, instructions) {
       return(selInd)
     } else {
       message("\nInvalid selection!")
-      valid <- FALSE
       k <- k + 1
     }
   }
