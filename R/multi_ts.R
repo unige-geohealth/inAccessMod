@@ -9,6 +9,11 @@
 #' landcover imported from AccessMod and an Excel or CSV table for each travel scenario.
 #' @param adminLayerName character; the name of the administrative unit layer (without extension)
 #' @param landcoverFile character; the file name of the original merged landcover (with extension)
+#' @param zones_ts character; Excel or CSV table that relates the administrative units to the different scenarios. Two columns:
+#' the first one has the same name than the field name of the administrative layer attribute table that refers to each administrative
+#' unit, and the second one called 'scenario'. In the first all the different units (as indicated in the attribute table), in the second,
+#' the names (without the extension) of the different scenario tables. If set to NULL, the user is interactively asked to assign
+#' a scenario to each administrative unit, and a zones_ts table is created.
 #' @details An output folder called out is created within the input folder, as well as a subfolder whose name 
 #' is based on the system time that contains three outputs (e.g. ./out/20220826104842):
 #' \itemize{
@@ -20,7 +25,7 @@
 #' \itemize{
 #' \item Check of the tables that are in the input folder: missing data, column names, values available for all landcover classes, values for the "mode" column, only one value per class, and speed in numerical format and positive or equal to zero.
 #' \item Console printing of the shapefile attribute table, and selection of the column used to determine the administrative unit. 
-#' \item Interactive selection of the scenario (based on the table names) for each administrative unit,  and creation of a table that relates the units and the scenarios.
+#' \item Interactive selection of the scenario (based on the table names) for each administrative unit, and creation of a table that relates the units and the scenarios, or loading this table if indicated.
 #' \item Loop over each administrative unit
 #' \itemize{
 #' \item Copy of the corresponding travel scenario table
@@ -33,7 +38,7 @@
 #' \item Writing the final raster, the final table, and the table that relates the different administrative units and the different travel scenarios. The final number of classes are N-classes x N-units.
 #' }
 #' @export
-multi_ts <- function (inputFolder, adminLayerName, landcoverFile) {
+multi_ts <- function (inputFolder, adminLayerName, landcoverFile, zones_ts = NULL) {
   if (!is.character(inputFolder)) {
     stop("inputFolder must be 'character'")
   }
@@ -45,6 +50,17 @@ multi_ts <- function (inputFolder, adminLayerName, landcoverFile) {
   }
   if (!is.character(landcoverFile)) {
     stop("landcoverFile must be 'character'")
+  }
+  if (!is.null(zones_ts)) {
+    if (!is.character(zones_ts)) {
+      stop("zones_ts must be 'character'")
+    }
+    if (!file.exists(zones_ts)) {
+      stop(paste(zones_ts, "does not exists. Set zones_ts to NULL to create it or modify the file path."))
+    }
+    if (!grepl("\\.csv|\\.xls", zones_ts)) {
+      stop("zones_ts must refer to an Excel or CSV file.")
+    }
   }
   admin <- sf::st_read(inputFolder, adminLayerName)
   landcover <- terra::rast(paste(inputFolder, landcoverFile, sep = "/"))
@@ -75,20 +91,58 @@ multi_ts <- function (inputFolder, adminLayerName, landcoverFile) {
   xlsNames <- list.files(inputFolder, pattern = "\\.xls|\\.xlsx|\\.csv", full.names = FALSE)
   xlsNames <- gsub("\\.xls|\\.xlsx|\\.csv", "", xlsNames)
   names(xlsLst) <- xlsNames
-  cols <- colnames(admin)
-  print(sf::st_drop_geometry(admin))
-  colUnit <- utils::menu(cols, title = "\nSelect the column (WITH NO SPECIAL CHARACTER LIKE APOSTROPHES, ACCENTS, etc.) that you would like to use for referring to the different administrative units.")
-  adminUnits <- unique(admin[[colUnit]])
-  if (length(adminUnits) == 1) {
-    stop("Selected column have only one value.")
-  }
-  adminUnits <- adminUnits[order(adminUnits)]
-  zoneScenario <- data.frame(Zone = adminUnits, scenario = NA)
-  colnames(zoneScenario)[1] <- colnames(sf::st_drop_geometry(admin))[colUnit]
-  scenarios <- gsub(paste0(inputFolder, "|/|\\.xls|\\.xlsx|\\.csv"), "", xls)
-  for (i in 1:nrow(zoneScenario)) {
-    sc <- utils::menu(scenarios, title = paste("\nWhich scenario for", zoneScenario[i, 1], "?"))
-    zoneScenario[i, 2] <- scenarios[sc]
+  if (is.null(zones_ts)) {
+    cols <- colnames(admin)
+    print(sf::st_drop_geometry(admin))
+    colUnit <- utils::menu(cols, title = "\nSelect the column (WITH NO SPECIAL CHARACTER LIKE APOSTROPHES, ACCENTS, etc.) that you would like to use for referring to the different administrative units.")
+    adminUnits <- unique(admin[[colUnit]])
+    if (length(adminUnits) == 1) {
+      stop("Selected column have only one value.")
+    }
+    adminUnits <- adminUnits[order(adminUnits)]
+    zoneScenario <- data.frame(Zone = adminUnits, scenario = NA)
+    colnames(zoneScenario)[1] <- colnames(sf::st_drop_geometry(admin))[colUnit]
+    scenarios <- gsub(paste0(inputFolder, "|/|\\.xls|\\.xlsx|\\.csv"), "", xls)
+    for (i in 1:nrow(zoneScenario)) {
+      sc <- utils::menu(scenarios, title = paste("\nWhich scenario for", zoneScenario[i, 1], "?"))
+      zoneScenario[i, 2] <- scenarios[sc]
+    }
+  } else {
+    if (grepl("\\.csv", zones_ts)) {
+      zoneScenario <- read.csv(zones_ts, header = TRUE)
+    } else if (grepl("\\.xlsx", zones_ts)) {
+      zoneScenario <- as.data.frame(readxl::read_xlsx(zones_ts))
+    } else {
+      zoneScenario <- as.data.frame(readxl::read_xls(zones_ts))
+    }
+    if (!colnames(zoneScenario)[1] %in% colnames(admin)) {
+      stop(paste(colnames(zoneScenario)[1], "is not a field of the administrative unit layer attribute table."))
+    }
+    colUnit <- colnames(zoneScenario)[1]
+    adminUnits <- unique(admin[[colUnit]])
+    if (!colnames(zoneScenario)[2] == "scenario") {
+      stop("Column 2 of zones_ts must be 'scenario'")
+    }
+    if (!all(adminUnits %in% zoneScenario[, 1])) {
+      noInfo <- adminUnits[!adminUnits %in% zoneScenario[, 1]]
+      if (length(noInfo) > 1) {
+        x <- "are"
+      } else {
+        x <- "is"
+      }
+      stop(paste(paste(noInfo, collapse = ", "), x, "missing the zones_ts table."))
+    }
+    if (!all(zoneScenario[, 2] %in% xlsNames)) {
+      noInfo <- zoneScenario[, 2][!zoneScenario[, 2] %in% xlsNames]
+      if (length(noInfo) > 1) {
+        x <- "are"
+        y <- "tables"
+      } else {
+        x <- "is"
+        y <- "table"
+      }
+      stop(paste(paste(noInfo, collapse = ", "), "scenario", y, x, "missing. Please check the scenario names in the zones_ts table."))
+    }
   }
   tempDir <- paste0(inputFolder, "/temp")
   if (dir.exists(tempDir)) {
@@ -132,5 +186,5 @@ multi_ts <- function (inputFolder, adminLayerName, landcoverFile) {
   writexl::write_xlsx(zoneScenario, path = paste(outFolder, "zones_ts.xlsx", sep = "/"), col_names = TRUE)
   unlink(tempDir, recursive = TRUE)
   message(paste("Output folder:", outFolder, "\n"))
-  message("If the outputs can not be well processed in AccessMod, try to use multi_ts_fast().")
+  # message("If the outputs can not be well processed in AccessMod, try to use multi_ts_fast().")
 }

@@ -23,7 +23,7 @@
 #' \itemize{
 #' \item Check of the tables that are in the input folder: missing data, column names, values available for all landcover classes, values for the "mode" column, only one value per class, and speed in numerical format and positive or equal to zero.
 #' \item Console printing of the shapefile attribute table, and selection of the column used to determine the administrative unit. 
-#' \item Interactive selection of the scenario (based on the table names) for each administrative unit,  and creation of a table that relates the units and the scenarios.
+#' \item Interactive selection of the scenario (based on the table names) for each administrative unit, and creation of a table that relates the units and the scenarios.
 #' \item Loop over each scenario
 #' \itemize{
 #' \item Landcover raster clip based on the administrative units that are related to the scenario i.
