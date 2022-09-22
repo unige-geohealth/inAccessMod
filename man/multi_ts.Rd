@@ -4,7 +4,7 @@
 \alias{multi_ts}
 \title{Multiple travel scenarios}
 \usage{
-multi_ts(inputFolder, adminLayerName, landcoverFile)
+multi_ts(inputFolder, adminLayerName, landcoverFile, zones_ts = NULL)
 }
 \arguments{
 \item{inputFolder}{character; the path to the input folder, which must contains an administrative unit shapefile, a merged 
@@ -13,6 +13,12 @@ landcover imported from AccessMod and an Excel or CSV table for each travel scen
 \item{adminLayerName}{character; the name of the administrative unit layer (without extension)}
 
 \item{landcoverFile}{character; the file name of the original merged landcover (with extension)}
+
+\item{zones_ts}{character; Excel or CSV table that relates the administrative units to the different scenarios. Two columns:
+the first one has the same name than the field name of the administrative layer attribute table that refers to each administrative
+unit, and the second one called 'scenario'. In the first all the different units (as indicated in the attribute table), in the second,
+the names (without the extension) of the different scenario tables. If set to NULL, the user is interactively asked to assign
+a scenario to each administrative unit, and a zones_ts table is created.}
 }
 \description{
 Function that allows to handle different travel scenarios for different administrative units. It creates an updated 
@@ -33,7 +39,7 @@ The function works are the following:
 \itemize{
 \item Check of the tables that are in the input folder: missing data, column names, values available for all landcover classes, values for the "mode" column, only one value per class, and speed in numerical format and positive or equal to zero.
 \item Console printing of the shapefile attribute table, and selection of the column used to determine the administrative unit. 
-\item Interactive selection of the scenario (based on the table names) for each administrative unit,  and creation of a table that relates the units and the scenarios.
+\item Interactive selection of the scenario (based on the table names) for each administrative unit, and creation of a table that relates the units and the scenarios, or loading this table if indicated.
 \item Loop over each administrative unit
 \itemize{
 \item Copy of the corresponding travel scenario table
