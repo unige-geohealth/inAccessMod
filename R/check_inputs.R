@@ -31,7 +31,6 @@ check_inputs <- function (mainPath, country, type, onlyPrint = TRUE) {
   folderLst <- unique(gsub("/[0-9].*$", "", folderLst))
   folderLst <- gsub("^.*/data/", "", folderLst)
   folderNAv <- folderLst[!folderLst %in% folderAv]
-  
   folderAv <- folderAv[!grepl("^vFacilities$", folderAv)]
   folderNAv <- folderNAv[!grepl("^vFacilities$", folderNAv)]
   if (length(folderAv) > 0) {
