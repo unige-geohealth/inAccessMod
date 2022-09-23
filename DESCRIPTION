@@ -15,6 +15,7 @@ Imports:
     fasterize,
     fs,
     gdalUtils (>= 2.0.3.2),
+    jsonlite,
     lubridate,
     osmextract,
     purrr,
