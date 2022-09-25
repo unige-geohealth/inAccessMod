@@ -58,7 +58,7 @@ scenarioJSON <- function (inputFolder, landcoverFile, outputFolder, fileName) {
   for (i in 1:length(xlsLst)) {
     scenarios$scenarios[[names(xlsLst)[i]]] <- xlsLst[[i]]
   }
-  data <- toJSON(scenarios)
+  data <- jsonlite::toJSON(scenarios)
   write(data, file = paste0(outputFolder, "/", fileName, ".json"))
   message(paste("JSON file created:", paste0(outputFolder, "/", fileName, ".json")))
 }
