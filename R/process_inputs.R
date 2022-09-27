@@ -82,6 +82,9 @@ process_inputs <- function (mainPath, country, selectedInputs = NULL, mostRecent
   }
   logTxt <- paste0(mainPath, "/", country, "/data/log.txt")
   epsg <- get_param(mainPath = mainPath, country = country, "EPSG")
+  if (length(epsg) == 0) {
+    stop("CRS is missing. Run the set_projection.")
+  }
   epsg <- paste0("EPSG:", epsg)
   if (length(epsg) == 0) {
     stop("EPSG for projection is not set. Run the set_projection function.")
@@ -133,6 +136,9 @@ process_inputs <- function (mainPath, country, selectedInputs = NULL, mostRecent
     selectedFolders <- selectedFolders[!grepl("rPopulation", selectedFolders)]
   }
   # Check if other rasters to be processed
+  if (length(selectedFolders) < 1) {
+    stop_quietly("No more input to be processed!")
+  }
   filesRasTrue <- NULL
   for (i in 1:length(selectedFolders)) {
     files <- list.files(paste0(mainPath, "/", country, "/data/", selectedFolders[i]), recursive = TRUE)
@@ -157,6 +163,7 @@ process_inputs <- function (mainPath, country, selectedInputs = NULL, mostRecent
       popOut <- load_layer(popFolder, multipleFilesMsg)[[1]]
     }
   }
+
   for (i in 1:length(selectedFolders)) {
     cat("\n")
     message(selectedFolders[i])
