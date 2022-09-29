@@ -16,7 +16,7 @@ initiate_project <- function (mainPath) {
     stop(paste(mainPath, "folder does not exist."))
   }
   countryLst <- countrycode::codelist$country.name.en[!is.na(countrycode::codelist$un.name.en)]
-  countryInd <- utils::menu(countryLst, title="Select the country", graphics=TRUE)
+  countryInd <- utils::menu(countryLst, title="Select the country", graphics=FALSE)
   if (countryInd == 0) {
     stop_quietly("You exit the function.")
   }
