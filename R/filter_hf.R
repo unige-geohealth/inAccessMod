@@ -25,7 +25,7 @@
 #' analysis scenario create new scenario folders. In the same scenario folder different 'raw' sub-folders may be created
 #' depending on the original Excel document modification time, and the selection of observations based on time. 
 #' @export
-filter_hf <- function (mainPath, country, pathTable, scenario = NULL, mostRecentObs = NULL, 
+filter_hf <- function (mainPath, country, pathTable = NULL, scenario = NULL, mostRecentObs = NULL, 
                        defaultParameters = TRUE,
                        type = TRUE,
                        ownership = FALSE,
@@ -89,14 +89,14 @@ filter_hf <- function (mainPath, country, pathTable, scenario = NULL, mostRecent
   }
 
   # Get column code and label
-  defaultCodeColumns <- inAccessMod::HeRAMS_table_parameters()
-  defaultStopLst <- inAccessMod::HeRAMS_stop_filtering()
+  defaultCodeColumns <- HeRAMS_table_parameters()
+  defaultStopLst <- HeRAMS_stop_filtering()
   # Get values that indicate that there is a partner support
-  defaultPartnership <- inAccessMod::HeRAMS_partnership_values()
+  defaultPartnership <- HeRAMS_partnership_values()
   if (!defaultParameters) {
-    codeColumns <- inAccessMod::set_HeRAMS_table_parameters(defaultCodeColumns)
-    stopLst <- inAccessMod::set_HeRAMS_stop(defaultStopLst)
-    partnershipValues <- inAccessMod::set_HeRAMS_key_values(defaultPartnership, "Values that indicate that there is a partner support\n")
+    codeColumns <- set_HeRAMS_table_parameters(defaultCodeColumns)
+    stopLst <- set_HeRAMS_stop(defaultStopLst)
+    partnershipValues <- set_HeRAMS_key_values(defaultPartnership, "Values that indicate that there is a partner support\n")
   } else {
     codeColumns <- defaultCodeColumns
     stopLst <- defaultStopLst
@@ -105,9 +105,9 @@ filter_hf <- function (mainPath, country, pathTable, scenario = NULL, mostRecent
  
   if (barriers) {
   # Get values that indicate that there is an impairment
-    defaultImpairmentValues <- inAccessMod::HeRAMS_impairment_values()
+    defaultImpairmentValues <- HeRAMS_impairment_values()
     if (!defaultParameters) {
-      impairmentValues <- inAccessMod::set_HeRAMS_key_values(defaultImpairmentValues, "Values that indicate that there is an impairment")
+      impairmentValues <- set_HeRAMS_key_values(defaultImpairmentValues, "Values that indicate that there is an impairment")
     } else {
       impairmentValues <- defaultImpairmentValues
     }
@@ -435,7 +435,9 @@ filter_hf <- function (mainPath, country, pathTable, scenario = NULL, mostRecent
             condMat1[, j] <- apply(condMat2, 1, any)
           }
           tibTxt <- tibTxt[apply(condMat1, 1, any, na.rm = TRUE), ]
+          tibCode <- tibCode[apply(condMat1, 1, any, na.rm = TRUE), ]
         } else {
+          tibCode <- tibCode[tibTxt[, colN, drop = TRUE] %in% cont, ]
           tibTxt <- tibTxt[tibTxt[, colN, drop = TRUE] %in% cont, ]
         } 
       }
@@ -453,7 +455,11 @@ filter_hf <- function (mainPath, country, pathTable, scenario = NULL, mostRecent
   file.copy(paste(tempDir, "time_frame.txt", sep = "/"), paste(pathFacilities, scenarioDir, outTimeFolder, sep = "/"))
   unlink(tempDir, recursive = TRUE)
   tibTxt <- abbr_col_names(tibTxt)
+  tibCode <- abbr_col_names(tibCode)
   dfColnames <- data.frame(code = colnames(tibTxt), label = colnames(tibTxtNames))
+  codeCol <- tibCode[, colnames(tibCode)[grepl("^QH[0-9]{3}$", colnames(tibCode))]]
+  colnames(codeCol) <- paste0(colnames(codeCol), "_c")
+  tibTxt <- dplyr::bind_cols(tibTxt, codeCol)
   write.csv(dfColnames, file = paste(outFolder, "column_codes.csv", sep = "/"))
   write.csv(tibTxt, file = paste(outFolder, "health_facilities.csv", sep = "/"))
   write(paste0(Sys.time(), ": Health facilities where filtered - scenario folder: ", scenarioDir, " - input folder: ", outTimeFolder), file = logTxt, append = TRUE)

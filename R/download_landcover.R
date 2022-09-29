@@ -111,7 +111,7 @@ download_landcover <- function (mainPath, country, alwaysDownload = FALSE, mostR
     utils::download.file(urls, destfile = paste0(pathLandcover, "/", country, awsLCSuffix, ".tif"), mode = "wb")
     write(paste0(Sys.time(), ": Single landcover tile downloaded - Input folder ", timeFolder), file = logTxt, append = TRUE)
   }else{
-    # Download SRTM tiles shapefile in a temporary folder
+    # Download tiles shapefile in a temporary folder
     tmpFolder <- paste0(pathLandcover, "/temp")
     dir.create(tmpFolder)
     for (i in 1:length(urls)) {

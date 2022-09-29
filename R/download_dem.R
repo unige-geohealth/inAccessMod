@@ -58,7 +58,8 @@ download_dem <- function (mainPath, country, alwaysDownload = FALSE, mostRecent 
       cat(paste0("Downloading tile ", i, "/", length(tiles), "...\n"))
       lon <- raster::extent(tiles[i,])[1]  + (raster::extent(tiles[i,])[2] - raster::extent(tiles[i,])[1]) / 2
       lat <- raster::extent(tiles[i,])[3]  + (raster::extent(tiles[i,])[4] - raster::extent(tiles[i,])[3]) / 2
-      tile <- raster::getData('SRTM', lon = lon, lat = lat, path = paste0(tmpFolder,"/"))
+      # tile <- raster::getData('SRTM', lon = lon, lat = lat, path = paste0(tmpFolder,"/"))
+      tile <- geodata::elevation_3s(lon = lon, lat = lat, path = paste0(tmpFolder,"/"))
       srtmList[[i]] <- tile
     }
     cat(paste0("Creating a mosaic with the downloaded rasters...\n"))
@@ -69,7 +70,8 @@ download_dem <- function (mainPath, country, alwaysDownload = FALSE, mostRecent 
   }else{
     lon <- raster::extent(tiles[1,])[1]  + (raster::extent(tiles[1,])[2] - raster::extent(tiles[1,])[1]) / 2
     lat <- raster::extent(tiles[1,])[3]  + (raster::extent(tiles[1,])[4] - raster::extent(tiles[1,])[3]) / 2
-    tile <- raster::getData('SRTM', lon = lon, lat = lat, path = pathDEM)
+    # tile <- raster::getData('SRTM', lon = lon, lat = lat, path = pathDEM)
+    tile <- geodata::elevation_3s(lon = lon, lat = lat, path = pathDEM)
     write(paste0(Sys.time(), ": Single DEM tile downloaded - Input folder ", timeFolder), file = logTxt, append = TRUE)
   }
   unlink(tmpFolder, recursive = TRUE)

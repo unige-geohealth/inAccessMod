@@ -35,7 +35,7 @@ get_boundaries <- function (mainPath, country, type, mostRecent) {
       } else {
         boundFolder <- paste0(pathBorder, "/", timeFolder, "/raw/")
         multipleFilesMsg <- "Select the boundary shapefile that you would like to use."
-        message(paste("Loading", type, "boundaries..."))
+        message(paste("Loading", type, "boundary shapefile..."))
         border <- load_layer(boundFolder, multipleFilesMsg)[[2]]
         return(border)
       }
@@ -47,7 +47,7 @@ get_boundaries <- function (mainPath, country, type, mostRecent) {
         folderLst <- list.dirs(pathBorder)
         boundFolder <-   folderLst[grepl(paste0("processed/", timeFolder), folderLst)]
         multipleFilesMsg <- "Select the boundary shapefile that you would like to use."
-        message(paste("\nLoading", type, "boundaries..."))
+        message(paste("\nLoading", type, "boundary shapefile..."))
         border <- load_layer(boundFolder, multipleFilesMsg)[[2]]
         return(border)
       }

@@ -96,43 +96,11 @@ process_inputs <- function (mainPath, country, selectedInputs = NULL, mostRecent
   } else {
     selectedFolders <- selectedInputs
   }
-  # Border is required for any input processing; if wanted, first process this layer
-  borderPath <- paste0(mainPath, "/", country, "/data/vBorders")
-  borderPr <- check_exists(borderPath, "processed", layer = TRUE)
-  # If we want to process border or if no processed shapefile exists (required for any other processing)
-  if (("vBorders" %in% selectedFolders) | is.null(borderPr)) {
-    borderFolders <- check_exists(borderPath, "raw", layer = TRUE)
-    if (is.null(borderFolders)) {
-      stop("\nBoundary shapefile is required for input processing. Run the download_boundaries function.")
-    }
-    message("\nLoading raw shapefile of boundaries...")
-    timeFolder <- select_input(borderFolders, "Shapefile downloaded at", mostRecent)
-    if (is.null(timeFolder)) {
-      stop_quietly("You exit the function.")
-    }
-    borderFolder <- paste0(borderPath, "/", timeFolder, "/raw")
-    toProcess <- to_process(borderFolder, alwaysProcess)
-    if (toProcess) {
-      multipleFilesMsg <- "Select the boundary shapefile that you would like to use."
-      border <- load_layer(borderFolder, multipleFilesMsg)[[2]]
-      border <- sf::st_transform(border, sf::st_crs(epsg))
-      write(paste0(Sys.time(), ": vBorders shapefile projected (", epsg, ") - From input folder: ", timeFolder), file = logTxt, append = TRUE)
-      sysTime <- Sys.time()
-      outTimeFolder <- gsub("-|[[:space:]]|\\:", "", sysTime)
-      borderOutFolder <- paste0(gsub("raw", "processed", borderFolder), "/", outTimeFolder)
-      dir.create(borderOutFolder, recursive = TRUE)
-      sf::st_write(border, paste0(borderOutFolder, "/vBorders.shp"), append=FALSE)
-      write(paste0(Sys.time(), ": Processed vBorders shapefile saved - Output folder: ", outTimeFolder), file = logTxt, append = TRUE)
-      selectedFolders <- selectedFolders[!grepl("vBorders", selectedFolders)]
-    }
-  }
-  if (length(selectedFolders) < 1) {
-    stop_quietly("No more input to be processed!")
-  }
-  message("Boundary shapefile...")
-  border <- get_boundaries(mainPath, country, "processed", mostRecent)
+  
+  
+
   if ("rPopulation" %in% selectedFolders) {
-    process_pop(mainPath, country, border, epsg, mostRecent, defaultMethods, changeRes, newRes, popCorrection, gridRes)
+    process_pop(mainPath, country, border, epsg, mostRecent, defaultMethods, changeRes, newRes, popCorrection, gridRes, alwaysProcess)
     selectedFolders <- selectedFolders[!grepl("rPopulation", selectedFolders)]
   }
   # Check if other rasters to be processed
@@ -145,6 +113,43 @@ process_inputs <- function (mainPath, country, selectedInputs = NULL, mostRecent
     filesRasTrue <- c(filesRasTrue, any(grepl("raw/.*\\.tif",files)))
   }
   if (any(filesRasTrue)) {
+    # Border is required for raster processing; if wanted, first process this layer
+    borderPath <- paste0(mainPath, "/", country, "/data/vBorders")
+    borderPr <- check_exists(borderPath, "processed", layer = TRUE)
+    # If we want to process border or if no processed shapefile exists (required for any other processing)
+    if (("vBorders" %in% selectedFolders) | is.null(borderPr)) {
+      borderFolders <- check_exists(borderPath, "raw", layer = TRUE)
+      if (is.null(borderFolders)) {
+        stop("\nBoundary shapefile is required for raster processing. Run the download_boundaries function.")
+      }
+      message("\nLoading raw shapefile of boundaries...")
+      timeFolder <- select_input(borderFolders, "Shapefile downloaded at", mostRecent)
+      if (is.null(timeFolder)) {
+        stop_quietly("You exit the function.")
+      }
+      borderFolder <- paste0(borderPath, "/", timeFolder, "/raw")
+      toProcess <- to_process(borderFolder, alwaysProcess)
+      if (toProcess) {
+        multipleFilesMsg <- "Select the boundary shapefile that you would like to use."
+        border <- load_layer(borderFolder, multipleFilesMsg)[[2]]
+        border <- sf::st_transform(border, sf::st_crs(epsg))
+        write(paste0(Sys.time(), ": vBorders shapefile projected (", epsg, ") - From input folder: ", timeFolder), file = logTxt, append = TRUE)
+        sysTime <- Sys.time()
+        outTimeFolder <- gsub("-|[[:space:]]|\\:", "", sysTime)
+        borderOutFolder <- paste0(gsub("raw", "processed", borderFolder), "/", outTimeFolder)
+        dir.create(borderOutFolder, recursive = TRUE)
+        sf::st_write(border, paste0(borderOutFolder, "/vBorders.shp"), append=FALSE)
+        write(paste0(Sys.time(), ": Processed vBorders shapefile saved - Output folder: ", outTimeFolder), file = logTxt, append = TRUE)
+      }
+      selectedFolders <- selectedFolders[!grepl("vBorders", selectedFolders)]
+    }
+    if (length(selectedFolders) < 1) {
+      stop_quietly("No more input to be processed!")
+    }
+    message("Loading boundary shapefile...")
+    border <- get_boundaries(mainPath, country, "processed", mostRecent)
+    
+    # Population is required for raster processing
     popFolder <- paste0(mainPath, "/", country, "/data/rPopulation")
     popFolders <- check_exists(popFolder, "processed", layer = TRUE)
     if (is.null(popFolders)) {
@@ -163,7 +168,6 @@ process_inputs <- function (mainPath, country, selectedInputs = NULL, mostRecent
       popOut <- load_layer(popFolder, multipleFilesMsg)[[1]]
     }
   }
-
   for (i in 1:length(selectedFolders)) {
     cat("\n")
     message(selectedFolders[i])
@@ -213,7 +217,7 @@ process_inputs <- function (mainPath, country, selectedInputs = NULL, mostRecent
       write(paste0(Sys.time(), ": Processed ", selectedFolders[i], " raster saved - Output folder: ", outTimeFolder), file = logTxt, append = TRUE)
     }
     if (!is.null(inputLayers[[2]])) {
-      shpProcessed <- process_shapefile(inputLayers[[2]], border, epsg, selectedFolders[i])
+      shpProcessed <- process_shapefile(inputLayers[[2]], epsg, selectedFolders[i])
       write(paste0(Sys.time(), ": ", selectedFolders[i], " shapefile projected and clipped - From input folder: ", timeFolder), file = logTxt, append = TRUE)
       sysTime <- Sys.time()
       outTimeFolder <- gsub("-|[[:space:]]|\\:", "", sysTime)

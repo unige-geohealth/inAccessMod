@@ -75,7 +75,7 @@ create_hf_shapefile <- function (mainPath, country, mostRecentBoundaries = TRUE,
   }
   logTxt <- paste0(mainPath, "/", country, "/data/log.txt")
 
-  border <- get_boundaries(mainPath = mainPath, country = country, type = "processed", mostRecentBoundaries)
+  border <- get_boundaries(mainPath = mainPath, country = country, type = "raw", mostRecentBoundaries)
   scenarioDirs <- list.dirs(pathFacilities, recursive = FALSE)
   scenarioDirs <- scenarioDirs[grepl("scenario", scenarioDirs)]
   if (is.null(scenario)) {
