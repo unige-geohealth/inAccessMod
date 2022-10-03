@@ -34,6 +34,7 @@ process_inputs <- function (mainPath, country, selectedInputs = NULL, mostRecent
   if (!is.character(country)) {
     stop("country must be 'character'")
   }
+  # Load the available raw input paths
   rawFolders <- check_inputs(mainPath, country, "raw", onlyPrint = FALSE)
   if (length(rawFolders) == 0) {
     stop("No input data available.")
@@ -97,21 +98,13 @@ process_inputs <- function (mainPath, country, selectedInputs = NULL, mostRecent
     selectedFolders <- selectedInputs
   }
   
-  
-
-  if ("rPopulation" %in% selectedFolders) {
-    process_pop(mainPath, country, border, epsg, mostRecent, defaultMethods, changeRes, newRes, popCorrection, gridRes, alwaysProcess)
-    selectedFolders <- selectedFolders[!grepl("rPopulation", selectedFolders)]
-  }
-  # Check if other rasters to be processed
-  if (length(selectedFolders) < 1) {
-    stop_quietly("No more input to be processed!")
-  }
+  # Check whether we have rasters to be processed
   filesRasTrue <- NULL
   for (i in 1:length(selectedFolders)) {
     files <- list.files(paste0(mainPath, "/", country, "/data/", selectedFolders[i]), recursive = TRUE)
     filesRasTrue <- c(filesRasTrue, any(grepl("raw/.*\\.tif",files)))
   }
+  # If so, we require the processed boundaries
   if (any(filesRasTrue)) {
     # Border is required for raster processing; if wanted, first process this layer
     borderPath <- paste0(mainPath, "/", country, "/data/vBorders")
@@ -142,32 +135,49 @@ process_inputs <- function (mainPath, country, selectedInputs = NULL, mostRecent
         write(paste0(Sys.time(), ": Processed vBorders shapefile saved - Output folder: ", outTimeFolder), file = logTxt, append = TRUE)
       }
       selectedFolders <- selectedFolders[!grepl("vBorders", selectedFolders)]
-    }
-    if (length(selectedFolders) < 1) {
-      stop_quietly("No more input to be processed!")
-    }
-    message("Loading boundary shapefile...")
-    border <- get_boundaries(mainPath, country, "processed", mostRecent)
-    
-    # Population is required for raster processing
-    popFolder <- paste0(mainPath, "/", country, "/data/rPopulation")
-    popFolders <- check_exists(popFolder, "processed", layer = TRUE)
-    if (is.null(popFolders)) {
-      message("\nNo processed population raster is available.\nProcessing raw population raster...")
-      process_pop(mainPath, country, border, epsg, mostRecent, defaultMethods, changeRes, newRes, popCorrection, gridRes)
-      popFolders <- check_exists(popFolder, "processed", layer = TRUE)
-    }
-    message("\nLoading processed population raster...")
-    timeFolder <- select_input(popFolders, "Population raster processed at:", mostRecent)
-    if (is.null(timeFolder)) {
-      stop_quietly("You exit the function.")
+      # If we don't need/want to process the boundary shapefile, load it
     } else {
-      popFolderLst <- list.dirs(popFolder)
-      popFolder <- popFolderLst[grepl(paste0("processed/", timeFolder), popFolderLst)]
-      multipleFilesMsg <- "Select the population raster that you would like to process."
-      popOut <- load_layer(popFolder, multipleFilesMsg)[[1]]
+      message("Loading boundary shapefile...")
+      border <- get_boundaries(mainPath, country, "processed", mostRecent)
+    }
+    # If we want to process the population raster
+    if ("rPopulation" %in% selectedFolders) {
+      process_pop(mainPath, country, border, epsg, mostRecent, defaultMethods, changeRes, newRes, popCorrection, gridRes, alwaysProcess)
+      selectedFolders <- selectedFolders[!grepl("rPopulation", selectedFolders)]
+      # Check if other inputs to be processed
+      if (length(selectedFolders) < 1) {
+        stop_quietly("No more input to be processed!")
+      }
+      # Check whether we still have rasters to be processed
+      filesRasTrue <- NULL
+      for (i in 1:length(selectedFolders)) {
+        files <- list.files(paste0(mainPath, "/", country, "/data/", selectedFolders[i]), recursive = TRUE)
+        filesRasTrue <- c(filesRasTrue, any(grepl("raw/.*\\.tif",files)))
+      }
+    }
+    # filesRasTrue might have changed; if still TRUE, load a processed population raster
+    if (any(filesRasTrue)) {
+      # Population is required for raster processing
+      popFolder <- paste0(mainPath, "/", country, "/data/rPopulation")
+      popFolders <- check_exists(popFolder, "processed", layer = TRUE)
+      if (is.null(popFolders)) {
+        message("\nNo processed population raster is available.\nProcessing raw population raster...")
+        process_pop(mainPath, country, border, epsg, mostRecent, defaultMethods, changeRes, newRes, popCorrection, gridRes)
+        popFolders <- check_exists(popFolder, "processed", layer = TRUE)
+      }
+      message("\nLoading processed population raster...")
+      timeFolder <- select_input(popFolders, "Population raster processed at:", mostRecent)
+      if (is.null(timeFolder)) {
+        stop_quietly("You exit the function.")
+      } else {
+        popFolderLst <- list.dirs(popFolder)
+        popFolder <- popFolderLst[grepl(paste0("processed/", timeFolder), popFolderLst)]
+        multipleFilesMsg <- "Select the population raster that you would like to process."
+        popOut <- load_layer(popFolder, multipleFilesMsg)[[1]]
+      }
     }
   }
+  
   for (i in 1:length(selectedFolders)) {
     cat("\n")
     message(selectedFolders[i])
