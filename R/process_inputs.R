@@ -137,7 +137,6 @@ process_inputs <- function (mainPath, country, selectedInputs = NULL, mostRecent
       selectedFolders <- selectedFolders[!grepl("vBorders", selectedFolders)]
       # If we don't need/want to process the boundary shapefile, load it
     } else {
-      message("Loading boundary shapefile...")
       border <- get_boundaries(mainPath, country, "processed", mostRecent)
     }
     # If we want to process the population raster
