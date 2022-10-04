@@ -119,6 +119,7 @@ download_landcover <- function (mainPath, country, alwaysDownload = FALSE, mostR
     dir.create(tmpFolder)
     for (i in 1:length(urls)) {
       cat(paste0("Downloading tile ", i, "/", length(urls), "...\n"))
+      # If extent is outside the available tiles
       dw <- tryCatch({utils::download.file(urls[i], destfile = paste0(tmpFolder, "/", codeFiles[i], ".tif"), mode = "wb")}, error = function(e) NULL)
       if (is.null(dw)) {
         next
