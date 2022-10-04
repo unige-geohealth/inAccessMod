@@ -157,6 +157,7 @@ create_hf_shapefile <- function (mainPath, country, mostRecentBoundaries = TRUE,
   }
   pts <- sp::SpatialPointsDataFrame(coords = xy[complete.cases(xy), ], data = df[complete.cases(xy), ], proj4string = terra::crs(epsg))
   border <- rgeos::gUnaryUnion(as(sf::st_transform(border, terra::crs(pts)), "Spatial"))
+  border <- sp::spTransform(border, pts@proj4string)
   inter <- rgeos::gIntersects(border, pts, byid = TRUE)
   interOutside <- FALSE
   if (!all(inter[, 1])) {
