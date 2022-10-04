@@ -108,7 +108,10 @@ download_landcover <- function (mainPath, country, alwaysDownload = FALSE, mostR
   dir.create(paste0(pathLandcover, "/", timeFolder, "/raw"), recursive = TRUE)
   pathLandcover <- paste0(pathLandcover, "/", timeFolder, "/raw")
   if (length(urls) == 1) {
-    utils::download.file(urls, destfile = paste0(pathLandcover, "/", country, awsLCSuffix, ".tif"), mode = "wb")
+    dw <- tryCatch({utils::download.file(urls, destfile = paste0(pathLandcover, "/", country, awsLCSuffix, ".tif"), mode = "wb")}, error = function(e) NULL)
+    if (is.null(dw)) {
+      stop(paste("Error: cannot open URL (single tile)", urls[i]))
+    }
     write(paste0(Sys.time(), ": Single landcover tile downloaded - Input folder ", timeFolder), file = logTxt, append = TRUE)
   }else{
     # Download tiles shapefile in a temporary folder
@@ -116,7 +119,10 @@ download_landcover <- function (mainPath, country, alwaysDownload = FALSE, mostR
     dir.create(tmpFolder)
     for (i in 1:length(urls)) {
       cat(paste0("Downloading tile ", i, "/", length(urls), "...\n"))
-      utils::download.file(urls[i], destfile = paste0(tmpFolder, "/", codeFiles[i], ".tif"), mode = "wb")
+      dw <- tryCatch({utils::download.file(urls[i], destfile = paste0(tmpFolder, "/", codeFiles[i], ".tif"), mode = "wb")}, error = function(e) NULL)
+      if (is.null(dw)) {
+        next
+      }
     }
     cat(paste0("Creating a mosaic with the downloaded rasters...\n"))
     files <- list.files(tmpFolder, pattern = "\\.tif", full.names=TRUE)
