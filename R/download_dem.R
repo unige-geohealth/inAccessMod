@@ -48,6 +48,7 @@ download_dem <- function (mainPath, country, alwaysDownload = FALSE, mostRecent 
   utils::download.file(url = urlSRTM, destfile = paste0(tmpFolder, "/srtm.zip"))
   utils::unzip(zipfile = paste0(tmpFolder, "/srtm.zip"), overwrite = TRUE, exdir= tmpFolder)
   shp <- raster::shapefile(paste0(tmpFolder, "/srtm_country-master/srtm/tiles.shp"))
+  border <- sp::spTransform(border, shp@proj4string)
   intersects <- rgeos::gIntersects(border, shp, byid=TRUE)
   tiles <- shp[intersects[,1],]
   logTxt <- paste0(mainPath, "/", country, "/data/log.txt")
