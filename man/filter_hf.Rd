@@ -7,7 +7,8 @@
 filter_hf(
   mainPath,
   country,
-  pathTable,
+  pathTableCode = NULL,
+  pathTableText = NULL,
   scenario = NULL,
   mostRecentObs = NULL,
   defaultParameters = TRUE,
@@ -29,7 +30,9 @@ filter_hf(
 
 \item{country}{character; the country folder name}
 
-\item{pathTable}{character; path to the HeRAMS Excel Table}
+\item{pathTableCode}{character; path to the HeRAMS CSV table with text for responses ("Available")}
+
+\item{pathTableText}{character; path to the HeRAMS CSV table with codes for responses ("A1")}
 
 \item{scenario}{character; a string of three characters that correspond to the scenario folder suffix like '001', '002'...'010'...'099'...'100'
 The criteria for selection are those of the specified scenario. If NULL, an interactive selection by attribute is run in the console.}

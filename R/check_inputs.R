@@ -16,6 +16,9 @@ check_inputs <- function (mainPath, country, type, onlyPrint = TRUE) {
   if (!is.character(country)) {
     stop("country must be 'character'")
   }
+  if (!dir.exists(paste(mainPath, country, sep = "/"))) {
+    stop(paste(paste(mainPath, country, sep = "/"), "does not exsit. Run the initiate_project first or check the path."))
+  }
   if (!type %in% c("raw","processed")) {
     stop("type must be 'raw' or 'processed'")
   }

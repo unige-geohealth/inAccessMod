@@ -142,7 +142,12 @@ create_hf_shapefile <- function (mainPath, country, mostRecentBoundaries = TRUE,
     message(paste("Coordinates are missing for the following facilities:"))
     cat("\n")
     dfNA <- df[!complete.cases(xy), ]
-    print(dfNA[, c("extern_id", "worksp_id", "date", "MoSD3", "NAME")])
+    # Try with names (if not available => without)
+    dfPrint <- tryCatch({dfNA[, c("extern_id", "worksp_id", "date", "MoSD3", "NAME")]}, error = function (e) NULL)
+    if (is.null(dfPrint)) {
+      dfPrint <- dfNA[, c("extern_id", "worksp_id", "date", "MoSD3")]
+    }
+    print(dfPrint)
     if (rmNA) {
       yn <- 2
     } else {
@@ -163,7 +168,12 @@ create_hf_shapefile <- function (mainPath, country, mostRecentBoundaries = TRUE,
   if (!all(inter[, 1])) {
     interOutside <- TRUE
     message("The follwing HFs are outside the country boundaries:")
-    print(df[!inter, c("extern_id", "worksp_id", "date", "MoSD3", "NAME")])
+    # Try with names (if not available => without)
+    dfPrint <- tryCatch({df[!inter, c("extern_id", "worksp_id", "date", "MoSD3", "NAME")]}, error = function (e) NULL)
+    if (is.null(dfPrint)) {
+      dfPrint <- df[!inter, c("extern_id", "worksp_id", "date", "MoSD3")]
+    }
+    print(dfPrint)
     if (rmOut) {
       yn <- 2
     } else {

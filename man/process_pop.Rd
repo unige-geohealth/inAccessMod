@@ -14,7 +14,8 @@ process_pop(
   changeRes,
   newRes,
   popCorrection,
-  gridRes
+  gridRes,
+  alwaysProcess
 )
 }
 \arguments{

@@ -4,7 +4,8 @@
 #' the selected facilities.
 #' @param mainPath character; the parent directory of the country folder
 #' @param country character; the country folder name
-#' @param pathTable character; path to the HeRAMS Excel Table
+#' @param pathTableCode character; path to the HeRAMS CSV table with text for responses ("Available")
+#' @param pathTableText character; path to the HeRAMS CSV table with codes for responses ("A1")
 #' @param scenario character; a string of three characters that correspond to the scenario folder suffix like '001', '002'...'010'...'099'...'100'
 #' The criteria for selection are those of the specified scenario. If NULL, an interactive selection by attribute is run in the console.
 #' @param mostRecentObs logical; should the most recent observation per health facility be taken into account? If NULL or FALSE, 
@@ -25,7 +26,7 @@
 #' analysis scenario create new scenario folders. In the same scenario folder different 'raw' sub-folders may be created
 #' depending on the original Excel document modification time, and the selection of observations based on time. 
 #' @export
-filter_hf <- function (mainPath, country, pathTable = NULL, scenario = NULL, mostRecentObs = NULL, 
+filter_hf <- function (mainPath, country, pathTableCode = NULL, pathTableText = NULL, scenario = NULL, mostRecentObs = NULL, 
                        defaultParameters = TRUE,
                        type = TRUE,
                        ownership = FALSE,
@@ -46,16 +47,31 @@ filter_hf <- function (mainPath, country, pathTable = NULL, scenario = NULL, mos
     stop("country must be 'character'")
   }
   yn <- 2
-  if(!is.null(pathTable)) {
-    if (!is.character(pathTable)) {
-      stop("pathTable must be 'character'")
+  if(!is.null(pathTableCode)) {
+    if (!is.character(pathTableCode)) {
+      stop("pathTableCode must be 'character'")
     } else {
-      if (!file.exists(pathTable)) {
-        stop("pathTable does not exists!")
+      if (!file.exists(pathTableCode)) {
+        stop("pathTableCode does not exists!")
       }
     }
   } else {
-    yn <- utils::menu(c("YES", "NO"), title = "\npathTable is NULL; would like to load ficticious example data for Switzerland?")
+    yn <- utils::menu(c("YES", "NO"), title = "\npathTableCode is NULL; would like to load ficticious example data for Switzerland?")
+    if (yn == 2) {
+      stop_quietly("No table to be filtered!")
+    } 
+  }
+  
+  if(!is.null(pathTableText)) {
+    if (!is.character(pathTableText)) {
+      stop("pathTableText must be 'character'")
+    } else {
+      if (!file.exists(pathTableText)) {
+        stop("pathTableText does not exists!")
+      }
+    }
+  } else {
+    yn <- utils::menu(c("YES", "NO"), title = "\npathTableText is NULL; would like to load ficticious example data for Switzerland?")
     if (yn == 2) {
       stop_quietly("No table to be filtered!")
     } 
@@ -63,9 +79,9 @@ filter_hf <- function (mainPath, country, pathTable = NULL, scenario = NULL, mos
   
   # Process the filtering with txt table, but check with code for stop filtering
   # tibTxtNames table are with full column names, for interactive selection (health services)
-  tibTxt <- tryCatch({readxl::read_excel(pathTable, skip = 1, sheet = 2, trim_ws = FALSE)}, error = function(e){NULL})
-  tibCode <- tryCatch({readxl::read_excel(pathTable, skip = 1, sheet = 1, trim_ws = FALSE)}, error = function(e){NULL})
-  tibTxtNames <- tryCatch({readxl::read_excel(pathTable, skip = 0, sheet = 2, trim_ws = FALSE)}, error = function(e){NULL})
+  tibTxt <- tryCatch({tibble::as_tibble(read.csv(pathTableText, skip = 2))}, error = function(e){NULL})
+  tibCode <- tryCatch({tibble::as_tibble(read.csv(pathTableCode, skip = 2))}, error = function(e){NULL})
+  tibTxtNames <- tryCatch({tibble::as_tibble(read.csv(pathTableText, header = TRUE, check.names = FALSE), .name_repair = "minimal")}, error = function(e){NULL})
   
   if (is.null(tibTxt) | is.null(tibCode) | is.null(tibTxtNames)) {
     if (yn == 1) {
@@ -73,16 +89,25 @@ filter_hf <- function (mainPath, country, pathTable = NULL, scenario = NULL, mos
       tibCode <- inAccessMod::fictitious_herams_data_code
       tibTxtNames <- inAccessMod::fictitious_herams_data_txt_colnames
     } else {
-      stop(paste(pathTable, "could not be opened."))
+      stop(paste(pathTableCode, "could not be opened."))
     }
   }
   
   # Check same order
-  matchRows <- all(tibCode$external_id == tibTxt$external_id) & all(tibTxt$external_id == tibTxtNames$`External ID`[-1])
+  numRows <- nrow(tibCode) == nrow(tibTxt) & nrow(tibCode) == (nrow(tibTxtNames) - 1)
+  if (!numRows) {
+    stop_quietly("Different number of rows for the two HeRAMS tables.")
+  }
+  matchRows <- all(tibCode$external_id %in% tibTxt$external_id) & all(tibTxt$external_id %in% tibTxtNames$`External ID`[-1])
   if (!matchRows) {
     stop_quietly("Tables with labels, codes and full column names are not matching.")
   }
-  
+  # Same order
+  if (!all(tibCode$external_id == tibTxt$external_id)) {
+    cat("\nReordering row orders of HeRAMS tables.")
+    tibCode <- tibCode[match(tibCode$external_id, tibTxt$external_id), ]
+  }
+  cat("\nHeRAMS tables: OK\n")
   pathFacilities <- paste0(mainPath, "/", country, "/data/vFacilities")
   if (!dir.exists(paste0(pathFacilities))) {
     stop(paste(pathFacilities, " does not exist. Run the initiate_project function."))

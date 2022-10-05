@@ -4,12 +4,10 @@
 \alias{process_shapefile}
 \title{Project and Clip Shapefile}
 \usage{
-process_shapefile(shp, border, epsg, inputName)
+process_shapefile(shp, epsg, inputName)
 }
 \arguments{
 \item{shp}{\code{sf} object to be processed}
-
-\item{border}{\code{sf} object; a boundary shapefile used for clipping}
 
 \item{epsg}{character; string that can be used as input in \code{sf::st_crs()} to describe a projection and datum}
 
