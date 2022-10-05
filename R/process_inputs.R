@@ -135,6 +135,7 @@ process_inputs <- function (mainPath, country, selectedInputs = NULL, mostRecent
         write(paste0(Sys.time(), ": Processed vBorders shapefile saved - Output folder: ", outTimeFolder), file = logTxt, append = TRUE)
       }
       selectedFolders <- selectedFolders[!grepl("vBorders", selectedFolders)]
+      border <- get_boundaries(mainPath, country, "processed", mostRecent)
       # If we don't need/want to process the boundary shapefile, load it
     } else {
       border <- get_boundaries(mainPath, country, "processed", mostRecent)

@@ -27,7 +27,7 @@
 #' @export
 process_pop <- function (mainPath, country, border, epsg, mostRecent, defaultMethods, changeRes, newRes, popCorrection, gridRes, alwaysProcess) {
   logTxt <- paste0(mainPath, "/", country, "/data/log.txt")
-  message("\nProcessing population raster...")
+  # message("\nProcessing population raster...")
   popFolder <- paste0(mainPath, "/", country, "/data/rPopulation")
   popFolders <- check_exists(popFolder, "raw", layer = TRUE)
   if (is.null(popFolders)) {
