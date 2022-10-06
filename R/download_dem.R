@@ -14,7 +14,7 @@
 #' The SRTM tiles to be downloaded are selected based on the extent of the boundary shapefile and are downloaded using the 
 #' \code{getData} function from the \pkg{raster} package. If there are multiple tiles, a mosaic is produced.
 #' @export
-download_dem <- function (mainPath, country, alwaysDownload = FALSE, mostRecent = FALSE, gdal = FALSE) {
+download_dem <- function (mainPath, country, alwaysDownload = FALSE, mostRecent = FALSE, gdal = TRUE) {
   if (!is.character(mainPath)) {
     stop("mainPath must be 'character'")
   }
