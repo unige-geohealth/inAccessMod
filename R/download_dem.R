@@ -9,11 +9,12 @@
 #' @param mostRecent logical; should the most recent boundary shapefile be selected to define the required DEM tiles? 
 #' If FALSE and if there are multiple available inputs, the user is interactively asked to select the input based on file
 #' creation time.
+#' @param gdal logidal; should the mosaicking of multiple tiles be done using the gdal library ?
 #' @details The function first downloads a SRTM tile grid shapefile from \url{https://github.com/sikli/srtm_country}.
 #' The SRTM tiles to be downloaded are selected based on the extent of the boundary shapefile and are downloaded using the 
 #' \code{getData} function from the \pkg{raster} package. If there are multiple tiles, a mosaic is produced.
 #' @export
-download_dem <- function (mainPath, country, alwaysDownload = FALSE, mostRecent = FALSE) {
+download_dem <- function (mainPath, country, alwaysDownload = FALSE, mostRecent = FALSE, gdal = FALSE) {
   if (!is.character(mainPath)) {
     stop("mainPath must be 'character'")
   }
@@ -66,7 +67,12 @@ download_dem <- function (mainPath, country, alwaysDownload = FALSE, mostRecent 
     cat(paste0("Creating a mosaic with the downloaded rasters...\n"))
     # Gdal mosaic (faster)
     files <- list.files(tmpFolder, pattern = "tif", full.names = TRUE)
-    gdalUtils::mosaic_rasters(gdalfile = files, dst_dataset = paste0(pathDEM, "/srtm.tif") ,of = "GTiff")
+    if (gdal) {
+      gdalUtils::mosaic_rasters(gdalfile = files, dst_dataset = paste0(pathDEM, "/srtm.tif") ,of = "GTiff")
+    } else {
+      newRas <- do.call(terra::merge, srtmList)
+      terra::writeRaster(newRas, paste0(pathDEM, "/srtm.tif"))
+    }
     write(paste0(Sys.time(), ": Multiple DEM tiles downloaded and mosaicked"), file = logTxt, append = TRUE)
   }else{
     lon <- raster::extent(tiles[1,])[1]  + (raster::extent(tiles[1,])[2] - raster::extent(tiles[1,])[1]) / 2
