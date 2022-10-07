@@ -130,7 +130,7 @@ download_landcover <- function (mainPath, country, alwaysDownload = FALSE, mostR
     # Gdal mosaic
     mosaicGDAL <- tryCatch({gdalUtils::mosaic_rasters(gdalfile = files, dst_dataset = paste0(pathLandcover, "/", country, awsLCSuffix, ".tif"), of="GTiff")}, error = function (e) 0)
     if (!is.null(mosaicGDAL) && mosaicGDAL == 0) {
-      message("Issues with the GDAL library -> mosaicking the tiles using the terra::merge function (slower)")
+      message("GDAL not found/issues -> mosaicking the tiles using the terra::merge function (slower)")
       lcLst <- list()
       for (i in 1:length(urls)) {
         ras <- tryCatch({terra::rast(paste0(tmpFolder, "/", codeFiles[i], ".tif"))}, error = function (e) NULL)
