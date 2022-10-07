@@ -68,8 +68,18 @@ download_dem <- function (mainPath, country, alwaysDownload = FALSE, mostRecent 
     files <- list.files(tmpFolder, pattern = "tif", full.names = TRUE)
     mosaicGDAL <- tryCatch({gdalUtils::mosaic_rasters(gdalfile = files, dst_dataset = paste0(pathDEM, "/srtm.tif") ,of = "GTiff")}, error = function (e) 0)
     if (!is.null(mosaicGDAL) && mosaicGDAL == 0) {
-      message("GDAL library not found/issues -> mosaicking the tiles using the terra::merge function (slower)")
-      newRas <- do.call(terra::merge, srtmList)
+      message("GDAL library not found/issues -> mosaicking the tiles using the terra::merge function (slower)...")
+      newRas <- tryCatch({do.call(terra::merge, srtmList)}, error = function (e) NULL)
+      if (is.null(newRas)) {
+        message("Too large ? Mosaicking the tiles incrementally...")
+        newRas <- do.call(terra::merge, srtmList[1:2])
+        srtmList <- srtmList[-c(1:2)]
+        while(length(srtmList) > 0) {
+          srtmList[[length(srtmList) + 1]] <- newRas
+          newRas <- do.call(terra::merge, srtmList[c(1, length(srtmList))])
+          srtmList <- srtmList[-c(1, length(srtmList))]
+        }
+      }
       terra::writeRaster(newRas, paste0(pathDEM, "/srtm.tif"))
     }
     write(paste0(Sys.time(), ": Multiple DEM tiles downloaded and mosaicked"), file = logTxt, append = TRUE)
