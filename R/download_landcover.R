@@ -128,7 +128,19 @@ download_landcover <- function (mainPath, country, alwaysDownload = FALSE, mostR
     cat(paste0("Creating a mosaic with the downloaded rasters...\n"))
     files <- list.files(tmpFolder, pattern = "\\.tif", full.names=TRUE)
     # Gdal mosaic
-    gdalUtils::mosaic_rasters(gdalfile = files, dst_dataset = paste0(pathLandcover, "/", country, awsLCSuffix, ".tif"), of="GTiff")
+    mosaicGDAL <- tryCatch({gdalUtils::mosaic_rasters(gdalfile = files, dst_dataset = paste0(pathLandcover, "/", country, awsLCSuffix, ".tif"), of="GTiff")}, error = function (e) 0)
+    if (!is.null(mosaicGDAL) && mosaicGDAL == 0) {
+      message("Issues with the GDAL library -> mosaicking the tiles using the terra::merge function (slower)")
+      lcLst <- list()
+      for (i in 1:length(urls)) {
+        ras <- tryCatch({terra::rast(paste0(tmpFolder, "/", codeFiles[i], ".tif"))}, error = function (e) NULL)
+        if (!is.null(ras)){
+          lcLst[[i]] <- ras
+        }
+      }
+      newRas <- do.call(terra::merge, lcLst)
+      terra::writeRaster(newRas, paste0(pathLandcover, "/", country, awsLCSuffix, ".tif"))
+    } 
     write(paste0(Sys.time(), ": Multiple landcover tiles downloaded and mosaicked - Input folder ", timeFolder), file = logTxt, append = TRUE)
     unlink(tmpFolder, recursive = TRUE)
   }
