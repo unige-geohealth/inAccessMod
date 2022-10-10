@@ -19,7 +19,7 @@ library(inAccessMod)
 ```
 
 ### Description
-This package allows us to easily prepare all the required layers for AccessMod. A proper folder structure is created in order to manage multi-temporal data and/or multiple analysis scenarios. While the functions to process health facility tables are specifically designed to handle HeRAMS data, the other ones can be used for any other project. The downloading, cropping, masking, resampling and exporting processes are automated to a large degree, making the preparation of the inputs quick and straightforward.
+This package allows us to easily prepare all the required layers for AccessMod. A proper folder structure is created in order to manage multi-temporal data and/or multiple HeRAMS analysis scenarios. While the functions to process health facility tables are specifically designed to handle HeRAMS data, the other ones can be used for any other project. The downloading, cropping, masking, resampling and exporting processes are automated to a large degree, making the preparation of the inputs quick and straightforward.
 
 ### Installation
 First, we make sure that the devtools package installed on our computer.
@@ -40,12 +40,10 @@ library(inAccessMod)
 ```
 
 ### Initiate Project
-With the *initiate_project* function, we can select the country and automatically, the ISO 3166-1 alpha-3 country code is stored in a config.txt file and the directory main structure for the project is created. This function also creates a log.txt file that will record and track the main operations related to the project. We will see that the final structure arises when downloading and processing the data with the corresponding functions, and it allows multiple ’raw’ inputs and multiple ’processed’ outputs for each input. This can be useful when performing different analyses for the same country (e.g. when we have updated data) or using different processing parameters. While all usual inputs can be automatically downloaded using this package (except the health facilities), we still can add data manually. For instance we would like to use a different population raster than the ones provided by WorldPop which is the population raster server used here, we could use the *copy_input* function to copy any input downloaded manually into an appropriate sub-folder for further processing.
-
-To initiate the project, the only parameter we need to provide is the path where the project, namely the country folder will be created.
+With the *initiate_project* function, we can select the country and automatically, the ISO 3166-1 alpha-3 country code is stored in a config.txt file and the directory main structure for the project is created. This function also creates a log.txt file that will record and track the main operations related to the project. We will see that the final structure arises when downloading and processing the data with the corresponding functions, and it allows multiple ’raw’ inputs and multiple ’processed’ outputs for each input. This can be useful when performing different analyses for the same country (e.g. when we have updated data) or using different processing parameters. To initiate the project, the only parameter we need to provide is the path where the project, namely the country folder will be created.
 
 ```{r initiate, eval=FALSE}
-mainPath <- "C:/inAccessMod/tutorial"
+mainPath <- "C:/inAccMod/tutorial"
 initiate_project(mainPath)
 ```
 
@@ -54,6 +52,10 @@ initiate_project(mainPath)
 As indicated in the console, some input folders are created by default. We are asked if we want to add another input folder. Let's say that it is not necessary. This is how the new directories look like in a tree-like format. Further, we will see how this tree can grow with the downloading and the processing of inputs.
 
 ![](initiate2.png)
+
+### Import inputs
+
+There is a set of functions that allows to download all the required layers from open database. However, if we would like to use other input data, we can run the copy_input function which only requires the project root path, the country name, and the path of the file or the folder that we would like to import. Then we are interactively asked to select to which input correspond this file or folder.
 
 ### Download the country boundaries
 
@@ -80,30 +82,36 @@ The function also has projected the boundary shapefile and we can observe how th
 
 ![](tree_after_setProj.png)
 
-### Filter the health facilities and create a point shapefile
+### Filter the health facilities and create a point shapefile (HeRAMS table)
 
-This section is only compatible with the HeRAMS Excel tables. If we are not working with HeRAMS data, we can just skip this part and use the *copy_input* function to copy a health facility shapefile into an appropriate sub-folder (it will copy the input to e.g. /vFacilities/20220524103021/raw).
+This section is only compatible with the HeRAMS tables. If we are not working with HeRAMS data, we can just skip this part and use the *copy_input* function to copy a health facility shapefile into an appropriate sub-folder (it will copy the input to e.g. /vFacilities/20220524103021/raw).
 
-If we are working with HeRAMS data, let's filter the health facilities from our raw health facility table with the *filter_hf*  function and create a point shapefile of the filtered facilities with the *create_hf_facilities* function. 
+Now, let's say that we are dealing with HeRAMS data and let's filter the health facilities from our raw health facility tables with the *filter_hf* function, and create a point shapefile of the filtered facilities with the *create_hf_facilities* function. We need two tables, the one with the responses as text (e.g. "Available"), and the one with responses as codes (e.g. "A1")  
 
-The function *filter_hf* requires the main project folder and the country folder name. Besides, it also requires the path to the raw Excel table (if NULL, we are asked whether we want to take fictitious example data from Switzerland). Three other parameters are optional: scenario, mostRecentObs, barriers, partners, and defaultParameters
+The function *filter_hf* requires the main project folder and the country folder name. Besides, it also requires the paths to the raw text and code tables (if NULL, we are asked whether we want to take fictitious example data from Switzerland). We have fourteen other parameters: scenario, mostRecentObs, defaultParamaters, type, ownership, status, building, equipment, functionality, accessibility, support, services, partners and barriers.
 
 To understand these parameters, let's see how this function works.
 
 #### scenario
-Based on a set of pre-defined table parameters (we are asked whether we would like to modify them when running the function or not), we are interactively asked to select the health facilities that we want to keep based on available attribute values. After a first filter on main information (e.g. health facility type) and operationality (status, building condition, functionality and accessibility), we are asked whether we would like to focus on specific health services. The overall information regarding the analysis scenario is recorded in a text file (selected_hf.txt) which should not be modified manually. A new scenario folder is created for any new set of selection criteria. The first time this function is run, a first scenario folder is created. The next times, we have two options: 1) We leave the scenario parameter NULL; we will be then interactively asked to select the health facility based on specific attributes, and if the selection criteria are identical than in any previous run, the corresponding scenario folder will be used as output folder. If not, a new scenario will be created. 2) We specify an already created scenario folder, and the function will apply the selection criteria linked with this scenario.
+We are interactively asked to select the health facilities that we want to keep based on available attribute values. After a first filter on main information (e.g. health facility type) and operationality (e.g. status, building condition, functionality, etc.), we are asked whether we would like to focus on specific health services. The overall information regarding the analysis scenario is recorded in a text file (selected_hf.txt) which should not be modified manually. A new scenario folder is created for any new set of selection criteria. The first time this function is run, a first scenario folder is created. The next times, we have two options: 1) We leave the scenario parameter NULL; we will be then interactively asked to select the health facility based on specific attributes, and if the selection criteria are identical than in any previous run, the corresponding scenario folder will be used as output folder. If not, a new scenario will be created. 2) We specify an already created scenario folder, and the function will apply the selection criteria linked with this scenario. Values for the scenario argument can be for instance "001" that corresponds to the folder vFacilities/001 if we would like to use the scenario 1 for filtering.
 
 #### mostRecentObs
-This logical parameter indicates whether we would like to take into account the most recent observation for each health facility when we have multiple responses. If mostRecentObs = FALSE, we can interactively select among three options, 1) most recent, 2) date limit (the most recent before a specific date), or case by case. The selected option is recorded in a text file (time_frame.txt) which should not be modified manually.
-
-#### barriers
-This logical parameter indicates whether we would like to also filter the health facilities on the causes of possible impairment such as dysfunctionality, unavailable services usually provided, etc. when impaired facilities are selected.
-
-#### partners
-This logical parameter indicates whether we would like to also filter the health facilities on the different possible supporting partners, when it applies.
+HeRAMS data table may include multiple responses for the same health facility and this parameter will define which response is going to be taken into account. If *mostRecentObs* is TRUE, all the most recent observation for each facility will be considered. If FALSE or NULL, we are interactively asked to choose between the following options: "Most recent", "Date limit" or "Case by case". If we select the option 2, we have to specify a date. In option 2, the algorithm removes the observation above the date limit, and takes the most recent one if there still are more than one observation. The selected option is recorded in a text file (time_frame.txt) which should not be modified manually.
 
 #### defaultParameters
-This logical parameter indicates whether the function should use the default HeRAMS table parameters for (column names, key code values, etc.). If is set to FALSE, we can interactively modify them. To access the default values, use HeRAMS_table_parameters, HeRAMS_impairment_values, HeRAMS_partnership_values, HeRAMS_stop_filtering().
+This logical parameter allows us to modify the pre-defined code values for the filtering process (column codes, impairment values, partnership values, etc.). When is set TRUE, we can see what are the default values and modify them.
+
+#### type, ownership, status, building, equipment, functionality, accessibility, support
+These logical parameters indicate whether the filtering process has to take into account the different health facility variables.
+
+#### services
+It is a logical parameter that indicate whether we would like to focus on specific health services
+
+#### Partners
+It is a logical parameter that indicate whether we would like to focus on specific support partners (ignored if support = FALSE)
+
+#### Barriers
+This logical parameter indicates whether we would like to also filter the health facilities on the causes of possible impairment such as dysfunctionality, unavailable services usually provided, etc. when impaired facilities are selected.
 
 Let's see an example with the fictitious example data. The following command shows the the six first rows of the table and some of the main variables.
 
@@ -219,14 +227,30 @@ Let's have a look at the log.txt file
 
 ![](log.png)
 
+### Label land cover classes
+The *label_landcover* function creates a CSV table with landcover codes and labels that can be imported into AccessMod. Besides the common arguments (mainPath, country, mostRecent) we have the *defaultLabels* logical parameter. It indicates if the Copernicus default labels should be associated with the the landcover raster values. If FALSE, we are interactively asked to enter the label names for each value.
+
+```{r labels, eval=FALSE}
+label_landcover(mainPath, country, mostRecent = TRUE, overwrite = TRUE, defaultLabels = TRUE)
+```
+
 ### Processed input compiling
 
-Finally, to facilitate the importation of processed inputs into AccessMod, we can use the *compile_processed_data* function. It compiles the available processed layers and copy them to a new folder called "zToAccessMod". Different runs of this function will create different sub-folder within the "zToAccessMod" folder. 
+To facilitate the importation of processed inputs into AccessMod, we can use the *compile_processed_data* function. It compiles the available processed layers and copy them to a new folder called "zToAccessMod". Different runs of this function will create different sub-folder within the "zToAccessMod" folder. 
 
 When *mostRecent* is TRUE, it is the most recent processed layer that is copied into the new folder.
 
 ```{r compile, eval=FALSE}
-compile_processed_data (mainPath, country, mostRecent = TRUE)
+compile_processed_data(mainPath, country, mostRecent = TRUE)
 ```
 
 ![](zToAccessMod.png)
+
+### Sub-national travel scenarios
+We can use the *multi_ts* function to handle different travel scenarios for different administrative units. It creates an updated merged landcover and an updated travel scenario table. The required inputs are an administrative shapefile, a merged landcover imported from AccessMod, and an Excel (or CSV) table for each travel scenario. The function requires a folder that only contains the required inputs. When running the function, the user is asked to select the attribute table column of the shapefile that refers to each administrative unit, and then to select the travel scenario for each administrative unit.
+
+```{r multi_ts, eval=FALSE}
+multi_ts("C:/Test/TravelScenarios/", "adminLayerName", "landcoverFile.tif", zones_ts = NULL)
+```
+
+The *zones_ts* argument refers to an Excel or CSV table that relates the administrative units to the different scenarios. Two columns: the first one has the same name than the field name of the administrative layer attribute table that refers to each administrative unit, and the second one called 'scenario'. In the first all the different units (as indicated in the attribute table), in the second, the names (without the extension) of the different scenario tables. If set to NULL, the user is interactively asked to assign a scenario to each administrative unit, and a zones_ts table is created.
