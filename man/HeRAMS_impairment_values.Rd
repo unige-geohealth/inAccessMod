@@ -9,3 +9,4 @@ HeRAMS_impairment_values()
 \description{
 Internal function to retrieve the values that indicate that there is an impairment
 }
+\keyword{internal}

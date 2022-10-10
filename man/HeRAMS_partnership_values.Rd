@@ -9,3 +9,4 @@ HeRAMS_partnership_values()
 \description{
 Internal function to retrieve the values that indicate that there is partner support
 }
+\keyword{internal}

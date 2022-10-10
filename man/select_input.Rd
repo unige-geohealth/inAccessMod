@@ -20,3 +20,4 @@ character; time of the input folder creation
 \description{
 Internal function that is used to select an input when multiple ones are available
 }
+\keyword{internal}

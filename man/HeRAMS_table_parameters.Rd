@@ -9,3 +9,4 @@ HeRAMS_table_parameters()
 \description{
 Internal function to retrieve a list of the variable codes for filtering the HeRAMS table
 }
+\keyword{internal}

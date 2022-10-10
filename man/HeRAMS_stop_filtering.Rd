@@ -9,3 +9,4 @@ HeRAMS_stop_filtering()
 \description{
 Internal function to retrieve the values that stop the questionnaire
 }
+\keyword{internal}

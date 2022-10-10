@@ -17,7 +17,7 @@ label_landcover(
 
 \item{country}{character; the country folder name}
 
-\item{mostRecent}{logical; should the most recent input be selected? If FALSE and if there are multiple
+\item{mostRecent}{logical; should the most recent processed landcover raster be selected? If FALSE and if there are multiple
 available inputs, the user is interactively asked to select the input based on file creation time.}
 
 \item{overwrite}{logical; in case it exists, should the output be overwritten?}
