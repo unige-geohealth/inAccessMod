@@ -3,7 +3,7 @@
 #' Creates a CSV table with landcover codes and labels that can be imported into AccessMod.
 #' @param mainPath character; the parent directory of the country folder
 #' @param country character; the country folder name
-#' @param mostRecent logical; should the most recent input be selected? If FALSE and if there are multiple
+#' @param mostRecent logical; should the most recent processed landcover raster be selected? If FALSE and if there are multiple
 #' available inputs, the user is interactively asked to select the input based on file creation time.
 #' @param overwrite logical; in case it exists, should the output be overwritten?
 #' @param defaultLabels logical; should the Copernicus default labels be associated with the the landcover raster values.
