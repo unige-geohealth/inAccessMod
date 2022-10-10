@@ -2,6 +2,7 @@
 #'
 #' To avoid truncated names and warnings when writing shapefiles
 #' @param tib \code{tibble}; futur attribute table
+#' @keywords internal
 #' @export
 abbr_col_names <- function (tib) {
   colnames(tib) <- gsub("SQ", "", colnames(tib))

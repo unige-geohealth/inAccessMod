@@ -12,3 +12,4 @@ abbr_col_names(tib)
 \description{
 To avoid truncated names and warnings when writing shapefiles
 }
+\keyword{internal}
