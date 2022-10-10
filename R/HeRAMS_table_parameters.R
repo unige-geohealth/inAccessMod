@@ -1,6 +1,7 @@
 #' HeRAMS table parameters
 #'
 #' Internal function to retrieve a list of the variable codes for filtering the HeRAMS table
+#' @keywords internal
 #' @export
 HeRAMS_table_parameters <- function() {
   list(

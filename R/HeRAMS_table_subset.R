@@ -14,6 +14,7 @@
 #' @param partnershipValues character; values that indicate that there is partner support. 
 #' Has to be compatible with regular expression (regex).
 #' @return a list of two \code{tibble} objects; The updated tibbles, the one with labels and the other one with codes.
+#' @keywords internal
 #' @export
 HeRAMS_table_subset <- function (tibT, tibC, varCol, stopQuest = TRUE, codeName = NULL, stopLst = NULL, tempDir, barriers, codeColumns, impairmentValues, partners, partnershipValues) {
   categories <- unique(tibT[, varCol, drop = TRUE])

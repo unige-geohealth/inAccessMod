@@ -1,6 +1,7 @@
 #' HeRAMS stop filtering
 #'
 #' Internal function to retrieve the values that stop the questionnaire
+#' @keywords internal
 #' @export
 HeRAMS_stop_filtering <- function() {
   list(
