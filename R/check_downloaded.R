@@ -3,6 +3,7 @@
 #' Internal function that is used to check if an input has already been downloaded and if so, to ask the user
 #' if they want to download it again.
 #' @param folders character; path of a specific input folder
+#' @keywords internal
 #' @export
 check_downloaded <- function (folders) {
   indFolder <- paste(paste0("\n", folders))    

@@ -8,6 +8,7 @@
 #' @param mostRecent logical; should the most recent input be selected? If FALSE and if there are multiple
 #' available inputs, the user is interactively asked to select the input based on file creation time.
 #' @return object of class \code{sf} when a layer was successfully read
+#' @keywords internal
 #' @export
 get_boundaries <- function (mainPath, country, type, mostRecent) {
   if (!is.character(mainPath)) {

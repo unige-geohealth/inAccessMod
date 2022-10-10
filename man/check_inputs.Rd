@@ -23,3 +23,4 @@ character vector when \code{onlyPrint} = FALSE, and NULL when \code{onlyPrint} =
 \description{
 Check whether a raw or processed input exists
 }
+\keyword{internal}

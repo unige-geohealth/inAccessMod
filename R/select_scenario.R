@@ -1,6 +1,7 @@
 #' Select HeRAMS Scenario (internal function)
 #'
 #' @param scenarioDirs character; Scenarios' folders
+#' @keywords internal
 #' @export
 select_scenario <- function (scenarioDirs) {
   if (length(scenarioDirs) == 0) {

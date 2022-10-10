@@ -17,3 +17,4 @@ to get the EPSG code for layer projection}
 \description{
 Internal function that is used to access the config.txt of the project and get a specific parameter (e.g. ISO alpha-3 code).
 }
+\keyword{internal}

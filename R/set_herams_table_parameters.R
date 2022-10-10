@@ -2,6 +2,7 @@
 #'
 #' Internal function to modify (if needed) the default values for column codes
 #' @param tableParam list; internal data with default values
+#' @keywords internal
 #' @export
 set_HeRAMS_table_parameters <- function (tableParam) {
   message("Variables and column names (compatible with regular expression)")

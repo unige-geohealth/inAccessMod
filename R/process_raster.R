@@ -8,6 +8,7 @@
 #' asked to select one of the available methods for \code{terra::project} function.
 #' @return a list of length 2; The first element is the processed \code{SpatRaster} object and the second element is the selected
 #' projection method (for track record)
+#' @keywords internal
 #' @export
 process_raster <- function (ras, border, epsg, projMeth) {
   `%>%` <- purrr::`%>%`

@@ -5,6 +5,7 @@
 #' @param country character; the country folder name
 #' @param param character; 'COUNTRY' to get the original country name, 'ISO' to get the ISO alpha-3 country code or 'EPSG'
 #' to get the EPSG code for layer projection
+#' @keywords internal
 #' @export
 get_param <- function (mainPath, country, param) {
   if (!is.character(mainPath)) {

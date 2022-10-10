@@ -25,3 +25,4 @@ Internal function used to navigate through the World Pop FTP's folders.
 \details{
 The function keeps running while no folder whose name is the country ISO code is reached.
 }
+\keyword{internal}

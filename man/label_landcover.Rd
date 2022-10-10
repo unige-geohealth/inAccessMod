@@ -26,7 +26,7 @@ available inputs, the user is interactively asked to select the input based on f
 If FALSE, the user is interactively asked to enter the label names for each value.}
 }
 \description{
-Create a CSV table with landcover codes and labels that can be imported into AccessMod.
+Creates a CSV table with landcover codes and labels that can be imported into AccessMod.
 }
 \details{
 The function writes a CSV table with two columns (classes and labels) into the same folder as the processed landcover layer.

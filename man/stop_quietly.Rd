@@ -15,3 +15,4 @@ Internal function that allows to stop a function with a non-error message
 \examples{
 stop_quietly("This is a non-error message");
 }
+\keyword{internal}

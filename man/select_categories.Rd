@@ -17,3 +17,4 @@ A list of length 2; the first element is a \code{sf} object and the second eleme
 \description{
 Internal function used to select the OSM shapefiles by attribute
 }
+\keyword{internal}

@@ -12,3 +12,4 @@ set_HeRAMS_stop(stopLst)
 \description{
 Internal function to modify (if needed) the default values for the responses that stop the questionnaire
 }
+\keyword{internal}

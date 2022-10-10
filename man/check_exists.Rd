@@ -22,3 +22,4 @@ character; time of the input folder creation
 Internal function that is used to check if an input already exists, and if so, to retrieve the time of 
 the folder creation.
 }
+\keyword{internal}

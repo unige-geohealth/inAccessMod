@@ -24,6 +24,7 @@
 #' in each of the cell considering  both the 'raw' and the 'processed' population raster. Then a ratio is calculated between both
 #' values and related to each grid cell. The grid shapefile is rasterized using the ratios as values, and finally
 #' the 'processed' raster is multiplied by the rasterized ratio. The lower is the grid resolution, the finer is the correction.
+#' @keywords internal
 #' @export
 process_pop <- function (mainPath, country, border, epsg, mostRecent, defaultMethods, changeRes, newRes, popCorrection, gridRes, alwaysProcess) {
   logTxt <- paste0(mainPath, "/", country, "/data/log.txt")

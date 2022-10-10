@@ -2,6 +2,7 @@
 #'
 #' Internal function to modify (if needed) the default values for the key codes
 #' @param values character; default values (regex compatible)
+#' @keywords internal
 #' @export
 set_HeRAMS_key_values <- function (values, msg) {
   message(paste0("\n", msg))

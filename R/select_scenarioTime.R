@@ -1,6 +1,7 @@
 #' Select HeRAMS Scenario Folder (internal function)
 #'
 #' @param scenario character; Scenario folder
+#' @keywords internal
 #' @export
 select_scenarioTime <- function (scenario) {
   scenarioTime <- list.dirs(scenario, recursive = FALSE)

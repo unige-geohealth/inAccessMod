@@ -5,6 +5,7 @@
 #' @param multiMsg character; used for printing in case of the user is interactively asked to select one layer from multiple ones
 #' @return a list of length 2; the first element can be a \code{SpatRaster} or NULL, 
 #' and the second element can be a \code{sf} object or NULL.
+#' @keywords internal
 #' @export
 load_layer <- function (folder, multiMsg) {
   rasterLayer <- FALSE

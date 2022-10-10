@@ -3,6 +3,7 @@
 #' Internal function used for an interactive class selection for a specific attribute
 #' @param categories character; available values
 #' @param instructions character; message to be displayed for the selection process
+#' @keywords internal
 #' @export
 select_hf_classes <- function (categories, instructions) {
   if (length(categories) == 1) {

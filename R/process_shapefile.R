@@ -4,7 +4,8 @@
 #' @param shp \code{sf} object to be processed
 #' @param epsg character; string that can be used as input in \code{sf::st_crs()} to describe a projection and datum
 #' @param inputName character; the input name for console printing
-#' @return \code{sf} object 
+#' @return \code{sf} object
+#' @keywords internal
 #' @export
 process_shapefile <- function (shp, epsg, inputName) {
   cat(paste("\nProjecting:", inputName, "shapefile\n"))

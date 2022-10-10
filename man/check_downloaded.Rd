@@ -13,3 +13,4 @@ check_downloaded(folders)
 Internal function that is used to check if an input has already been downloaded and if so, to ask the user
 if they want to download it again.
 }
+\keyword{internal}

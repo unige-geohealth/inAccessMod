@@ -59,3 +59,4 @@ in each of the cell considering  both the 'raw' and the 'processed' population r
 values and related to each grid cell. The grid shapefile is rasterized using the ratios as values, and finally
 the 'processed' raster is multiplied by the rasterized ratio. The lower is the grid resolution, the finer is the correction.
 }
+\keyword{internal}

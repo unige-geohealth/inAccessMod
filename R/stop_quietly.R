@@ -4,6 +4,7 @@
 #' @param msg Character string
 #' @examples
 #' stop_quietly("This is a non-error message");
+#' @keywords internal
 #' @export
 stop_quietly <- function(msg) {
   message(msg)

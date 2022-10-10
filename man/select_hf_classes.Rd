@@ -14,3 +14,4 @@ select_hf_classes(categories, instructions)
 \description{
 Internal function used for an interactive class selection for a specific attribute
 }
+\keyword{internal}

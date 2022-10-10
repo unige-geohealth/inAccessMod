@@ -8,6 +8,7 @@
 #' asked to select one of the available methods for \code{terra::resample} function.
 #' @return a list of length 2; the first element is the processed \code{SpatRaster} object and the second element is the selected
 #' resampling method (for track record)
+#' @keywords internal
 #' @export
 resample_raster <- function (ras1, ras0, rasInit, resampMeth) {
   `%>%` <- purrr::`%>%`

@@ -23,3 +23,4 @@ object of class \code{sf} when a layer was successfully read
 \description{
 Internal function that is used to get the boundary shapefile required in other functions
 }
+\keyword{internal}

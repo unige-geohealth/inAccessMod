@@ -7,6 +7,7 @@
 #' @param layer logical; is the input a spatial layer (e.g. raster or shapefile)?
 #' @param extension character; if \code{layer} = FALSE, the extension of the input (e.g. 'xlsx')
 #' @return character; time of the input folder creation
+#' @keywords internal
 #' @export
 check_exists <- function (path, type, layer = TRUE, extension = NULL) {
   if (!is.character(path)) {

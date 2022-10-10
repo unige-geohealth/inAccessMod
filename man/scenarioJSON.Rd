@@ -22,3 +22,4 @@ From multiple travel scenarios table, the function creates a JSON file that can 
 \details{
 A JSON file is created in the output folder.
 }
+\keyword{internal}

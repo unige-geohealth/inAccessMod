@@ -8,6 +8,7 @@
 #' @return a list of length 2; the first element is a character vector that contains the available files in the targeted folder
 #' and the second element is the path of the targeted folder.
 #' @details The function keeps running while no folder whose name is the country ISO code is reached.
+#' @keywords internal
 #' @export
 navigate_ftp <- function (folderLst, iso, pathFTP, pathFTP0) {
   navig <- TRUE

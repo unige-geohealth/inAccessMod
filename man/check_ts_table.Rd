@@ -16,3 +16,4 @@ check_ts_table(xlsi, xlsiFile, vLc)
 \description{
 Check the format and content of the travel scenario table (internal function).
 }
+\keyword{internal}

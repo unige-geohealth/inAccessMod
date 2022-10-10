@@ -7,6 +7,7 @@
 #' @param outputFolder character; the output folder where the JSON file will be written.
 #' @param fileName character; the name of the output JSON file (without extension).
 #' @details A JSON file is created in the output folder.
+#' @keywords internal
 #' @export
 
 scenarioJSON <- function (inputFolder, landcoverFile, outputFolder, fileName) {

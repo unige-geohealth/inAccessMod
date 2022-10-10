@@ -17,3 +17,4 @@ interactively asked whether they want to process it again or not.}
 Internal function that is used to check if an input has already been processed and if so, to ask the user
 if they want to process it again.
 }
+\keyword{internal}

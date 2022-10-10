@@ -1,6 +1,6 @@
 #' Label landcover layer
 #' 
-#' Create a CSV table with landcover codes and labels that can be imported into AccessMod.
+#' Creates a CSV table with landcover codes and labels that can be imported into AccessMod.
 #' @param mainPath character; the parent directory of the country folder
 #' @param country character; the country folder name
 #' @param mostRecent logical; should the most recent input be selected? If FALSE and if there are multiple

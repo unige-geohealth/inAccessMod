@@ -18,3 +18,4 @@ and the second element can be a \code{sf} object or NULL.
 \description{
 Internal function that is used to load either a raster or a shapefile
 }
+\keyword{internal}

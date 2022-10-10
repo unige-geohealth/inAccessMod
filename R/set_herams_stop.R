@@ -2,6 +2,7 @@
 #'
 #' Internal function to modify (if needed) the default values for the responses that stop the questionnaire
 #' @param stopLst list; internal data with default values
+#' @keywords internal
 #' @export
 set_HeRAMS_stop <- function (stopLst) {
   message("\nStop response code (response that stops the questionnaire)")

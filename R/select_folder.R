@@ -4,6 +4,7 @@
 #' @param x character vector; folder names
 #' @param msg character; message to be print for selection
 #' @return character vector
+#' @keywords internal
 #' @export
 select_folder <- function (x, msg) {
   n <- 1:length(x)

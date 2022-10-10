@@ -23,3 +23,4 @@ resampling method (for track record)
 \description{
 Internal function used to resample rasters
 }
+\keyword{internal}

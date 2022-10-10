@@ -6,6 +6,7 @@
 #' @param alwaysProcess logical; should the raw input always be processed, even if it has already been 
 #' processed? If FALSE and if the raw input has already been processed the user is 
 #' interactively asked whether they want to process it again or not.
+#' @keywords internal
 #' @export
 to_process <- function (path, alwaysProcess) {
   prFiles <- list.files(gsub("raw", "processed", path), recursive = TRUE, pattern = "\\.tif|\\.shp")

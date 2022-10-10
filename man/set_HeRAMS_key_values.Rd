@@ -12,3 +12,4 @@ set_HeRAMS_key_values(values, msg)
 \description{
 Internal function to modify (if needed) the default values for the key codes
 }
+\keyword{internal}

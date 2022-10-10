@@ -4,6 +4,7 @@
 #' @param sfObject \code{sf} object
 #' @param columnName character; the column name corresponding to the attribute used for filtering the shapefile
 #' @return A list of length 2; the first element is a \code{sf} object and the second element is the selected attribute values
+#' @keywords internal
 #' @export
 select_categories <- function (sfObject, columnName, defaultClasses, classes) {
   sfDataFrame <- sfObject

@@ -23,3 +23,4 @@ projection method (for track record)
 \description{
 Internal function used to crop, mask and project rasters
 }
+\keyword{internal}

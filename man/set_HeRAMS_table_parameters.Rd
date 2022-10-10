@@ -12,3 +12,4 @@ set_HeRAMS_table_parameters(tableParam)
 \description{
 Internal function to modify (if needed) the default values for column codes
 }
+\keyword{internal}

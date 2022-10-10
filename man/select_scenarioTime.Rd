@@ -12,3 +12,4 @@ select_scenarioTime(scenario)
 \description{
 Select HeRAMS Scenario Folder (internal function)
 }
+\keyword{internal}

@@ -17,3 +17,4 @@ character vector
 \description{
 Internal function used to subset elements from a character vector that correspond to folder names
 }
+\keyword{internal}

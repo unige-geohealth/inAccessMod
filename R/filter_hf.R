@@ -324,7 +324,6 @@ filter_hf <- function (mainPath, country, pathTableCode = NULL, pathTableText = 
           go <- TRUE
         }
         if (i == posParam[4] & building) {
-          print("FOUR")
           go <- TRUE
         }
         if (i == posParam[5] & equipment) {

@@ -19,3 +19,4 @@ process_shapefile(shp, epsg, inputName)
 \description{
 Internal function used to project and clip shapefiles
 }
+\keyword{internal}
