@@ -6,6 +6,7 @@
 #' @param mostRecent logical; should the most recent input be selected? If FALSE and if there are multiple
 #' available inputs, the user is interactively asked to select the input based on time.
 #' @return character; time of the input folder creation
+#' @keywords internal
 #' @export
 select_input <- function (folders, msg, mostRecent = FALSE) {
   if (length(folders) > 1) {
