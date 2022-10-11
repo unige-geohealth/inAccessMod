@@ -44,7 +44,7 @@ download_boundaries <- function (mainPath, country, adminLevel, alwaysDownload =
     adminLevelTry <- adminLevelTry - 1
   }
   if (is.null(border)) {
-    stop("No available shapefile from geoBoundaries for this country. You might have to download it manually.\n\n")
+    stop("Error with the connection or no available shapefile for this country.\nTry to access https://www.geoboundaries.org/\n\n")
   }
 
   adminLevelTry <- adminLevelTry + 1
