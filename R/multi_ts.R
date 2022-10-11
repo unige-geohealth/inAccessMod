@@ -156,6 +156,7 @@ multi_ts <- function (inputFolder, adminLayerName, landcoverFile, zones_ts = NUL
   dir.create(tempDir)
   scenarioLst <- vector("list", nrow(zoneScenario))
   classVal <- 0
+  rasLst <- list()
   for (i in 1:nrow(zoneScenario)) {
     zone <- zoneScenario[i, 1, drop = TRUE]
     cat(paste("\nProcessing zone:", zone))
@@ -171,6 +172,8 @@ multi_ts <- function (inputFolder, adminLayerName, landcoverFile, zones_ts = NUL
     ts$label <- paste0(ts$label, "_", zone)
     scenarioLst[[i]] <- ts
     newRas <- terra::subst(maskedLc, from = oldClass, to = newClass)
+    # List and write (list ready if mosaic_gdal doesn't work)
+    rasLst[[i]] <- newRas
     terra::writeRaster(newRas, file = paste0(tempDir, "/zone", i, ".tif"))
   }
   allRast <- paste0(tempDir, "/zone", 1:nrow(zoneScenario), ".tif")
@@ -179,14 +182,26 @@ multi_ts <- function (inputFolder, adminLayerName, landcoverFile, zones_ts = NUL
   outFolder <- paste0(inputFolder, "/out/", timeFolder)
   dir.create(outFolder, recursive = TRUE)
   message("\nMerging and writing ouptuts...")
-  terra::writeRaster(landcover, file = paste(outFolder, "multi_ts_merged_landcover.tif", sep = "/"), overwrite = TRUE, filetype = "GTiff")
-  gdalUtils::mosaic_rasters(gdalfile = allRast, dst_dataset = paste(outFolder, "multi_ts_merged_landcover.tif", sep = "/"), of="GTiff", verbose = FALSE)
+  mosaicGDAL <- tryCatch({gdalUtils::mosaic_rasters(gdalfile = allRast, dst_dataset = paste(outFolder, "multi_ts_merged_landcover.tif", sep = "/"), of = "GTiff", verbose = FALSE)}, error = function (e) 0, warning = function (e) 0)
+  if (!is.null(mosaicGDAL) && mosaicGDAL == 0) {
+    message("GDAL library not found/issues -> mosaicking the tiles using the terra::merge function (slower)...")
+    newRas <- tryCatch({do.call(terra::merge, rasLst)}, error = function (e) NULL)
+    if (is.null(newRas)) {
+      message("Memory issues: Too large ? Trying to mosaicking the tiles incrementally...")
+      newRas <- do.call(terra::merge, rasLst[1:2])
+      rasLst <- rasLst[-c(1:2)]
+      while(length(rasLst) > 0) {
+        rasLst[[length(rasLst) + 1]] <- newRas
+        newRas <- do.call(terra::merge, rasLst[c(1, length(rasLst))])
+        rasLst <- rasLst[-c(1, length(rasLst))]
+      }
+    }
+    terra::writeRaster(newRas, paste(outFolder, "multi_ts_merged_landcover.tif", sep = "/"))
+  }
   finalScenario <- do.call(rbind, scenarioLst)
-  
   # finalScenario2 <- finalScenario
   # finalScenario2$label <- paste0("label_", 1:nrow(finalScenario2))
   # writexl::write_xlsx(finalScenario2, path = paste(outFolder, "multi_ts2.xlsx", sep = "/"), col_names = TRUE) 
-  
   writexl::write_xlsx(finalScenario, path = paste(outFolder, "multi_ts.xlsx", sep = "/"), col_names = TRUE)  
   writexl::write_xlsx(zoneScenario, path = paste(outFolder, "zones_ts.xlsx", sep = "/"), col_names = TRUE)
   unlink(tempDir, recursive = TRUE)
