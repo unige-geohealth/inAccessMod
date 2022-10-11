@@ -34,12 +34,8 @@ download_dem <- function (mainPath, country, alwaysDownload = FALSE, mostRecent 
       check_downloaded(folders)
     }
   }
-  borderR <- get_boundaries(mainPath, country, "raw", mostRecent)
-  borderR <- as(borderR, "Spatial")
-  border <- tryCatch({rgeos::gUnaryUnion(border)}, error = function (e) NULL)
-  if (is.null(border)) {
-    border <- borderR
-  }
+  border <- get_boundaries(mainPath, country, "raw", mostRecent)
+  border <- as(sf::st_combine(border), "Spatial")
   # Download SRTM tiles shapefile in a temporary folder
   sysTime <- Sys.time()
   timeFolder <- gsub("-|[[:space:]]|\\:", "", sysTime)
