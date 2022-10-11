@@ -68,29 +68,34 @@ multi_ts <- function (inputFolder, adminLayerName, landcoverFile, zones_ts = NUL
   vLc <- unique(vLc[!is.na(vLc)])
   vLc <- vLc[order(vLc)]
   xls <- list.files(inputFolder, pattern = "\\.xls|\\.csv", full.names = TRUE)
-  xls <- xls[!grepl("\\~\\$", xls)]
+  xlsNames <- list.files(inputFolder, pattern = "\\.xls|\\.xlsx|\\.csv", full.names = FALSE)
+  xlsNames <- gsub("\\.xls|\\.xlsx|\\.csv", "", xlsNames)
+  # xls <- xls[!grepl("\\~\\$", xls)]
+  
   if (any(duplicated(gsub("\\.xls|\\.xlsx|\\.csv", "", xls)))) {
     stop("Duplicated names for travel scenario tables.")
   }
   if (length(xls) == 0) {
     stop("No Excel file (travel scenario) in the input folder.")
   }
-  xlsLst <- vector("list", length = length(xls))
+  xlsLst <- list()
   for (i in 1:length(xls)) {
     if (grepl("\\.xlsx$", xls[i])) {
-      xlsi <- readxl::read_xlsx(xls[i])
+      xlsi <- tryCatch({readxl::read_xlsx(xls[i])}, error = function (e) NULL)
     } else if (grepl("\\.xls$", xls[i])){
-      xlsi <- readxl::read_xls(xls[i])
+      xlsi <- tryCatch({readxl::read_xls(xls[i])}, error = function (e) NULL)
     } else {
-      xlsi <- tibble::as_tibble(read.csv(xls[i], header = TRUE))
+      # Warning = NULL; with read.csv difficult to get an error, but it gives warning if table is not well formatted or if it is a temporary
+      # file (macOS)
+      xlsi <- tryCatch({tibble::as_tibble(read.csv(xls[i], header = TRUE))}, error = function (e) NULL, warning = function (e) NULL)
+    }
+    if (is.null(xlsi)) {
+      next
     }
     xlsiFile <- xls[i]
     check_ts_table(xlsi, xlsiFile, vLc)
-    xlsLst[[i]] <- as.data.frame(xlsi[order(xlsi$class), ])
+    xlsLst[[xlsNames[i]]] <- as.data.frame(xlsi[order(xlsi$class), ])
   }
-  xlsNames <- list.files(inputFolder, pattern = "\\.xls|\\.xlsx|\\.csv", full.names = FALSE)
-  xlsNames <- gsub("\\.xls|\\.xlsx|\\.csv", "", xlsNames)
-  names(xlsLst) <- xlsNames
   if (is.null(zones_ts)) {
     cols <- colnames(admin)
     print(sf::st_drop_geometry(admin))
@@ -102,7 +107,7 @@ multi_ts <- function (inputFolder, adminLayerName, landcoverFile, zones_ts = NUL
     adminUnits <- adminUnits[order(adminUnits)]
     zoneScenario <- data.frame(Zone = adminUnits, scenario = NA)
     colnames(zoneScenario)[1] <- colnames(sf::st_drop_geometry(admin))[colUnit]
-    scenarios <- gsub(paste0(inputFolder, "|/|\\.xls|\\.xlsx|\\.csv"), "", xls)
+    scenarios <- names(xlsLst)
     for (i in 1:nrow(zoneScenario)) {
       sc <- utils::menu(scenarios, title = paste("\nWhich scenario for", zoneScenario[i, 1], "?"))
       zoneScenario[i, 2] <- scenarios[sc]
