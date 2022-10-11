@@ -55,7 +55,7 @@ As indicated in the console, some input folders are created by default. We are a
 
 ### Import inputs
 
-There is a set of functions that allows to download all the required layers from open database. However, if we would like to use other input data, we can run the copy_input function which only requires the project root path, the country name, and the path of the file or the folder that we would like to import. Then we are interactively asked to select to which input correspond this file or folder.
+There is a set of functions that allows to download all the required layers from open database. However, if we would like to use other input data, we can run the copy_input function which only requires the project root path, the country name, and the path of the file or the folder that we would like to import. Then we are interactively asked to select to which input correspond this file or folder. To avoid possible further conflicts, the input has to be a "raw" input (i.e. not projected).
 
 ### Download the country boundaries
 

@@ -1,10 +1,11 @@
 #' Copy Input
 #'
-#' Copy a manually downloaded input to the project corresponding directory before being processed.
+#' Copy a manually downloaded input to the project corresponding directory before being processed. To avoid possible further conflicts, 
+#' the input has to be a "raw" input (i.e. not projected).
 #' @param mainPath character; the parent directory of the country folder
 #' @param country character; the country folder name
-#' @param input character; the absolute path of the input. Can be a single path (corresponding to e.g. a health facility table) 
-#' or a vector of different paths (corresponding to e.g. shapefile documents). Can be the path of a folder. In this case, the function
+#' @param input character; the absolute path of the raw input. Can be a single path (corresponding to e.g. a health facility table) 
+#' or a vector of different paths (corresponding to e.g. shapefile documents). Can also be the path of a folder. In this case, the function
 #' will copy all the file that are inside this folder.
 #' @details The user is interactively asked to select the 'input' folder destination.
 #' @export
