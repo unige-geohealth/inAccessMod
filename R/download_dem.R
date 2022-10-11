@@ -58,7 +58,7 @@ download_dem <- function (mainPath, country, alwaysDownload = FALSE, mostRecent 
       cat(paste0("Downloading tile ", i, "/", length(tiles), "...\n"))
       lon <- raster::extent(tiles[i,])[1]  + (raster::extent(tiles[i,])[2] - raster::extent(tiles[i,])[1]) / 2
       lat <- raster::extent(tiles[i,])[3]  + (raster::extent(tiles[i,])[4] - raster::extent(tiles[i,])[3]) / 2
-      # tile <- raster::getData('SRTM', lon = lon, lat = lat, path = paste0(tmpFolder,"/"))
+      # List and write (list ready if mosaic_gdal doesn't work)
       tile <- geodata::elevation_3s(lon = lon, lat = lat, path = paste0(tmpFolder,"/"))
       srtmList[[i]] <- tile
     }
