@@ -52,7 +52,7 @@ filter_hf <- function (mainPath, country, pathTableCode = NULL, pathTableText = 
       stop("pathTableCode must be 'character'")
     } else {
       if (!file.exists(pathTableCode)) {
-        stop("pathTableCode does not exists!")
+        stop(paste(pathTableCode, "does not exists!"))
       }
     }
   } else {
@@ -67,7 +67,7 @@ filter_hf <- function (mainPath, country, pathTableCode = NULL, pathTableText = 
       stop("pathTableText must be 'character'")
     } else {
       if (!file.exists(pathTableText)) {
-        stop("pathTableText does not exists!")
+        stop(paste(pathTableText, "does not exists!"))
       }
     }
   } else {
