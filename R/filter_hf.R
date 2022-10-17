@@ -79,9 +79,11 @@ filter_hf <- function (mainPath, country, pathTableCode = NULL, pathTableText = 
   
   # Process the filtering with txt table, but check with code for stop filtering
   # tibTxtNames table are with full column names, for interactive selection (health services)
-  tibTxt <- tryCatch({tibble::as_tibble(read.csv(pathTableText, skip = 2))}, error = function(e){NULL})
-  tibCode <- tryCatch({tibble::as_tibble(read.csv(pathTableCode, skip = 2))}, error = function(e){NULL})
-  tibTxtNames <- tryCatch({tibble::as_tibble(read.csv(pathTableText, header = TRUE, check.names = FALSE), .name_repair = "minimal")}, error = function(e){NULL})
+  # tibTxt <- tryCatch({tibble::as_tibble(read.csv(pathTableText, skip = 2))}, error = function(e){NULL})
+  tibTxt <- tryCatch({tibble::as_tibble(data.table::fread(pathTableText, skip = 2))}, error = function(e){NULL})
+  # tibCode <- tryCatch({tibble::as_tibble(read.csv(pathTableCode, skip = 2))}, error = function(e){NULL})
+  tibCode <- tryCatch({tibble::as_tibble(data.table::fread(pathTableCode, skip = 2))}, error = function(e){NULL})
+  tibTxtNames <- tryCatch({tibble::as_tibble(data.table::fread(pathTableText, header = TRUE, check.names = FALSE), .name_repair = "minimal")}, error = function(e){NULL})
   
   if (is.null(tibTxt) | is.null(tibCode) | is.null(tibTxtNames)) {
     if (yn == 1) {
