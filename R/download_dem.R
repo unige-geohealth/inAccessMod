@@ -65,9 +65,13 @@ download_dem <- function (mainPath, country, alwaysDownload = FALSE, mostRecent 
     cat(paste0("Creating a mosaic with the downloaded rasters...\n"))
     # Gdal mosaic (faster)
     files <- list.files(tmpFolder, pattern = "tif", full.names = TRUE)
-    # Try gdal. If not found: warning and return 0; if other error return 0
-    mosaicGDAL <- tryCatch({gdalUtils::mosaic_rasters(gdalfile = files, dst_dataset = paste0(pathDEM, "/srtm.tif"), of = "GTiff")}, error = function (e) 0, warning = function (e) 0)
-    if (!is.null(mosaicGDAL) && mosaicGDAL == 0) {
+    # Try gdal. If not found: warning and return NULL
+    mosaicGDAL <- tryCatch({gdalUtils::mosaic_rasters(gdalfile = files, dst_dataset = paste0(pathDEM, "/srtm.tif"), of = "GTiff")}, error = function (e) NULL, warning = function (e) NULL)
+    # Warning if GDAL is not found also return NULL. Anyway we have NULL. Let's check if the output has been created. 
+    if (!file.exists(paste0(pathDEM, "/srtm.tif"))) {
+      mosaicGDAL <- 1
+    }
+    if (!is.null(mosaicGDAL) && mosaicGDAL == 1) {
       message("GDAL library not found/issues -> mosaicking the tiles using the terra::merge function (slower)...")
       newRas <- tryCatch({do.call(terra::merge, srtmList)}, error = function (e) NULL)
       if (is.null(newRas)) {

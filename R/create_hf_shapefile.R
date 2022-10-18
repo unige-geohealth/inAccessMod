@@ -139,15 +139,16 @@ create_hf_shapefile <- function (mainPath, country, mostRecentBoundaries = TRUE,
     stop_quietly(paste("Coordinates are not available! Add them manually in the CSV file:\n", paste(hfFolder, fi, sep = "/")))
   }
   if (!all(complete.cases(xy))) {
-    message(paste("Coordinates are missing for the following facilities:"))
-    cat("\n")
     dfNA <- df[!complete.cases(xy), ]
     # Try with names (if not available => without)
     dfPrint <- tryCatch({dfNA[, c("extern_id", "worksp_id", "date", "MoSD3", "NAME")]}, error = function (e) NULL)
+    cat("\n")
     if (is.null(dfPrint)) {
       dfPrint <- dfNA[, c("extern_id", "worksp_id", "date", "MoSD3")]
     }
     print(dfPrint)
+    cat("\n")
+    message(paste("Coordinates are missing the facilities printed above."))
     if (rmNA) {
       yn <- 2
     } else {
@@ -167,13 +168,13 @@ create_hf_shapefile <- function (mainPath, country, mostRecentBoundaries = TRUE,
   interOutside <- FALSE
   if (!all(inter[, 1])) {
     interOutside <- TRUE
-    message("The follwing HFs are outside the country boundaries:")
     # Try with names (if not available => without)
     dfPrint <- tryCatch({df[!inter, c("extern_id", "worksp_id", "date", "MoSD3", "NAME")]}, error = function (e) NULL)
     if (is.null(dfPrint)) {
       dfPrint <- df[!inter, c("extern_id", "worksp_id", "date", "MoSD3")]
     }
     print(dfPrint)
+    message("The facilities indicated above are outside the country boundaries")
     if (rmOut) {
       yn <- 2
     } else {
@@ -184,7 +185,7 @@ create_hf_shapefile <- function (mainPath, country, mostRecentBoundaries = TRUE,
     }
   }
   if (interOutside) {
-    write.table(df[!inter[, 1]], paste(hfFolder, "coordinates_outside.txt", sep = "/"))
+    write.table(df[!inter[, 1], ], paste(hfFolder, "coordinates_outside.txt", sep = "/"))
     message(paste("\nYou can access the removed HFs at:\n", paste(hfFolder, "coordinates_outside.txt", sep = "/"), "\n"))
   }
   # shp <- pts[inter[, 1], -1]
