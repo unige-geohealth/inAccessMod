@@ -70,10 +70,12 @@ download_population <- function (mainPath, country, alwaysDownload = FALSE) {
       logTxt <- paste0(mainPath, "/", country, "/data/log.txt")
       sysTime <- Sys.time()
       timeFolder <- gsub("-|[[:space:]]|\\:", "", sysTime)
+      check_path_length(paste0(pathPop, "/", timeFolder, "/raw"))
       dir.create(paste0(pathPop, "/", timeFolder, "/raw"), recursive = TRUE)
       pathPop <- paste0(pathPop, "/", timeFolder, "/raw")
       for (i in selInd) {
         filePath <- paste0(pathFTP, folderLst[i])
+        check_path_length(paste0(pathPop, "/", folderLst[i]))
         utils::download.file(url = filePath, destfile = paste0(pathPop, "/", folderLst[i]), quiet = FALSE, mode = "wb", method = "libcurl")
         write(paste0(Sys.time(), ": Population raster downloaded from ", filePath, " - Input folder ", timeFolder), file = logTxt, append = TRUE)
         cat(paste0(pathPop, "/", folderLst[i], "\n"))

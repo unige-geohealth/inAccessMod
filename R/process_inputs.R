@@ -130,7 +130,9 @@ process_inputs <- function (mainPath, country, selectedInputs = NULL, mostRecent
         sysTime <- Sys.time()
         outTimeFolder <- gsub("-|[[:space:]]|\\:", "", sysTime)
         borderOutFolder <- paste0(gsub("raw", "processed", borderFolder), "/", outTimeFolder)
+        check_path_length(borderOutFolder)
         dir.create(borderOutFolder, recursive = TRUE)
+        check_path_length(paste0(borderOutFolder, "/vBorders.shp"))
         sf::st_write(border, paste0(borderOutFolder, "/vBorders.shp"), append=FALSE)
         write(paste0(Sys.time(), ": Processed vBorders shapefile saved - Output folder: ", outTimeFolder), file = logTxt, append = TRUE)
       }
@@ -222,7 +224,9 @@ process_inputs <- function (mainPath, country, selectedInputs = NULL, mostRecent
       sysTime <- Sys.time()
       outTimeFolder <- gsub("-|[[:space:]]|\\:", "", sysTime)
       outFolder <- paste0(gsub("raw", "processed", inputFolder), "/", outTimeFolder)
+      check_path_length(outFolder)
       dir.create(outFolder, recursive = TRUE)
+      check_path_length(paste0(outFolder, "/", selectedFolders[i], ".tif"))
       terra::writeRaster(rasResampled, paste0(outFolder, "/", selectedFolders[i], ".tif"), overwrite=TRUE)
       write(paste0(Sys.time(), ": Processed ", selectedFolders[i], " raster saved - Output folder: ", outTimeFolder), file = logTxt, append = TRUE)
     }
@@ -232,10 +236,12 @@ process_inputs <- function (mainPath, country, selectedInputs = NULL, mostRecent
       sysTime <- Sys.time()
       outTimeFolder <- gsub("-|[[:space:]]|\\:", "", sysTime)
       outFolder <- paste0(gsub("raw", "processed", inputFolder), "/", outTimeFolder)
+      check_path_length(outFolder)
       dir.create(outFolder, recursive = TRUE)
       shpName <- paste0(selectedFolders[i], ".shp")
       # In case we have scenario for HeRAMS data
       shpName <- gsub("/scenario[0-9]{3}", "", shpName)
+      check_path_length(paste0(outFolder, "/", shpName))
       sf::st_write(shpProcessed, paste0(outFolder, "/", shpName), append=FALSE)
       write(paste0(Sys.time(), ": Processed ", shpName, " shapefile saved - Output folder: ", outTimeFolder), file = logTxt, append = TRUE)
     }

@@ -42,6 +42,7 @@ download_dem <- function (mainPath, country, alwaysDownload = FALSE, mostRecent 
   dir.create(paste0(pathDEM, "/", timeFolder, "/raw"), recursive = TRUE)
   pathDEM <- paste0(pathDEM, "/", timeFolder, "/raw")
   tmpFolder <- paste0(pathDEM, "/temp")
+  check_path_length(tmpFolder)
   dir.create(tmpFolder)
   urlSRTM <- "https://github.com/sikli/srtm_country/archive/master.zip"
   utils::download.file(url = urlSRTM, destfile = paste0(tmpFolder, "/srtm.zip"))

@@ -26,6 +26,7 @@ compile_processed_data <- function (mainPath, country, mostRecent = TRUE) {
   sysTime <- Sys.time()
   outTimeFolder <- gsub("-|[[:space:]]|\\:", "", sysTime)
   outFolder <- paste(mainPath, country, "data/zToAccessMod", outTimeFolder, sep = "/")
+  check_path_length(outFolder)
   dir.create(outFolder, recursive = TRUE)
   for (i in 1:length(inputsAv)) {
     inputFolder <- paste0(mainPath, "/", country, "/data/", inputsAv[i])
@@ -35,6 +36,7 @@ compile_processed_data <- function (mainPath, country, mostRecent = TRUE) {
     files <- list.files(inputFolder, full.names = TRUE)
     for (file in files) {
       cat(paste("\nCopying", file, "to", outFolder))
+      check_path_length(paste0(outFolder, "/", gsub("^.*/", "", file)))
       file.copy(from = file, to = outFolder, copy.date = TRUE, overwrite = TRUE)
     }
   }

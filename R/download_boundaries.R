@@ -50,10 +50,12 @@ download_boundaries <- function (mainPath, country, adminLevel, alwaysDownload =
   adminLevelTry <- adminLevelTry + 1
   sysTime <- Sys.time()
   timeFolder <- gsub("-|[[:space:]]|\\:", "", sysTime)
+  check_path_length(paste0(pathBorder, "/", timeFolder, "/raw"))
   dir.create(paste0(pathBorder, "/", timeFolder, "/raw"), recursive = TRUE)
   pathBorder <- paste0(pathBorder, "/", timeFolder, "/raw")
   borderMeta <- rgeoboundaries::gb_metadata(iso, adm_lvl = adminLevelTry)
   # Save metadata
+  check_path_length(paste0(pathBorder, "/", borderMeta$boundaryID, ".txt"))
   write.table(borderMeta,paste0(pathBorder, "/", borderMeta$boundaryID, ".txt"))
   # Save shapefile
   sf::st_write(border, paste0(pathBorder, "/", borderMeta$boundaryID, ".shp"), append = FALSE)

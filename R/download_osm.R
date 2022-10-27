@@ -91,6 +91,7 @@ download_osm <- function (x, mainPath, country, alwaysDownload = FALSE, countryN
   }
   sysTime <- Sys.time()
   timeFolder <- gsub("-|[[:space:]]|\\:", "", sysTime)
+  check_path_length(paste0(pathFolder, "/", timeFolder, "/raw"))
   dir.create(paste0(pathFolder, "/", timeFolder, "/raw"), recursive = TRUE)
   pathFolder <- paste0(pathFolder, "/", timeFolder, "/raw")
   # Download
@@ -118,6 +119,7 @@ download_osm <- function (x, mainPath, country, alwaysDownload = FALSE, countryN
     shp$class <- classLab$class[match(shp$highway, classLab$highway)]
   }
   shapeName <- gsub("\\.gpkg$", "", list.files(pathFolder)[grepl("\\.gpkg$", list.files(pathFolder))])
+  check_path_length(paste0(pathFolder, "/v", stringr::str_to_title(x), "_", shapeName, ".shp"))
   sf::st_write(shp, paste0(pathFolder, "/v", stringr::str_to_title(x), "_", shapeName, ".shp"), append=FALSE) # Save the layer
   logTxt <- paste0(mainPath, "/", country, "/data/log.txt")
   write(paste0(Sys.time(), ": ", x, " downloaded from OSM; ", paste(categ, collapse = ", "), "- Input folder ", timeFolder), file = logTxt, append = TRUE)

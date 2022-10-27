@@ -60,9 +60,12 @@ initiate_project <- function (mainPath) {
   }
   # Create directories
   pathData <- paste0(mainPath, "/", toupper(country), "/data")
+  check_path_length(pathData)
   dir.create(pathData, recursive = TRUE, showWarnings = FALSE)
   for (inputName in inputNames) {
-    dir.create(paste0(pathData, "/", inputName), showWarnings = FALSE)
+    pathInput <- paste0(pathData, "/", inputName)
+    check_path_length(pathInput)
+    dir.create(pathInput, showWarnings = FALSE)
   }
   # Create config.txt for ISO code, and then EPSG as well
   pathCountry <- paste0(mainPath, "/", country, "/data")

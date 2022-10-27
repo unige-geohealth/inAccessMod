@@ -27,6 +27,7 @@
 #' @keywords internal
 #' @export
 process_pop <- function (mainPath, country, border, epsg, mostRecent, defaultMethods, changeRes, newRes, popCorrection, gridRes, alwaysProcess) {
+  message("Processing population raster...")
   logTxt <- paste0(mainPath, "/", country, "/data/log.txt")
   # message("\nProcessing population raster...")
   popFolder <- paste0(mainPath, "/", country, "/data/rPopulation")
