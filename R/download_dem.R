@@ -52,6 +52,7 @@ download_dem <- function (mainPath, country, alwaysDownload = FALSE, mostRecent 
   intersects <- rgeos::gIntersects(border, shp, byid=TRUE)
   tiles <- shp[intersects[,1],]
   logTxt <- paste0(mainPath, "/", country, "/data/log.txt")
+  revertDownloadOptions <- FALSE
   #Download tiles
   if (length(tiles) > 1) {
     srtmList  <- list()
@@ -60,8 +61,17 @@ download_dem <- function (mainPath, country, alwaysDownload = FALSE, mostRecent 
       lon <- raster::extent(tiles[i,])[1]  + (raster::extent(tiles[i,])[2] - raster::extent(tiles[i,])[1]) / 2
       lat <- raster::extent(tiles[i,])[3]  + (raster::extent(tiles[i,])[4] - raster::extent(tiles[i,])[3]) / 2
       # List and write (list ready if mosaic_gdal doesn't work)
-      tile <- geodata::elevation_3s(lon = lon, lat = lat, path = paste0(tmpFolder,"/"))
+      tile <- tryCatch({geodata::elevation_3s(lon = lon, lat = lat, path = paste0(tmpFolder,"/"))}, error = function (e) NULL)
+      if (is.null(tile)) {
+        message("Cannot open URL. Trying with 'curl' and ignoring potential SSL issues.")
+        options(download.file.method="curl", download.file.extra="-k -L")
+        tile <- geodata::elevation_3s(lon = lon, lat = lat, path = paste0(tmpFolder,"/"))
+        revertDownloadOptions <- TRUE
+      }
       srtmList[[i]] <- tile
+    }
+    if (revertDownloadOptions) {
+      options(download.file.method=NULL, download.file.extra=NULL)
     }
     cat(paste0("Creating a mosaic with the downloaded rasters...\n"))
     # Gdal mosaic (faster)
