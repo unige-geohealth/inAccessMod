@@ -139,7 +139,7 @@ download_landcover <- function (mainPath, country, alwaysDownload = FALSE, mostR
     check_path_length(paste0(pathLandcover, "/", country, awsLCSuffix))
     mosaicGDAL <- tryCatch({gdalUtils::mosaic_rasters(gdalfile = files, dst_dataset = paste0(pathLandcover, "/", country, awsLCSuffix), of="GTiff")}, error = function (e) NULL, warning = function (e) NULL)
     # Warning if GDAL is not found also return NULL. Anyway we have NULL. Let's check if the output has been created. 
-    if (!file.exists(paste0(pathLandcover, "/", country, awsLCSuffix, ".tif"))) {
+    if (!file.exists(paste0(pathLandcover, "/", country, awsLCSuffix))) {
       mosaicGDAL <- 1
     }
     if (!is.null(mosaicGDAL) && mosaicGDAL == 1) {

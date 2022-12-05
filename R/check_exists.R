@@ -48,7 +48,7 @@ check_exists <- function (path, type, layer = TRUE, extension = NULL) {
     # Only keep sys.time folders
     folderLst <- folderLst[grepl("^[0-9]{14}$", folderLst)]
     folders <- paste0(substr(folderLst, 1, 4), "-", substr(folderLst, 5, 6), "-", substr(folderLst, 7, 8), " ", substr(folderLst, 9, 10), ":", substr(folderLst, 11, 12), ":", substr(folderLst, 13, 14), " CEST")
-    return(folders)
+    return(unique(folders))
   } else {
     return(NULL)
   }
