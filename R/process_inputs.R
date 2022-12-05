@@ -21,7 +21,7 @@
 #' the user is interactively asked to provide the new resolution.
 #' @param popCorrection logical; should the raster correction algorithm be run. If it is NULL, the user is interactively asked
 #' whether they want to run it or not.
-#' @param gridRes numeric; the resolution of the grid shapefile used for correcting the raster. Ignored if \code{popCorrection} is FALSE.
+#' @param gridRes numeric; the resolution (meters) of the grid shapefile used for correcting the raster. Ignored if \code{popCorrection} is FALSE.
 #' If NULL and \code{popCorrection} is TRUE, the user is interactively asked to provide the grid resolution.
 #' @details A 'processed' boundary shapefile is required for processing any other inputs. A 'processed' population raster is required
 #' for processing any other raster. These conditions are taken into account and the processing of these
