@@ -36,6 +36,11 @@ download_landcover <- function (mainPath, country, alwaysDownload = FALSE, mostR
   awsLCFolder <- "https://s3-eu-west-1.amazonaws.com/vito.landcover.global/v3.0.1/2019/"
   awsLCSuffix <- "_PROBAV_LC100_global_v3.0.1_2019-nrt_Discrete-Classification-map_EPSG-4326.tif"
   border <- get_boundaries(mainPath, country, "raw", mostRecent)
+  # Is the raw boundary in lon lat ?
+  if (terra::linearUnits(as(border, "SpatVector")) != 0) {
+    # Projection transformation
+    border <- sf::st_transform(border, crs = "+proj=longlat +datum=WGS84")
+  }
   # Based on https://lcviewer.vito.be/download and the names of available files for downloading
   # Coordinate intervals
   seqCoord <- list(X = seq(from = -180, to = 180, by = 20), Y = seq(from = -40, to = 80, by = 20))

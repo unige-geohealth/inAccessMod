@@ -104,6 +104,11 @@ download_osm <- function (x, mainPath, country, alwaysDownload = FALSE, countryN
                   force_download = TRUE)
   }else{
     border <- get_boundaries(mainPath, country, "raw", mostRecent)
+    # Is the raw boundary in lon lat ?
+    if (terra::linearUnits(as(border, "SpatVector")) != 0) {
+      # Projection transformation
+      border <- sf::st_transform(border, crs = "+proj=longlat +datum=WGS84")
+    }
     # Download 
     shp <- osmextract::oe_get(sf::st_bbox(border),
                   quiet = FALSE,
