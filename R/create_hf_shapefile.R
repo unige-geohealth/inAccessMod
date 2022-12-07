@@ -140,6 +140,7 @@ create_hf_shapefile <- function (mainPath, country, mostRecentBoundaries = TRUE,
   }
   if (!all(complete.cases(xy))) {
     dfNA <- df[!complete.cases(xy), ]
+    df <- df[complete.cases(xy), ]
     # Try with names (if not available => without)
     dfPrint <- tryCatch({dfNA[, c("extern_id", "worksp_id", "date", "MoSD3", "NAME")]}, error = function (e) NULL)
     cat("\n")
