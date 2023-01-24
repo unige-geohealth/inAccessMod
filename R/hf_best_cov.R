@@ -1,4 +1,4 @@
-#' best_hf
+#' hf_best_cov
 #'
 #' Select the health facilities that offer the best population coverage using their 
 #' catchments and a raster of population. This function also offers the possibility to ensure that N 
@@ -16,7 +16,7 @@
 #' @param adminColName character; name of the administrative unit name column in the administrative unit shapefile (required if adminCheck = TRUE)
 #' @export
 
-best_hf <- function (workDir, 
+hf_best_cov <- function (workDir, 
                       catchShp, 
                       popRaster, 
                       hfShp, 
