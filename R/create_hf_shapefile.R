@@ -14,11 +14,13 @@
 #' interactively asked whether they want to remove them or not.
 #' @param scenario character; a string of three characters that correspond to the scenario folder suffix like '001', '002'...'010'...'099'...'100'
 #' If NULL, the user is interactively asked to choose the scenario from the available ones.
+#' @param nameCSV character; name of csv file WITH extension corresponding to filtered facilities. If null, it will take the default name used in 
+#' the filter_hf function (health_facilities.csv). 
 #' @details Once the missing coordinate issue is addressed, the function checks whether the health facilities fall within the
 #' country boundary. There is a track record of both the facilities with missing coordinates and the ones that fall
 #' outside the country boundary.
 #' @export
-create_hf_shapefile <- function (mainPath, country, mostRecentBoundaries = TRUE, lonlat = TRUE, epsg = NULL, rmNA = NULL, rmOut = NULL, scenario = NULL) {
+create_hf_shapefile <- function (mainPath, country, mostRecentBoundaries = TRUE, lonlat = TRUE, epsg = NULL, rmNA = NULL, rmOut = NULL, scenario = NULL, nameCSV = NULL) {
   if (!is.character(mainPath)) {
     stop("mainPath must be 'character'")
   }
@@ -73,6 +75,10 @@ create_hf_shapefile <- function (mainPath, country, mostRecentBoundaries = TRUE,
       stop(paste0(pathFacilities, "/scenario", scenario, "does not exist"))
     }
   }
+  if (is.null(nameCSV)) {
+    nameCSV <- "health_facilities.csv"
+  }
+  
   logTxt <- paste0(mainPath, "/", country, "/data/log.txt")
 
   border <- get_boundaries(mainPath = mainPath, country = country, type = "raw", mostRecentBoundaries)
@@ -122,9 +128,9 @@ create_hf_shapefile <- function (mainPath, country, mostRecentBoundaries = TRUE,
   #   scenarioTime <- scenarioTime[subInd]
   # }
   hfFolder <- paste(scenario, scenarioTime, "raw", sep = "/")
-  filesCsv <- list.files(hfFolder)[grepl("health_facilities.csv$", list.files(hfFolder))]
+  filesCsv <- list.files(hfFolder)[grepl(paste0(nameCSV, "$"), list.files(hfFolder))]
   if (length(filesCsv) == 0) {
-    stop("health_facilities.csv is missing. Run the filter_hf function first.")
+    stop(paste(nameCSV, "is missing. Run the filter_hf function first."))
   }
   multiMsg <- "Select the CSV table that you would like to process."
   if (length(filesCsv) > 1) {
