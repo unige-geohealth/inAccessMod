@@ -425,12 +425,17 @@ filter_hf <- function (mainPath, country, pathTableCode = NULL, pathTableText = 
     if (is.null(scenarioDir)) {
       scenarioDir <- list.dirs(pathFacilities, recursive = FALSE)
       scenarioDir <- scenarioDir[grepl("scenario[0-9]{3}", scenarioDir)]
-      if ((length(scenarioDir) + 1) < 9) {
-        scenarioDir <- paste0("scenario00", length(scenarioDir) + 1)
-      } else if ((length(scenarioDir) + 1) < 99) {
-        scenarioDir <- paste0("scenario0", length(scenarioDir) + 1)
+      if (length(scenarioDir) == 0) {
+        scenarioDir <- "scenario001"
       } else {
-        scenarioDir <- paste0("scenario", length(scenarioDir) + 1)
+        scenarioDir <- scenarioDir[length(scenarioDir)]
+        nbr <- stringr::str_extract(stringr::str_extract(scenarioDir, "scenario[0-9]{3}"), "[0-9]{3}")
+        nbr <- gsub("^0*", "", nbr)
+        ncharNbr <- nchar(nbr)
+        if (as.numeric(nbr) == 9 | as.numeric(nbr) == 99) {
+          ncharNbr <- ncharNbr + 1
+        }
+        scenarioDir <- paste0("scenario", paste(rep("0", 3 - ncharNbr), collapse = ""), as.numeric(nbr) + 1)
       }
       message(paste("\nNew scenario:", scenarioDir))
       dir.create(paste(pathFacilities, scenarioDir, sep = "/"))
