@@ -14,7 +14,7 @@
 #' interactively asked whether they want to remove them or not.
 #' @param scenario character; a string of three characters that correspond to the scenario folder suffix like '001', '002'...'010'...'099'...'100'
 #' If NULL, the user is interactively asked to choose the scenario from the available ones.
-#' @param nameCSV character; name of csv file WITH extension corresponding to filtered facilities. If null, it will take the default name used in 
+#' @param nameCSV character; name of csv file WITHOUT extension corresponding to filtered facilities. If null, it will take the default name used in 
 #' the filter_hf function (health_facilities.csv). 
 #' @details Once the missing coordinate issue is addressed, the function checks whether the health facilities fall within the
 #' country boundary. There is a track record of both the facilities with missing coordinates and the ones that fall
@@ -76,7 +76,7 @@ create_hf_shapefile <- function (mainPath, country, mostRecentBoundaries = TRUE,
     }
   }
   if (is.null(nameCSV)) {
-    nameCSV <- "health_facilities.csv"
+    nameCSV <- "health_facilities"
   }
   
   logTxt <- paste0(mainPath, "/", country, "/data/log.txt")
@@ -128,9 +128,9 @@ create_hf_shapefile <- function (mainPath, country, mostRecentBoundaries = TRUE,
   #   scenarioTime <- scenarioTime[subInd]
   # }
   hfFolder <- paste(scenario, scenarioTime, "raw", sep = "/")
-  filesCsv <- list.files(hfFolder)[grepl(paste0(nameCSV, "$"), list.files(hfFolder))]
+  filesCsv <- list.files(hfFolder)[grepl(paste0(nameCSV, ".csv$"), list.files(hfFolder))]
   if (length(filesCsv) == 0) {
-    stop(paste(nameCSV, "is missing. Run the filter_hf function first."))
+    stop(paste(paste0(nameCSV, ".csv"), "is missing. Run the filter_hf function first."))
   }
   multiMsg <- "Select the CSV table that you would like to process."
   if (length(filesCsv) > 1) {
@@ -164,11 +164,11 @@ create_hf_shapefile <- function (mainPath, country, mostRecentBoundaries = TRUE,
     if (yn == 1) {
       stop_quietly(paste("You exited the script! Correct the coordinates manually in the CSV file:\n", paste(hfFolder, fi, sep = "/")))
     } else {
-      write.table(dfNA, paste(hfFolder, "coordinates_NA.txt", sep = "/"))
-      message(paste("\nYou can access the removed HFs at:\n", paste(hfFolder, "coordinates_NA.txt", sep = "/"), "\n"))
+      write.table(dfNA, paste(hfFolder, paste0(nameCSV, "_coordinates_NA.txt"), sep = "/"))
+      message(paste("\nYou can access the removed HFs at:\n", paste(hfFolder, paste0(nameCSV, "_coordinates_NA.txt"), sep = "/"), "\n"))
     }
   }
-  pts <- sp::SpatialPointsDataFrame(coords = xy[complete.cases(xy), ], data = df[complete.cases(xy), ], proj4string = terra::crs(epsg))
+  pts <- sp::SpatialPointsDataFrame(coords = xy[complete.cases(xy), ], data = df[complete.cases(xy), ], proj4string = sp::CRS(epsg))
   border <- rgeos::gUnaryUnion(as(sf::st_transform(border, terra::crs(pts)), "Spatial"))
   border <- sp::spTransform(border, pts@proj4string)
   inter <- rgeos::gIntersects(border, pts, byid = TRUE)
@@ -192,14 +192,14 @@ create_hf_shapefile <- function (mainPath, country, mostRecentBoundaries = TRUE,
     }
   }
   if (interOutside) {
-    write.table(df[!inter[, 1], ], paste(hfFolder, "coordinates_outside.txt", sep = "/"))
-    message(paste("\nYou can access the removed HFs at:\n", paste(hfFolder, "coordinates_outside.txt", sep = "/"), "\n"))
+    write.table(df[!inter[, 1], ], paste(hfFolder, paste0(nameCSV, "_coordinates_outside.txt"), sep = "/"))
+    message(paste("\nYou can access the removed HFs at:\n", paste(hfFolder, paste0(nameCSV, "_coordinates_outside.txt"), sep = "/"), "\n"))
   }
   # shp <- pts[inter[, 1], -1]
   shp <- sf::st_as_sf(pts[inter[, 1], -1])
   cat("Saving the HFs' shapefile...\n")
   # rgdal::writeOGR(shp, paste(hfFolder, "health_facilities.shp", sep = "/"), layer = "hf", driver = "ESRI Shapefile", overwrite_layer = TRUE)
-  sf::st_write(shp, paste(hfFolder, "health_facilities.shp", sep = "/"), append = FALSE)
+  sf::st_write(shp, paste(hfFolder, paste0(nameCSV, ".shp"), sep = "/"), append = FALSE)
   inputFolder <- stringr::str_extract(hfFolder, "scenario[0-9]{3}/[0-9]{14}")
   write(paste0(Sys.time(), ": Health facility shapefile created - Input folder: ", inputFolder), fi = logTxt, append = TRUE)
 }
