@@ -12,7 +12,8 @@ create_hf_shapefile(
   epsg = NULL,
   rmNA = NULL,
   rmOut = NULL,
-  scenario = NULL
+  scenario = NULL,
+  nameCSV = NULL
 )
 }
 \arguments{
@@ -35,6 +36,9 @@ interactively asked whether they want to remove them or not.}
 
 \item{scenario}{character; a string of three characters that correspond to the scenario folder suffix like '001', '002'...'010'...'099'...'100'
 If NULL, the user is interactively asked to choose the scenario from the available ones.}
+
+\item{nameCSV}{character; name of csv file WITHOUT extension corresponding to filtered facilities. If null, it will take the default name used in 
+the filter_hf function (health_facilities.csv).}
 }
 \description{
 Create a point shapefile of health facilities based on a pre-processed HeRAMS health facility table obtained with the
