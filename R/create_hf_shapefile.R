@@ -140,7 +140,7 @@ create_hf_shapefile <- function (mainPath, country, mostRecentBoundaries = TRUE,
     fi <- filesCsv
   }
   df <- read.csv(paste(hfFolder, fi, sep = "/"))
-  xy <- data.frame(Lat = df[, "GPS_002", drop = TRUE], Lon = df[, "GPS_001", drop = TRUE])
+  xy <- data.frame(Lon = df[, "GPS_002", drop = TRUE], Lat = df[, "GPS_001", drop = TRUE])
   if (nrow(xy[complete.cases(xy), ]) == 0) {
     stop_quietly(paste("Coordinates are not available! Add them manually in the CSV file:\n", paste(hfFolder, fi, sep = "/")))
   }
@@ -168,9 +168,12 @@ create_hf_shapefile <- function (mainPath, country, mostRecentBoundaries = TRUE,
       message(paste("\nYou can access the removed HFs at:\n", paste(hfFolder, paste0(nameCSV, "_coordinates_NA.txt"), sep = "/"), "\n"))
     }
   }
-  pts <- sp::SpatialPointsDataFrame(coords = xy[complete.cases(xy), ], data = df[complete.cases(xy), ], proj4string = sp::CRS(epsg))
+  pts <- sp::SpatialPointsDataFrame(coords = xy[complete.cases(xy), ], data = df, proj4string = sp::CRS(epsg))
   border <- rgeos::gUnaryUnion(as(sf::st_transform(border, terra::crs(pts)), "Spatial"))
   border <- sp::spTransform(border, pts@proj4string)
+  # Tolerance
+  border <- suppressWarnings(rgeos::gBuffer(border, width = 0.2))
+  # Intersection
   inter <- rgeos::gIntersects(border, pts, byid = TRUE)
   interOutside <- FALSE
   if (!all(inter[, 1])) {

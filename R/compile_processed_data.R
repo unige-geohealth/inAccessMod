@@ -31,7 +31,7 @@ compile_processed_data <- function (mainPath, country, mostRecent = TRUE) {
   for (i in 1:length(inputsAv)) {
     inputFolder <- paste0(mainPath, "/", country, "/data/", inputsAv[i])
     inputFolders <- check_exists(inputFolder, "processed", layer = TRUE)
-    timeFolder <- select_input(inputFolders, paste(inputsAv[i], "downloaded at:"), mostRecent) 
+    timeFolder <- select_input(inputFolders, paste(inputsAv[i], "processed at:"), mostRecent) 
     inputFolder <- folderLst[grepl(paste0("processed/", timeFolder), folderLst)]
     files <- list.files(inputFolder, full.names = TRUE)
     for (file in files) {
