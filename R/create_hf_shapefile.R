@@ -169,7 +169,7 @@ create_hf_shapefile <- function (mainPath, country, mostRecentBoundaries = TRUE,
     }
   }
   pts <- sp::SpatialPointsDataFrame(coords = xy[complete.cases(xy), ], data = df, proj4string = sp::CRS(epsg))
-  border <- rgeos::gUnaryUnion(as(sf::st_transform(border, terra::crs(pts)), "Spatial"))
+  border <- rgeos::gUnaryUnion(as(sf::st_transform(border, raster::crs(pts)), "Spatial"))
   border <- sp::spTransform(border, pts@proj4string)
   # Tolerance
   border <- suppressWarnings(rgeos::gBuffer(border, width = 0.2))
