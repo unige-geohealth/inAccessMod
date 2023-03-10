@@ -261,7 +261,7 @@ The *hf_best_cov* function allows to select the health facilities that offer the
 Let's say that we would like to select the 10 'best' facilities in terms of coverage regardless the administrative units they belong to. You will need to have all your inputs in one folder.
 
 ```{r cov, eval=FALSE}
-multi_ts(workDir = "C:/Test/BestCoverage/", catchShp = "catchment", popRaster = "population.tif", catchHfColName = "facilitiyName", nTot = 10)
+hf_best_cov(workDir = "C:/Test/BestCoverage/", catchShp = "catchment", popRaster = "population.tif", catchHfColName = "facilitiyName", nTot = 10)
 ```
 
 *workDir* is the path of the folder that contains the inputs, *catchShp* is the name of the catchment shapefile WITHOUT extension, *popRaster* is the name of the population raster file WITH extension, *catchHfColName* is the name of the health facility name column in the catchment shapefile, and *nTot* the number of facilities to be selected.
@@ -269,7 +269,7 @@ multi_ts(workDir = "C:/Test/BestCoverage/", catchShp = "catchment", popRaster = 
 If we would like to select at least one facility per administrative unit:
 
 ```{r cov2, eval=FALSE}
-multi_ts(workDir = "C:/Test/BestCoverage/", catchShp = "catchment", popRaster = "population.tif", catchHfColName = "facilitiyName", nTot = 10, adminCheck = TRUE, hfShp = "facilities", hfHfColName = "facilityName", npAdmin = 1, adminShp = "adminUnit", adminColName = "regionName")
+hf_best_cov(workDir = "C:/Test/BestCoverage/", catchShp = "catchment", popRaster = "population.tif", catchHfColName = "facilitiyName", nTot = 10, adminCheck = TRUE, hfShp = "facilities", hfHfColName = "facilityName", npAdmin = 1, adminShp = "adminUnit", adminColName = "regionName")
 ```
 
 *adminCheck = TRUE* indicates that at least N facilities per administrative unit are selected (by default adminCheck = FALSE), *hfShp* corresponds to the name of the health facility shapefile WITHOUT extension, *hfHfColName* is the name of the health facility name column in the health facility shapefile, *npAdmin* is the the minimum number of health facilities to be selected by administrative unit, *adminShp* is the shapefile of the administrative units WITHOUT extension, and *adminColName* is the name of the administrative unit name column in the administrative unit shapefile.
