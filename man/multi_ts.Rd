@@ -14,7 +14,7 @@ landcover imported from AccessMod and an Excel or CSV table for each travel scen
 
 \item{landcoverFile}{character; the file name of the original merged landcover (with extension)}
 
-\item{zones_ts}{character; Excel or CSV table that relates the administrative units to the different scenarios. Two columns:
+\item{zones_ts}{character; path to Excel or CSV table (must be outside the input folder) that relates the administrative units to the different scenarios. Two columns:
 the first one has the same name than the field name of the administrative layer attribute table that refers to each administrative
 unit, and the second one called 'scenario'. In the first all the different units (as indicated in the attribute table), in the second,
 the names (without the extension) of the different scenario tables. If set to NULL, the user is interactively asked to assign

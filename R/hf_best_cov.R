@@ -6,24 +6,29 @@
 #' @param workDir character; working directory that contains the inputs
 #' @param catchShp character; name of the catchment shapefile WITHOUT extension
 #' @param popRaster character; name of the population raster file WITH extension
-#' @param hfShp character; name of the health facility shapefile WITHOUT extension
-#' @param hfHfColName character; name of the health facility name column in the health facility shapefile
 #' @param catchHfColName character; name of the health facility name column in the catchment shapefile
 #' @param nTot integer; number of health facilities to be selected
 #' @param adminCheck logical; whether a minimum of health facilities per administrative unit must be selected. FALSE by default
+#' @param hfShp character; name of the health facility shapefile WITHOUT extension
+#' @param hfHfColName character; name of the health facility name column in the health facility shapefile
 #' @param npAdmin integer; minimum number of health facilities to be selected per administrative unit (required if adminCheck = TRUE)
 #' @param adminShp character; name of the administrative unit shapefile WITHOUT extention (required if adminCheck = TRUE)
 #' @param adminColName character; name of the administrative unit name column in the administrative unit shapefile (required if adminCheck = TRUE)
+#' @details The outputs are a table with the selected facilities with their names, the population they cover, and the cumulative sum of the covered population. 
+#' A bar plot representing the cumulative sum of the covered population for the selected facilities is also generated. The algorithm works recursively. 
+#' It orders the facility based and the total population located within their catchments, it selects the first facility and removes the population covered 
+#' in its catchment in case we would have catchments that overlap, to avoid counting the same population multiple times. 
+#' It repeats the process until the number of facilities to be selected is reached.
 #' @export
 
 hf_best_cov <- function (workDir, 
                       catchShp, 
                       popRaster, 
-                      hfShp, 
-                      hfHfColName, 
                       catchHfColName, 
                       nTot,
                       adminCheck = FALSE,
+                      hfShp = NULL, 
+                      hfHfColName = NULL, 
                       npAdmin = NULL,
                       adminShp = NULL,
                       adminColName = NULL) {
@@ -49,14 +54,7 @@ hf_best_cov <- function (workDir,
     stop(paste(pop, "does not exist."))
   }
   pop <- terra::rast(pop)
-  hf <- paste0(paste(workDir, hfShp, sep="/"),".shp")
-  if (!file.exists(hf)) {
-    stop(paste(hf, "does not exist."))
-  }
-  hf <- sf::st_read(hf, quiet = TRUE)
-  if (!hfHfColName %in% colnames(hf)) {
-    stop(paste(hfHfColName, "is not a valid column name in the facility shapefile."))
-  }
+  
   if (!catchHfColName %in% colnames(tempCatch)) {
     stop(paste(catchHfColName, "is not a valid column name in the catchment shapefile."))
   }
@@ -71,6 +69,14 @@ hf_best_cov <- function (workDir,
       if (!is.numeric(npAdmin)) {
         stop("npAdmin must be 'numeric'")
       }
+    }
+    if (is.null(hfShp)) {
+      stop("If adminCheck = TRUE, hfShp is required.")
+    }
+    hf <- paste0(paste(workDir, hfShp, sep="/"),".shp")
+    hf <- sf::st_read(hf, quiet = TRUE)
+    if (!hfHfColName %in% colnames(hf)) {
+      stop(paste(hfHfColName, "is not a valid column name in the facility shapefile."))
     }
     admin <- sf::st_read(paste0(paste(workDir, adminShp, sep="/"),".shp"), quiet = TRUE)
     if (!adminColName %in% colnames(admin)) {
@@ -119,8 +125,8 @@ hf_best_cov <- function (workDir,
     x <- sf::st_equals(similarCatch$geometry[1], similarCatch$geometry, sparse = FALSE)
     if (any(x)) {
       j <- j + 1
-      hfIdent <- sf::st_drop_geometry(similarCatch[, hfHfColName])[x, 1]
-      ind <- which(sf::st_drop_geometry(simi[, hfHfColName])[, 1] %in% hfIdent)
+      hfIdent <- sf::st_drop_geometry(similarCatch[, catchHfColName])[x, 1]
+      ind <- which(sf::st_drop_geometry(simi[, catchHfColName])[, 1] %in% hfIdent)
       simi$grp[ind] <- j
       similarCatch <- similarCatch[-which(x), ] 
     } else {

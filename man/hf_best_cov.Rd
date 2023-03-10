@@ -8,11 +8,11 @@ hf_best_cov(
   workDir,
   catchShp,
   popRaster,
-  hfShp,
-  hfHfColName,
   catchHfColName,
   nTot,
   adminCheck = FALSE,
+  hfShp = NULL,
+  hfHfColName = NULL,
   npAdmin = NULL,
   adminShp = NULL,
   adminColName = NULL
@@ -25,15 +25,15 @@ hf_best_cov(
 
 \item{popRaster}{character; name of the population raster file WITH extension}
 
-\item{hfShp}{character; name of the health facility shapefile WITHOUT extension}
-
-\item{hfHfColName}{character; name of the health facility name column in the health facility shapefile}
-
 \item{catchHfColName}{character; name of the health facility name column in the catchment shapefile}
 
 \item{nTot}{integer; number of health facilities to be selected}
 
 \item{adminCheck}{logical; whether a minimum of health facilities per administrative unit must be selected. FALSE by default}
+
+\item{hfShp}{character; name of the health facility shapefile WITHOUT extension}
+
+\item{hfHfColName}{character; name of the health facility name column in the health facility shapefile}
 
 \item{npAdmin}{integer; minimum number of health facilities to be selected per administrative unit (required if adminCheck = TRUE)}
 
@@ -45,4 +45,11 @@ hf_best_cov(
 Select the health facilities that offer the best population coverage using their 
 catchments and a raster of population. This function also offers the possibility to ensure that N 
 facilities are selected for each administrative unit.
+}
+\details{
+The outputs are a table with the selected facilities with their names, the population they cover, and the cumulative sum of the covered population. 
+A bar plot representing the cumulative sum of the covered population for the selected facilities is also generated. The algorithm works recursively. 
+It orders the facility based and the total population located within their catchments, it selects the first facility and removes the population covered 
+in its catchment in case we would have catchments that overlap, to avoid counting the same population multiple times. 
+It repeats the process until the number of facilities to be selected is reached.
 }
