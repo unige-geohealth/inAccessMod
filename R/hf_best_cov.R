@@ -78,6 +78,11 @@ hf_best_cov <- function (workDir,
     if (!hfHfColName %in% colnames(hf)) {
       stop(paste(hfHfColName, "is not a valid column name in the facility shapefile."))
     }
+    test1 <- all(sf::st_drop_geometry(hf)[ , hfHfColName] %in% sf::st_drop_geometry(tempCatch)[ , catchHfColName])
+    test2 <- all(sf::st_drop_geometry(tempCatch)[ , catchHfColName] %in% sf::st_drop_geometry(hf)[ , hfHfColName])
+    if (!all(c(test1, test2))) {
+      stop("Discrepancy between facility names in health facility and catchment shapefiles.")
+    }
     admin <- sf::st_read(paste0(paste(workDir, adminShp, sep="/"),".shp"), quiet = TRUE)
     if (!adminColName %in% colnames(admin)) {
       stop(paste(hfHfColName, "is not a valid column name in the facility shapefile."))
@@ -95,10 +100,13 @@ hf_best_cov <- function (workDir,
       hfSub <- sf::st_drop_geometry(suppressWarnings(hf[sf::st_intersects(admin[i, ], hf, sparse = FALSE), ]))
       # Add the administrative name to the catchment attribute table for the intersected facilities
       tempCatch[sf::st_drop_geometry(tempCatch[, catchHfColName])[, 1] %in% hfSub[, hfHfColName], adminColName] <- adminSubName
-      # Create a table that will keep track the number of selected facilities per admin
-      units <- unique(sf::st_drop_geometry(tempCatch[, adminColName])[, 1])
-      hfCounts <- data.frame(admin = units, count = 0)
+      # # Create a table that will keep track the number of selected facilities per admin
+      # units <- unique(sf::st_drop_geometry(tempCatch[, adminColName])[, 1])
+      # hfCounts <- data.frame(admin = units, count = 0)
     }
+    # Create a table that will keep track the number of selected facilities per admin
+    units <- unique(sf::st_drop_geometry(tempCatch[, adminColName])[, 1])
+    hfCounts <- data.frame(admin = units, count = 0)
     # Final table preparation
     finalTable <- data.frame(matrix(ncol = 3, nrow = nTot))
     names(finalTable) <- c("Facility name","Population covered", "Region")
@@ -293,7 +301,7 @@ hf_best_cov <- function (workDir,
   
   # Create output folder
   outFolder <- file.path(workDir, "outputs", gsub("-|[[:space:]]|\\:", "", Sys.time()))
-  dir.create(outFolder, showWarnings = F)
+  dir.create(outFolder, showWarnings = FALSE, recursive = TRUE)
   
   # Write the csv of the ranked candidates and their population cover
   write.csv(finalTable, paste0(outFolder, "/facilities_table.csv"), row.names = FALSE)
