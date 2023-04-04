@@ -24,7 +24,9 @@ devtools::install_github("ptimoner/inAccessMod", build_vignettes = TRUE)
 * **download_landcover**: Download a landcover raster (Copernicus)
 * **download_osm**: Download road, river, lake and other natural barriers shapefiles (OSM)
 * **process_inputs**: Process all the raw inputs
+* **multi_ts**: Allows to handle different travel scenarios for different administrative units
 * **compile_processed_data**: Compile all the processed data into one single folder to facilitate the input importation into AccessMod
+* **hf_best_cov**: Select the health facilities that offer the best population coverage using their catchments and a raster of population.
 
 ## Tutorial
 See the package vignette.
