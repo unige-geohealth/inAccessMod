@@ -9,9 +9,11 @@ from The Health Resources and Services Availability Monitoring System (HeRAMS), 
 masking, resampling, exporting processes are automated to a large degree, making the preparation of the inputs quick and straightforward. 
 
 ## Installation
+```
 if (!require("devtools")) install.packages("devtools")
 
 devtools::install_github("ptimoner/inAccessMod", build_vignettes = TRUE)
+```
 
 ## Main functions
 * `initiate_project`: Start the project, selecting the country, getting the ISO alpha-3 code, etc.
