@@ -14,19 +14,19 @@ if (!require("devtools")) install.packages("devtools")
 devtools::install_github("ptimoner/inAccessMod", build_vignettes = TRUE)
 
 ## Main functions
-* **initiate_project**: Start the project, selecting the country, getting the ISO alpha-3 code, etc.
-* **download_boundaries**: Download the administrative boundaries from geoBoundaries
-* **set_projection**: Set the projected coordinate reference system for the project
-* **filter_hf**: Filter the health facilities (only compatible with HeRAMS data)
-* **create_hf_shapefile**: Create a shapefile of health facilities (only compatible with HeRAMS data)
-* **download_dem**: Download a DEM raster (SRTM)
-* **download_population**: Download a population raster (WorldPop)
-* **download_landcover**: Download a landcover raster (Copernicus)
-* **download_osm**: Download road, river, lake and other natural barriers shapefiles (OSM)
-* **process_inputs**: Process all the raw inputs
-* **multi_ts**: Allows to handle different travel scenarios for different administrative units
-* **compile_processed_data**: Compile all the processed data into one single folder to facilitate the input importation into AccessMod
-* **hf_best_cov**: Select the health facilities that offer the best population coverage using their catchments and a raster of population.
+* `initiate_project`: Start the project, selecting the country, getting the ISO alpha-3 code, etc.
+* `download_boundaries`: Download the administrative boundaries from geoBoundaries
+* `set_projection`: Set the projected coordinate reference system for the project
+* `filter_hf`: Filter the health facilities (only compatible with HeRAMS data)
+* `create_hf_shapefile`: Create a shapefile of health facilities (only compatible with HeRAMS data)
+* `download_dem`: Download a DEM raster (SRTM)
+* `download_population`: Download a population raster (WorldPop)
+* `download_landcover`: Download a landcover raster (Copernicus)
+* `download_osm`: Download road, river, lake and other natural barriers shapefiles (OSM)
+* `process_inputs`: Process all the raw inputs
+* `multi_ts`: Allows to handle different travel scenarios for different administrative units
+* `compile_processed_data`: Compile all the processed data into one single folder to facilitate the input importation into AccessMod
+* `hf_best_cov`: Select the health facilities that offer the best population coverage using their catchments and a raster of population.
 
 ## Tutorial
 See the package vignette.
