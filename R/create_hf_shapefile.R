@@ -79,8 +79,10 @@ create_hf_shapefile <- function (mainPath, country, mostRecentBoundaries = TRUE,
     nameCSV <- "health_facilities"
   }
   
+  colNamesHeRAMS <- inAccessMod::HeRAMS_parameters$print
+  codeColumns <- unlist(set_HeRAMS_table_parameters(colNamesHeRAMS))
+  
   logTxt <- paste0(mainPath, "/", country, "/data/log.txt")
-
   border <- get_boundaries(mainPath = mainPath, country = country, type = "raw", mostRecentBoundaries)
   scenarioDirs <- list.dirs(pathFacilities, recursive = FALSE)
   scenarioDirs <- scenarioDirs[grepl("scenario", scenarioDirs)]
@@ -148,10 +150,10 @@ create_hf_shapefile <- function (mainPath, country, mostRecentBoundaries = TRUE,
     dfNA <- df[!complete.cases(xy), ]
     df <- df[complete.cases(xy), ]
     # Try with names (if not available => without)
-    dfPrint <- tryCatch({dfNA[, c("extern_id", "worksp_id", "date", "MoSD3", "NAME")]}, error = function (e) NULL)
+    dfPrint <- tryCatch({dfNA[, codeColumns]}, error = function (e) NULL)
     cat("\n")
     if (is.null(dfPrint)) {
-      dfPrint <- dfNA[, c("extern_id", "worksp_id", "date", "MoSD3")]
+      dfPrint <- dfNA[, codeColumns[-which(names(codeColumns) == "name")]]
     }
     print(dfPrint)
     cat("\n")
@@ -179,9 +181,9 @@ create_hf_shapefile <- function (mainPath, country, mostRecentBoundaries = TRUE,
   if (!all(inter[, 1])) {
     interOutside <- TRUE
     # Try with names (if not available => without)
-    dfPrint <- tryCatch({df[!inter, c("extern_id", "worksp_id", "date", "MoSD3", "NAME")]}, error = function (e) NULL)
+    dfPrint <- tryCatch({df[!inter, codeColumns]}, error = function (e) NULL)
     if (is.null(dfPrint)) {
-      dfPrint <- df[!inter, c("extern_id", "worksp_id", "date", "MoSD3")]
+      dfPrint <- df[!inter, codeColumns[-which(names(codeColumns) == "name")]]
     }
     print(dfPrint)
     message("The facilities indicated above are outside the country boundaries")

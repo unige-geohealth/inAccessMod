@@ -116,10 +116,10 @@ filter_hf <- function (mainPath, country, pathTableCode = NULL, pathTableText = 
   }
 
   # Get column code and label
-  defaultCodeColumns <- HeRAMS_table_parameters()
-  defaultStopLst <- HeRAMS_stop_filtering()
+  defaultCodeColumns <- inAccessMod::HeRAMS_parameters$table_parameters
+  defaultStopLst <- inAccessMod::HeRAMS_parameters$stop
   # Get values that indicate that there is a partner support
-  defaultPartnership <- HeRAMS_partnership_values()
+  defaultPartnership <- inAccessMod::HeRAMS_parameters$values$partnership
   if (!defaultParameters) {
     codeColumns <- set_HeRAMS_table_parameters(defaultCodeColumns)
     stopLst <- set_HeRAMS_stop(defaultStopLst)
@@ -132,7 +132,7 @@ filter_hf <- function (mainPath, country, pathTableCode = NULL, pathTableText = 
  
   if (barriers) {
   # Get values that indicate that there is an impairment
-    defaultImpairmentValues <- HeRAMS_impairment_values()
+    defaultImpairmentValues <- inAccessMod::HeRAMS_parameters$values$impairment
     if (!defaultParameters) {
       impairmentValues <- set_HeRAMS_key_values(defaultImpairmentValues, "Values that indicate that there is an impairment")
     } else {
