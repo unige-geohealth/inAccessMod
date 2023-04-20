@@ -35,8 +35,12 @@ check_inputs <- function (mainPath, country, type, onlyPrint = TRUE) {
   folderLst <- unique(gsub("/[0-9].*$", "", folderLst))
   folderLst <- gsub("^.*/data/", "", folderLst)
   folderNAv <- folderLst[!folderLst %in% folderAv]
-  folderAv <- folderAv[!grepl("^vFacilities$", folderAv)]
-  folderNAv <- folderNAv[!grepl("^vFacilities$", folderNAv)]
+  
+  # Not necessary anymore and it prevented to process vFacilities with no particular scenario
+  # With folderLst <- folderLst[grepl("^[0-9]{14}$", folderLst)] in check_exists, it should be always ok
+  # folderAv <- folderAv[!grepl("^vFacilities$", folderAv)]
+  # folderNAv <- folderNAv[!grepl("^vFacilities$", folderNAv)]
+
   if (length(folderAv) > 0) {
     if (length(folderAv) == 1) {
       message(paste("\nThe following", type, "input is AVAILABLE:"))

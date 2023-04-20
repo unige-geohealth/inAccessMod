@@ -2,7 +2,7 @@
 #'
 #' Internal function that is used to check if an input already exists, and if so, to retrieve the time of 
 #' the folder creation.
-#' @param path character; path of the country folder
+#' @param path character; path of input folder
 #' @param type character; 'raw' or 'processed'
 #' @param layer logical; is the input a spatial layer (e.g. raster or shapefile)?
 #' @param extension character; if \code{layer} = FALSE, the extension of the input (e.g. 'xlsx')
@@ -32,12 +32,15 @@ check_exists <- function (path, type, layer = TRUE, extension = NULL) {
   }
   fileLst <- list.files(path, full.names = FALSE, recursive = TRUE)
   if (type == "raw"){
+    # 20230420101040 => nchar = 14
     if (layer) {
       folderLst <- substr(fileLst[grepl(paste0("/", type, "/.*\\.tif|/", type, "/.*\\.shp"), fileLst)], 1, 14)
     } else {
       folderLst <- substr(fileLst[grepl(paste0("/", type, "/.*\\.", extension), fileLst)], 1, 14)
     }
   } else {
+    # 25 = nchar up to processed timeFolder
+    # 20230420101040/processed/20230420101040
     if (layer) {
       folderLst <- substr(fileLst[grepl(paste0("/", type, "/.*\\.tif|/", type, "/.*\\.shp"), fileLst)], 1 + 25, 14 + 25)
     } else {
@@ -45,9 +48,8 @@ check_exists <- function (path, type, layer = TRUE, extension = NULL) {
     }
   }
   if (length(folderLst) != 0) {
-    # Only keep sys.time folders
     folderLst <- folderLst[grepl("^[0-9]{14}$", folderLst)]
-    folders <- paste0(substr(folderLst, 1, 4), "-", substr(folderLst, 5, 6), "-", substr(folderLst, 7, 8), " ", substr(folderLst, 9, 10), ":", substr(folderLst, 11, 12), ":", substr(folderLst, 13, 14), " CEST")
+    folders <- as.POSIXct(folderLst, format = "%Y%m%d%H%M%S")
     return(unique(folders))
   } else {
     return(NULL)
