@@ -26,7 +26,7 @@ scenarioJSON <- function (inputFolder, landcoverFile, outputFolder, fileName) {
   if (!dir.exists(outputFolder)) {
     stop(paste(outputFolder, "does not exist"))
   }
-  landcover <- terra::rast(paste(inputFolder, landcoverFile, sep = "/"))
+  landcover <- terra::rast(file.path(inputFolder, landcoverFile))
   vLc <- terra::values(landcover)[, 1]
   vLc <- unique(vLc[!is.na(vLc)])
   vLc <- vLc[order(vLc)]
@@ -60,8 +60,8 @@ scenarioJSON <- function (inputFolder, landcoverFile, outputFolder, fileName) {
     scenarios$scenarios[[names(xlsLst)[i]]] <- xlsLst[[i]]
   }
   data <- jsonlite::toJSON(scenarios)
-  write(data, file = paste0(outputFolder, "/", fileName, ".json"))
-  message(paste("JSON file created:", paste0(outputFolder, "/", fileName, ".json")))
+  write(data, file = file.path(outputFolder, paste0(fileName, ".json")))
+  message(paste("JSON file created:", file.path(outputFolder, paste0(fileName, ".json"))))
 }
 
 

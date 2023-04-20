@@ -28,9 +28,9 @@
 #' @export
 process_pop <- function (mainPath, country, border, epsg, mostRecent, defaultMethods, changeRes, newRes, popCorrection, gridRes, alwaysProcess) {
   message("Processing population raster...")
-  logTxt <- paste0(mainPath, "/", country, "/data/log.txt")
+  logTxt <- file.path(mainPath, country, "data", "log.txt")
   # message("\nProcessing population raster...")
-  popFolder <- paste0(mainPath, "/", country, "/data/rPopulation")
+  popFolder <- file.path(mainPath, country, "data", "rPopulation")
   popFolders <- check_exists(popFolder, "raw", layer = TRUE)
   if (is.null(popFolders)) {
     stop("No input population raster available.")
@@ -39,7 +39,7 @@ process_pop <- function (mainPath, country, border, epsg, mostRecent, defaultMet
   if (is.null(timeFolder)) {
     stop_quietly("You exit the function.")
   }
-  popFolder <- paste0(popFolder, "/", timeFolder, "/raw")
+  popFolder <- file.path(popFolder, timeFolder, "raw")
   toProcess <- to_process(popFolder, alwaysProcess)
   if (toProcess) {
     multipleFilesMsg <- "Select the population raster that you would like to process."
@@ -148,11 +148,11 @@ process_pop <- function (mainPath, country, border, epsg, mostRecent, defaultMet
       # Ratio is infinite, which became NA in R.
       zonalStat  <- fasterize::fasterize(grd, as(popFinal, "Raster"), "pop_diff")
       popOut <- popFinal * as(zonalStat, "SpatRaster")
-      sysTime <- Sys.time()
-      outTimeFolder <- gsub("-|[[:space:]]|\\:", "", sysTime)
+      outTimeFolder <- format(Sys.time(), "%Y%m%d%H%M%S")
       popOutFolder <- paste0(gsub("raw", "processed", popFolder), "/", outTimeFolder)
       dir.create(popOutFolder, recursive = TRUE)
-      raster::writeRaster(popOut, paste0(popOutFolder, "/rPopulation.tif"), overwrite=TRUE)
+      check_path_length(file.path(popOutFolder, "rPopulation.tif"))
+      raster::writeRaster(popOut, file.path(popOutFolder, "rPopulation.tif"), overwrite=TRUE)
       write(paste0(Sys.time(), ": Population raster corrected using a grid of ", gridRes, " x ", gridRes, " m cells"), file = logTxt, append = TRUE)
       cat("\nSumming values of the processed population raster per grid cell after correction\n")          
       popOutSum <- exactextractr::exact_extract(popOut, grd, "sum")
@@ -163,11 +163,11 @@ process_pop <- function (mainPath, country, border, epsg, mostRecent, defaultMet
       write(paste0(Sys.time(), ": Processed population raster saved - Output folder: ", outTimeFolder), file = logTxt, append = TRUE)
     } else {
       popOut <- popFinal
-      sysTime <- Sys.time()
-      outTimeFolder <- gsub("-|[[:space:]]|\\:", "", sysTime)
-      popOutFolder <- paste0(gsub("raw", "processed", popFolder), "/", outTimeFolder)
+      outTimeFolder <- format(Sys.time(), "%Y%m%d%H%M%S")
+      popOutFolder <- file.path(gsub("raw", "processed", popFolder), outTimeFolder)
       dir.create(popOutFolder, recursive = TRUE)
-      terra::writeRaster(popOut, paste0(popOutFolder, "/rPopulation.tif"), overwrite=TRUE)
+      check_path_length(file.path(popOutFolder, "rPopulation.tif"))
+      terra::writeRaster(popOut, file.path(popOutFolder, "rPopulation.tif"), overwrite=TRUE)
       write(paste0(Sys.time(), ": Processed population raster saved - Output folder: ", outTimeFolder), file = logTxt, append = TRUE)
     }
   }

@@ -7,7 +7,7 @@
 check_exists(path, type, layer = TRUE, extension = NULL)
 }
 \arguments{
-\item{path}{character; path of the country folder}
+\item{path}{character; path of input folder}
 
 \item{type}{character; 'raw' or 'processed'}
 

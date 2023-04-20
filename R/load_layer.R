@@ -32,7 +32,7 @@ load_layer <- function (folder, multiMsg) {
     }else{
       file <- filesTif
     }
-    ras <- terra::rast(paste0(folder, "/", file))
+    ras <- terra::rast(file.path(folder, file))
   }else{
     ras <- NULL
   }
@@ -43,7 +43,7 @@ load_layer <- function (folder, multiMsg) {
     }else{
       file <- filesShp
     }
-    shp <- sf::st_read(paste0(folder, "/", file), quiet=TRUE)
+    shp <- sf::st_read(file.path(folder, file), quiet=TRUE)
   }else{
     shp <- NULL
   }

@@ -21,7 +21,7 @@ get_boundaries <- function (mainPath, country, type, mostRecent) {
     stop("type must be 'raw' or 'processed")
   }
   # Check directory
-  pathBorder <- paste0(mainPath, "/", country, "/data/vBorders")
+  pathBorder <- file.path(mainPath, country, "data", "vBorders")
   if (!dir.exists(pathBorder)) {
     stop(paste(pathBorder,"does not exist. Run the initiate_project function first or check the input parameters."))
   }

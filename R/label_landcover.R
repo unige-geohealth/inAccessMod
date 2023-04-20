@@ -21,7 +21,7 @@ label_landcover <- function(mainPath, country, mostRecent, overwrite = FALSE, de
     stop("mostRecent must be 'logical'")
   }
   # Check directory
-  pathLandcover <- paste0(mainPath, "/", country, "/data/rLandcover")
+  pathLandcover <- file.path(mainPath, country, "data", "rLandcover")
   folders <- check_exists(pathLandcover, "processed", layer = TRUE)
   if (is.null(folders)) {
     stop("\nProcessed land cover raster is missing!")
@@ -33,7 +33,7 @@ label_landcover <- function(mainPath, country, mostRecent, overwrite = FALSE, de
   folderLst <- list.dirs(pathLandcover)
   landcoverFolder <-   folderLst[grepl(paste0("processed/", timeFolder), folderLst)]
   landcover <- load_layer(landcoverFolder, "")[[1]]
-  landcoverTable <- paste0(landcoverFolder, "/labelLandcover.csv")
+  landcoverTable <- file.path(landcoverFolder, "labelLandcover.csv")
   if (file.exists(landcoverTable)) {
     if (!overwrite) {
       stop("\nLandcover label table already exists. Set overwrite = TRUE to create it again.")

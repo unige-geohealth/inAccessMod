@@ -19,8 +19,8 @@ devtools::install_github("ptimoner/inAccessMod", build_vignettes = TRUE)
 * `initiate_project`: Start the project, selecting the country, getting the ISO alpha-3 code, etc.
 * `download_boundaries`: Download the administrative boundaries from geoBoundaries
 * `set_projection`: Set the projected coordinate reference system for the project
-* `filter_hf`: Filter the health facilities (only compatible with HeRAMS data)
-* `create_hf_shapefile`: Create a shapefile of health facilities (only compatible with HeRAMS data)
+* `HeRAMS_filter_hf`: Filter the health facilities (only compatible with HeRAMS data)
+* `HeRAMS_create_hf_shapefile`: Create a shapefile of health facilities (only compatible with HeRAMS data)
 * `download_dem`: Download a DEM raster (SRTM)
 * `download_population`: Download a population raster (WorldPop)
 * `download_landcover`: Download a landcover raster (Copernicus)

@@ -19,11 +19,11 @@ select_input <- function (folders, msg, mostRecent = FALSE) {
       return(NULL)
     } else {
       folder <- folders[selInd]
-      folder <- gsub("-|[[:space:]]|\\:|[A-z]", "", folder)
+      folder <- format(folder, "%Y%m%d%H%M%S")
       return(folder)
     }
   } else {
-    folder <- gsub("-|[[:space:]]|\\:|[A-z]", "", folders)
+    folder <- format(folder, "%Y%m%d%H%M%S")
     return(folder)
   }
 }

@@ -51,10 +51,9 @@ copy_input <- function (mainPath, country, input) {
   folders <- folders[!grepl("zToAccessMod", folders)]
   fold <- utils::menu(folders, title = "Which data would you like to load?")
   folder <- list.dirs(path, recursive = FALSE)[grepl(folders[fold], list.dirs(path, recursive = FALSE))]
-  sysTime <- Sys.time()
-  timeFolder <- gsub("-|[[:space:]]|\\:", "", sysTime)
-  dir.create(paste0(folder, "/", timeFolder, "/raw"), recursive = TRUE)
-  folder <- paste0(folder, "/", timeFolder, "/raw")
+  timeFolder <- format(Sys.time(), "%Y%m%d%H%M%S")
+  folder <- file.path(folder, timeFolder, "raw")
+  dir.create(folder, recursive = TRUE)
   if (!dirInput) {
     for (i in 1:length(input)) {
       file.copy(input[i], folder, overwrite = TRUE, copy.date = TRUE)

@@ -19,7 +19,7 @@
 HeRAMS_table_subset <- function (tibT, tibC, varCol, stopQuest = TRUE, codeName = NULL, stopLst = NULL, tempDir, barriers, codeColumns, impairmentValues, partners, partnershipValues) {
   categories <- unique(tibT[, varCol, drop = TRUE])
   categories[!complete.cases(categories)] <- "Empty response"
-  selInd <- select_hf_classes(categories, "Select the values that you would like to keep")
+  selInd <- HeRAMS_select_hf_classes(categories, "Select the values that you would like to keep")
   if (is.null(selInd)) {
     categories <- categories
   } else {
@@ -27,13 +27,12 @@ HeRAMS_table_subset <- function (tibT, tibC, varCol, stopQuest = TRUE, codeName 
   }
   # If selInd is equal to the length of categories + 1
   if (!all(complete.cases(categories))) {
-    unlink(tempDir, recursive = TRUE)
     stop_quietly("You canceled the filtering process.")
   }
   categories[categories == "Empty response"] <- NA
   tibC <- tibC[tibT[, varCol, drop = TRUE] %in% categories, ]
   tibT <- tibT[tibT[, varCol, drop = TRUE] %in% categories, ]
-  write(paste0(varCol, " -> ", paste(categories, collapse = " + ")), file = paste(tempDir, "selected_hf.txt", sep = "/"), append = TRUE)
+  write(paste0(varCol, " -> ", paste(categories, collapse = " + ")), file = file.path(tempDir, "selected_hf.txt"), append = TRUE)
   # Check if stop
   if (stopQuest) {
     if (codeName %in% names(stopLst)) {
@@ -59,7 +58,7 @@ HeRAMS_table_subset <- function (tibT, tibC, varCol, stopQuest = TRUE, codeName 
           resps <- c(resps, resp)
         }
         categories <- unique(resps)
-        selInd <- select_hf_classes(categories, "Select the values that you would like to keep")
+        selInd <- HeRAMS_select_hf_classes(categories, "Select the values that you would like to keep")
         if (is.null(selInd)) {
           categories <- categories
         } else {
@@ -98,7 +97,7 @@ HeRAMS_table_subset <- function (tibT, tibC, varCol, stopQuest = TRUE, codeName 
           resps <- c(resps, resp)
         }
         categories <- unique(resps)
-        selInd <- select_hf_classes(categories, "Select the values that you would like to keep")
+        selInd <- HeRAMS_select_hf_classes(categories, "Select the values that you would like to keep")
         if (is.null(selInd)) {
           categories <- categories
         } else {
@@ -116,7 +115,7 @@ HeRAMS_table_subset <- function (tibT, tibC, varCol, stopQuest = TRUE, codeName 
         }
         tibC <- tibC[apply(condMat1, 1, any, na.rm = TRUE), ]
         tibT <- tibT[apply(condMat1, 1, any, na.rm = TRUE), ]
-        write(paste0(varCol, codeColumns$Barrier_suffix, " -> ", paste(categories, collapse = " + ")), file = paste(tempDir, "selected_hf.txt", sep = "/"), append = TRUE)
+        write(paste0(varCol, codeColumns$Barrier_suffix, " -> ", paste(categories, collapse = " + ")), file = file.path(tempDir, "selected_hf.txt"), append = TRUE)
       }
     }
   }

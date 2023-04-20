@@ -101,13 +101,13 @@ process_inputs <- function (mainPath, country, selectedInputs = NULL, mostRecent
   # Check whether we have rasters to be processed
   filesRasTrue <- NULL
   for (i in 1:length(selectedFolders)) {
-    files <- list.files(paste0(mainPath, "/", country, "/data/", selectedFolders[i]), recursive = TRUE)
+    files <- list.files(file.path(mainPath, country, "data", selectedFolders[i]), recursive = TRUE)
     filesRasTrue <- c(filesRasTrue, any(grepl("raw/.*\\.tif",files)))
   }
   # If so, we require the processed boundaries
   if (any(filesRasTrue)) {
     # Border is required for raster processing; if wanted, first process this layer
-    borderPath <- paste0(mainPath, "/", country, "/data/vBorders")
+    borderPath <- file.path(mainPath, country, "data", "vBorders")
     borderPr <- check_exists(borderPath, "processed", layer = TRUE)
     # If we want to process border or if no processed shapefile exists (required for any other processing)
     if (("vBorders" %in% selectedFolders) | is.null(borderPr)) {
@@ -120,20 +120,19 @@ process_inputs <- function (mainPath, country, selectedInputs = NULL, mostRecent
       if (is.null(timeFolder)) {
         stop_quietly("You exit the function.")
       }
-      borderFolder <- paste0(borderPath, "/", timeFolder, "/raw")
+      borderFolder <- file.path(borderPath, timeFolder, "raw")
       toProcess <- to_process(borderFolder, alwaysProcess)
       if (toProcess) {
         multipleFilesMsg <- "Select the boundary shapefile that you would like to use."
         border <- load_layer(borderFolder, multipleFilesMsg)[[2]]
         border <- sf::st_transform(border, sf::st_crs(epsg))
         write(paste0(Sys.time(), ": vBorders shapefile projected (", epsg, ") - From input folder: ", timeFolder), file = logTxt, append = TRUE)
-        sysTime <- Sys.time()
-        outTimeFolder <- gsub("-|[[:space:]]|\\:", "", sysTime)
-        borderOutFolder <- paste0(gsub("raw", "processed", borderFolder), "/", outTimeFolder)
+        outTimeFolder <- format(Sys.time(), "%Y%m%d%H%M%S")
+        borderOutFolder <- file.path(gsub("raw", "processed", borderFolder), outTimeFolder)
         check_path_length(borderOutFolder)
         dir.create(borderOutFolder, recursive = TRUE)
-        check_path_length(paste0(borderOutFolder, "/vBorders.shp"))
-        sf::st_write(border, paste0(borderOutFolder, "/vBorders.shp"), append=FALSE)
+        check_path_length(file.path(borderOutFolder, "vBorders.shp"))
+        sf::st_write(border, file.path(borderOutFolder, "vBorders.shp"), append=FALSE)
         write(paste0(Sys.time(), ": Processed vBorders shapefile saved - Output folder: ", outTimeFolder), file = logTxt, append = TRUE)
       }
       selectedFolders <- selectedFolders[!grepl("vBorders", selectedFolders)]
@@ -153,14 +152,14 @@ process_inputs <- function (mainPath, country, selectedInputs = NULL, mostRecent
       # Check whether we still have rasters to be processed
       filesRasTrue <- NULL
       for (i in 1:length(selectedFolders)) {
-        files <- list.files(paste0(mainPath, "/", country, "/data/", selectedFolders[i]), recursive = TRUE)
+        files <- list.files(file.path(mainPath, country, "data", selectedFolders[i]), recursive = TRUE)
         filesRasTrue <- c(filesRasTrue, any(grepl("raw/.*\\.tif",files)))
       }
     }
     # filesRasTrue might have changed; if still TRUE, load a processed population raster
     if (any(filesRasTrue)) {
       # Population is required for raster processing
-      popFolder <- paste0(mainPath, "/", country, "/data/rPopulation")
+      popFolder <- file.path(mainPath, country, "data", "rPopulation")
       popFolders <- check_exists(popFolder, "processed", layer = TRUE)
       if (is.null(popFolders)) {
         message("\nNo processed population raster is available.\nProcessing raw population raster...")
@@ -183,13 +182,13 @@ process_inputs <- function (mainPath, country, selectedInputs = NULL, mostRecent
   for (i in 1:length(selectedFolders)) {
     cat("\n")
     message(selectedFolders[i])
-    inputFolder <- paste0(mainPath, "/", country, "/data/", selectedFolders[i])
+    inputFolder <- file.path(mainPath, country, "data", selectedFolders[i])
     inputFolders <- check_exists(inputFolder, "raw", layer = TRUE)
     timeFolder <- select_input(inputFolders, paste(selectedFolders[i], "downloaded at:"), mostRecent)
     if (is.null(timeFolder)) {
       stop_quietly("You exit the function.")
     }
-    inputFolder <- paste0(inputFolder, "/", timeFolder, "/raw")
+    inputFolder <- file.path(inputFolder, timeFolder, "raw")
     processLayer <- to_process(inputFolder, alwaysProcess)
     if (!processLayer) {
       if (i == length(selectedFolders)) {
@@ -221,28 +220,26 @@ process_inputs <- function (mainPath, country, selectedInputs = NULL, mostRecent
       rasResampled <- rasResampledMeth[[1]]
       resampMeth <- rasResampledMeth[[2]]
       write(paste0(Sys.time(), ": ", selectedFolders[i], " raster resampled using the '", resampMeth, "' method - From input folder: ",timeFolder), file = logTxt, append = TRUE)
-      sysTime <- Sys.time()
-      outTimeFolder <- gsub("-|[[:space:]]|\\:", "", sysTime)
-      outFolder <- paste0(gsub("raw", "processed", inputFolder), "/", outTimeFolder)
+      outTimeFolder <- format(Sys.time(), "%Y%m%d%H%M%S")
+      outFolder <- file.path(gsub("raw", "processed", inputFolder), outTimeFolder)
       check_path_length(outFolder)
       dir.create(outFolder, recursive = TRUE)
-      check_path_length(paste0(outFolder, "/", selectedFolders[i], ".tif"))
-      terra::writeRaster(rasResampled, paste0(outFolder, "/", selectedFolders[i], ".tif"), overwrite=TRUE)
+      check_path_length(file.path(outFolder, paste0(selectedFolders[i], ".tif")))
+      terra::writeRaster(rasResampled, file.path(outFolder, paste0(selectedFolders[i], ".tif")), overwrite=TRUE)
       write(paste0(Sys.time(), ": Processed ", selectedFolders[i], " raster saved - Output folder: ", outTimeFolder), file = logTxt, append = TRUE)
     }
     if (!is.null(inputLayers[[2]])) {
       shpProcessed <- process_shapefile(inputLayers[[2]], epsg, selectedFolders[i])
       write(paste0(Sys.time(), ": ", selectedFolders[i], " shapefile projected and clipped - From input folder: ", timeFolder), file = logTxt, append = TRUE)
-      sysTime <- Sys.time()
-      outTimeFolder <- gsub("-|[[:space:]]|\\:", "", sysTime)
+      outTimeFolder <- format(Sys.time(), "%Y%m%d%H%M%S")
       outFolder <- paste0(gsub("raw", "processed", inputFolder), "/", outTimeFolder)
       check_path_length(outFolder)
       dir.create(outFolder, recursive = TRUE)
       shpName <- paste0(selectedFolders[i], ".shp")
       # In case we have scenario for HeRAMS data
       shpName <- gsub("/scenario[0-9]{3}", "", shpName)
-      check_path_length(paste0(outFolder, "/", shpName))
-      sf::st_write(shpProcessed, paste0(outFolder, "/", shpName), append=FALSE)
+      check_path_length(file.path(outFolder, shpName))
+      sf::st_write(shpProcessed, file.path(outFolder, shpName), append=FALSE)
       write(paste0(Sys.time(), ": Processed ", shpName, " shapefile saved - Output folder: ", outTimeFolder), file = logTxt, append = TRUE)
     }
   }

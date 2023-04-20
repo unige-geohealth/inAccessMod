@@ -5,7 +5,7 @@
 #' @param instructions character; message to be displayed for the selection process
 #' @keywords internal
 #' @export
-select_hf_classes <- function (categories, instructions) {
+HeRAMS_select_hf_classes <- function (categories, instructions) {
   if (length(categories) == 1) {
     cat(paste("\nOnly one value available:", categories))
     yn <- utils::menu(c("YES", "NO"), title = "\nWould you like to keep all the facilities (if not, the filtering process will be canceled) ?")

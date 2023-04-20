@@ -26,7 +26,7 @@ download_boundaries <- function (mainPath, country, adminLevel, alwaysDownload =
     stop("alwaysDownload must be 'logical'")
   }
   # Check directory
-  pathBorder <- paste0(mainPath, "/", country, "/data/vBorders")
+  pathBorder <- file.path(mainPath, country, "data", "vBorders")
   folders <- check_exists(pathBorder, "raw")
   if (!is.null(folders)) {
     if (!alwaysDownload) {
@@ -48,18 +48,17 @@ download_boundaries <- function (mainPath, country, adminLevel, alwaysDownload =
   }
 
   adminLevelTry <- adminLevelTry + 1
-  sysTime <- Sys.time()
-  timeFolder <- gsub("-|[[:space:]]|\\:", "", sysTime)
+  timeFolder <- format(Sys.time(), "%Y%m%d%H%M%S")
   check_path_length(paste0(pathBorder, "/", timeFolder, "/raw"))
   dir.create(paste0(pathBorder, "/", timeFolder, "/raw"), recursive = TRUE)
-  pathBorder <- paste0(pathBorder, "/", timeFolder, "/raw")
+  pathBorder <- file.path(pathBorder, timeFolder, "raw")
   borderMeta <- rgeoboundaries::gb_metadata(iso, adm_lvl = adminLevelTry)
   # Save metadata
-  check_path_length(paste0(pathBorder, "/", borderMeta$boundaryID, ".txt"))
-  write.table(borderMeta,paste0(pathBorder, "/", borderMeta$boundaryID, ".txt"))
+  check_path_length(file.path(pathBorder, paste0(borderMeta$boundaryID, ".txt")))
+  write.table(borderMeta, file.path(pathBorder, paste0(borderMeta$boundaryID, ".txt")))
   # Save shapefile
-  sf::st_write(border, paste0(pathBorder, "/", borderMeta$boundaryID, ".shp"), append = FALSE)
-  logTxt <- paste0(mainPath, "/", country, "/data/log.txt")
+  sf::st_write(border, file.path(pathBorder, paste0(borderMeta$boundaryID, ".shp")), append = FALSE)
+  logTxt <- file.path(mainPath, country, "data", "log.txt")
   write(paste0(sysTime, ": Boundaries downloaded from OSM (admin level ", adminLevelTry, ") - Input folder ", timeFolder), file = logTxt, append = TRUE)
   cat(paste0(pathBorder, "/", borderMeta$boundaryID, ".shp", "\n"))
 }

@@ -23,9 +23,8 @@ compile_processed_data <- function (mainPath, country, mostRecent = TRUE) {
   if (length(inputsAv) == 0) {
     stop("No processed inputs available.")
   }
-  sysTime <- Sys.time()
-  outTimeFolder <- gsub("-|[[:space:]]|\\:", "", sysTime)
-  outFolder <- paste(mainPath, country, "data/zToAccessMod", outTimeFolder, sep = "/")
+  outTimeFolder <- format(Sys.time(), "%Y%m%d%H%M%S")
+  outFolder <- file.path(mainPath, country, "data/zToAccessMod", outTimeFolder)
   check_path_length(outFolder)
   dir.create(outFolder, recursive = TRUE)
   for (i in 1:length(inputsAv)) {

@@ -21,11 +21,11 @@ get_param <- function (mainPath, country, param) {
       stop("param must be 'COUNTRY', 'ISO', 'EPSG'")
     }
   }
-  pathCountry <- paste0(mainPath, "/", country, "/data")
-  if (!file.exists(paste0(pathCountry, "/config.txt"))) {
+  pathCountry <- file.path(mainPath, country, "data")
+  if (!file.exists(file.path(pathCountry, "config.txt"))) {
     stop("Project main parameters have not been set yet. Run the initiate_project function.")
   }
-  fileConn <- file(paste0(pathCountry, "/config.txt"))
+  fileConn <- file(file.path(pathCountry, "config.txt"))
   config <- readLines(fileConn)
   close(fileConn)
   param <- config[grepl(param, config)]
