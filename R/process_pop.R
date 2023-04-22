@@ -35,7 +35,7 @@ process_pop <- function (mainPath, country, border, epsg, mostRecent, defaultMet
   if (is.null(popFolders)) {
     stop("No input population raster available.")
   }
-  timeFolder <- select_input(popFolders, "Raster downloaded at", mostRecent)
+  timeFolder <- select_input(popFolders, "Raster timestamped at", mostRecent)
   if (is.null(timeFolder)) {
     stop_quietly("You exit the function.")
   }
@@ -136,6 +136,15 @@ process_pop <- function (mainPath, country, border, epsg, mostRecent, defaultMet
       # So border areas may become NA, leading to a loss of population when multiplied by the zonalStat raster
       # grdInter <- gIntersection(gUnaryUnion(as(border, "Spatial")), as(grd, "Spatial"), byid = TRUE)
       # grdInterPoly <- st_cast(as(grdInter, "sf"), "MULTIPOLYGON")
+
+      # We need to mask popRas with border; when we have population raster with higher extent than boundaries
+      # (in case of sub-region analysis for e.g.), we will have population what will be counted that fall outside
+      # the actual boundary (usually, at the national level, we don't have this problem as outside boundaries, population
+      # are used to be NA)
+      border <- sf::st_transform(as(border, "sf"), terra::crs(popRas))
+      popRas <- terra::crop(popRas, border)
+      popRas <- terra::mask(popRas, as(border, "SpatVector"))  
+      
       cat("\nSumming values of the original population raster per grid cell\n")
       popSum <- exactextractr::exact_extract(popRas, sf::st_transform(grd, terra::crs(popRas)), "sum")
       cat("\nSumming values of the processed population raster per grid cell before correction\n")

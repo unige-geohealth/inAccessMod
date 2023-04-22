@@ -15,7 +15,7 @@ process_raster <- function (ras, border, epsg, projMeth) {
   border <- sf::st_transform(as(border, "sf"), terra::crs(ras))
   cat(paste("Cropping:\n", ras %>% terra::sources()))
   rasCrop <- terra::crop(ras, border)
-  cat(paste("\n\nMasking:\n", ras %>% terra::sources()))
+  cat(paste("\nMasking:\n", ras %>% terra::sources()))
   rasMask <- terra::mask(rasCrop, as(border, "SpatVector"))
   if (is.null(projMeth)) {
     projectionMethod <- c("near", "bilinear","cubic", "cubicspline")

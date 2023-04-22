@@ -59,6 +59,6 @@ download_boundaries <- function (mainPath, country, adminLevel, alwaysDownload =
   # Save shapefile
   sf::st_write(border, file.path(pathBorder, paste0(borderMeta$boundaryID, ".shp")), append = FALSE)
   logTxt <- file.path(mainPath, country, "data", "log.txt")
-  write(paste0(sysTime, ": Boundaries downloaded from OSM (admin level ", adminLevelTry, ") - Input folder ", timeFolder), file = logTxt, append = TRUE)
-  cat(paste0(pathBorder, "/", borderMeta$boundaryID, ".shp", "\n"))
+  write(paste0(Sys.time(), ": Boundaries downloaded from OSM (admin level ", adminLevelTry, ") - Input folder ", timeFolder), file = logTxt, append = TRUE)
+  cat(paste0("Done: ", pathBorder, "/", borderMeta$boundaryID, ".shp", "\n"))
 }

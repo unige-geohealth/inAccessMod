@@ -78,7 +78,7 @@ download_population <- function (mainPath, country, alwaysDownload = FALSE) {
         check_path_length(file.path(pathPop, folderLst[i]))
         utils::download.file(url = filePath, destfile = file.path(pathPop, folderLst[i]), quiet = FALSE, mode = "wb", method = "libcurl")
         write(paste0(Sys.time(), ": Population raster downloaded from ", filePath, " - Input folder ", timeFolder), file = logTxt, append = TRUE)
-        cat(paste0(pathPop, "/", folderLst[i], "\n"))
+        cat(paste0("Done: ", pathPop, "/", folderLst[i], "\n"))
       }
       downloadProcess <- FALSE
     }

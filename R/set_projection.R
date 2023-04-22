@@ -55,7 +55,7 @@ set_projection <- function (mainPath, country, mostRecent = FALSE, alwaysSet = F
   if (is.null(folders)) {
     stop("Raw boundary shapefile is missing.")
   } else {
-    timeFolderBound <- select_input(folders, "Shapefile downloaded at", mostRecent)
+    timeFolderBound <- select_input(folders, "Shapefile timestamped at", mostRecent)
     if (is.null(timeFolderBound)) {
       stop_quietly("You exit the function.")
     } else {

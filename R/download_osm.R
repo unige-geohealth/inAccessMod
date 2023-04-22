@@ -80,11 +80,11 @@ download_osm <- function (x, mainPath, country, alwaysDownload = FALSE, countryN
                     "steps",
                     "unclassified",
                     "bridge")
-  }else if (x == "waterLines") {
+  } else if (x == "waterLines") {
     querySQL <- "SELECT * FROM 'lines' WHERE waterway IS NOT NULL"
     colName <- "waterway"
     classes <- "river"
-  }else{
+  } else {
     querySQL <- "SELECT * FROM 'multipolygons' WHERE natural IS NOT NULL"
     colName <- "natural"
     classes <- "water"
@@ -101,7 +101,7 @@ download_osm <- function (x, mainPath, country, alwaysDownload = FALSE, countryN
                   query = querySQL,
                   download_directory = pathFolder,
                   force_download = TRUE)
-  }else{
+  } else {
     border <- get_boundaries(mainPath, country, "raw", mostRecent)
     # Is the raw boundary in lon lat ?
     if (terra::linearUnits(as(border, "SpatVector")) != 0) {
@@ -124,9 +124,9 @@ download_osm <- function (x, mainPath, country, alwaysDownload = FALSE, countryN
   }
   shapeName <- gsub("\\.gpkg$", "", list.files(pathFolder)[grepl("\\.gpkg$", list.files(pathFolder))])
   check_path_length(file.path(pathFolder, paste0("/v", stringr::str_to_title(x), "_", shapeName, ".shp")))
-  sf::st_write(shp, file.path(pathFolder, paste0("/v", stringr::str_to_title(x), "_", shapeName, ".shp")), append=FALSE) # Save the layer
+  suppressWarnings(sf::st_write(shp, file.path(pathFolder, paste0("/v", stringr::str_to_title(x), "_", shapeName, ".shp")), append=FALSE)) # Save the layer
   logTxt <- file.path(mainPath, country, "data", "log.txt")
   write(paste0(Sys.time(), ": ", x, " downloaded from OSM; ", paste(categ, collapse = ", "), "- Input folder ", timeFolder), file = logTxt, append = TRUE)
   file.remove(file.path(pathFolder, list.files(pathFolder)[grepl("\\.gpkg$|\\.pbf$", list.files(pathFolder))]))
-  cat(paste0(pathFolder, "/v", stringr::str_to_title(x), "_", shapeName,".shp", "\n"))
+  cat(paste0("Done: ", pathFolder, "/v", stringr::str_to_title(x), "_", shapeName,".shp", "\n"))
 }

@@ -23,7 +23,7 @@ select_input <- function (folders, msg, mostRecent = FALSE) {
       return(folder)
     }
   } else {
-    folder <- format(folder, "%Y%m%d%H%M%S")
+    folder <- format(folders, "%Y%m%d%H%M%S")
     return(folder)
   }
 }

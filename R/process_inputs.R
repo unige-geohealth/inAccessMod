@@ -116,7 +116,7 @@ process_inputs <- function (mainPath, country, selectedInputs = NULL, mostRecent
         stop("\nBoundary shapefile is required for raster processing. Run the download_boundaries function.")
       }
       message("\nLoading raw shapefile of boundaries...")
-      timeFolder <- select_input(borderFolders, "Shapefile downloaded at", mostRecent)
+      timeFolder <- select_input(borderFolders, "Shapefile timestamped at", mostRecent)
       if (is.null(timeFolder)) {
         stop_quietly("You exit the function.")
       }
@@ -139,6 +139,7 @@ process_inputs <- function (mainPath, country, selectedInputs = NULL, mostRecent
       border <- get_boundaries(mainPath, country, "processed", mostRecent)
       # If we don't need/want to process the boundary shapefile, load it
     } else {
+      message("\nLoading raw shapefile of boundaries...")
       border <- get_boundaries(mainPath, country, "processed", mostRecent)
     }
     # If we want to process the population raster
@@ -147,7 +148,7 @@ process_inputs <- function (mainPath, country, selectedInputs = NULL, mostRecent
       selectedFolders <- selectedFolders[!grepl("rPopulation", selectedFolders)]
       # Check if other inputs to be processed
       if (length(selectedFolders) < 1) {
-        stop_quietly("No more input to be processed!")
+        cat("\nDone!\n")
       }
       # Check whether we still have rasters to be processed
       filesRasTrue <- NULL
@@ -184,7 +185,7 @@ process_inputs <- function (mainPath, country, selectedInputs = NULL, mostRecent
     message(selectedFolders[i])
     inputFolder <- file.path(mainPath, country, "data", selectedFolders[i])
     inputFolders <- check_exists(inputFolder, "raw", layer = TRUE)
-    timeFolder <- select_input(inputFolders, paste(selectedFolders[i], "downloaded at:"), mostRecent)
+    timeFolder <- select_input(inputFolders, paste(selectedFolders[i], "timestamped at:"), mostRecent)
     if (is.null(timeFolder)) {
       stop_quietly("You exit the function.")
     }

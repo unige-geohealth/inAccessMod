@@ -78,13 +78,15 @@ download_dem <- function (mainPath, country, alwaysDownload = FALSE, mostRecent 
     # Gdal mosaic (faster)
     files <- list.files(tmpFolder, pattern = "tif", full.names = TRUE)
     # Try gdal (tryCatch to avoid function to stop)
-    mosaicGDAL <- tryCatch({gdalUtils::mosaic_rasters(gdalfile = files, dst_dataset = file.path(pathDEM, "srtm.tif"), of = "GTiff")}, error = function (e) NULL, warning = function (e) NULL)
-    # Warning can prevent the function from running. Let's check if the output has been created. 
+    # mosaicGDAL <- tryCatch({gdalUtils::mosaic_rasters(gdalfile = files, dst_dataset = file.path(pathDEM, "srtm.tif"), of = "GTiff")}, error = function (e) NULL, warning = function (e) NULL)
+    try(gdalUtils::mosaic_rasters(gdalfile = files, dst_dataset = file.path(pathDEM, "srtm.tif"), of = "GTiff"))
+    # Some warnings can prevent the function from running. Let's check if the output has been created. 
     if (!file.exists(file.path(pathDEM, "srtm.tif"))) {
-      mosaicGDAL <- 1
-    }
-    if (!is.null(mosaicGDAL) && mosaicGDAL == 1) {
-      message("GDAL library not found/issues -> mosaicking the tiles using the terra::merge function (slower)...")
+      mosaicGDAL <- FALSE
+    } else 
+      mosaicGDAL <- TRUE
+    if (!mosaicGDAL) {
+      message("GDAL library not found/issues -> mosaicking the tiles using the terra::merge function (slower)\nPlease wait....")
       newRas <- tryCatch({do.call(terra::merge, srtmList)}, error = function (e) NULL)
       if (is.null(newRas)) {
         message("Memory issues: Too large ? Trying to mosaicking the tiles incrementally...")
@@ -110,5 +112,5 @@ download_dem <- function (mainPath, country, alwaysDownload = FALSE, mostRecent 
   filesTif <- files[grepl("^.*\\.tif$", files)]
   mtime <- file.info(list.files(path = pathDEM, pattern="\\.tif", full.names = TRUE))[,"mtime"]
   mostRecent <- which(order(as.POSIXct(mtime)) == 1)
-  cat(paste0("\n", pathDEM, "/", filesTif[mostRecent], "\n"))
+  cat(paste0("Done: ", pathDEM, "/", filesTif[mostRecent], "\n"))
 }
