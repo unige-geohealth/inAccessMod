@@ -71,8 +71,8 @@ HeRAMS_create_hf_shapefile <- function (mainPath, country, mostRecentBoundaries 
     if(!grepl("[0-9]{3}", scenario)) {
       stop("If not NULL, scenario must contains three characters that correspond to the scenario folder suffix like '001', '002'...'010'...'099'...'100'")
     }
-    if(!dir.exists(file.path(pathFacilities, "scenario", scenario))) {
-      stop(paste0(pathFacilities, "/scenario", scenario, "does not exist"))
+    if(!dir.exists(file.path(pathFacilities, paste0("scenario", scenario)))) {
+      stop(paste0(pathFacilities, "/scenario", scenario, " does not exist"))
     }
   }
   if (is.null(nameCSV)) {
@@ -106,11 +106,11 @@ HeRAMS_create_hf_shapefile <- function (mainPath, country, mostRecentBoundaries 
   
   colNamesHeRAMS <- inAccessMod::HeRAMS_parameters$print
   if (!all(unlist(colNamesHeRAMS) %in% colnames(df))) {
-    message(paste("Check the column names of:", file.path(hfFolder, fi), "and change the parameters accordingly"))
-    codeColumns <- unlist(set_HeRAMS_table_parameters(colNamesHeRAMS))
+    message(paste("\nCheck the column names of:", file.path(hfFolder, fi), "and change the parameters accordingly"))
+    codeColumns <- unlist(set_HeRAMS_table_parameters(colNamesHeRAMS, regex = FALSE))
   }
   if (!all(codeColumns %in% colnames(df))) {
-    stop_quietly("Invalid parameters!")
+    stop_quietly("Column name not valid !")
   }
   
   xy <- data.frame(Lon = df[, "GPS_002", drop = TRUE], Lat = df[, "GPS_001", drop = TRUE])
@@ -174,7 +174,61 @@ HeRAMS_create_hf_shapefile <- function (mainPath, country, mostRecentBoundaries 
   # shp <- pts[inter[, 1], -1]
   shp <- sf::st_as_sf(pts[inter[, 1], -1])
   cat("Saving the HFs' shapefile...\n")
-  sf::st_write(shp, file.path(hfFolder, paste0(nameCSV, ".shp")), append = FALSE)
+  tempShp <- tempfile()
+  tryWrite <- tryCatch({sf::st_write(shp, dsn = paste0(tempShp, ".shp"), append = FALSE)}, error = function (e) 0)
+  # Check if the lock file exists
+  k <- 0
+  # If tryWrite = 0; dim(tryWrite) is null; if writing succeeded, tryWrite is the shp
+  while (is.null(dim(tryWrite)) & k < 10) {
+    k <- k + 1
+    colNames <- colnames(shp)[-ncol(shp)]
+    # nCat <- 1:length(colNames)
+    # indCat <- paste(paste0("\n", nCat, ": ", colNames))
+    # cat(indCat)
+    # So we have time to see the message (when k > 0)
+    Sys.sleep(1.5)
+    print(colNames, max = length(colNames))
+    message("\n\nError when writing the shapefile, let's try reducing the number of fields")
+    cat(paste0("\nSelect the indices of the fields to be removed.\nOn the same line separated by a comma, or by an hyphen for sequences (e.g. 1,2,3-5). Type 0 to exit.\n"))
+    selInd <- readline(prompt = "Selection: ")
+    selInd <- gsub("-", ":", selInd)
+    if (selInd == "0") {
+      stop_quietly("You exit the function.")
+    }
+    elements <- unlist(strsplit(selInd, ","))
+    result <- c(sapply(elements, function(x) {
+      if (grepl(":", x)) {
+        eval(parse(text = x))
+      } else {
+        as.numeric(x)
+      }
+    }))
+    if (is.list(result)) {
+      toRm <- do.call(c, result)
+    } else {
+      toRm <- result
+    }
+    names(toRm) <- NULL
+    if (length(selInd) == 0) {
+      message("\nEmpty selection!")
+    } else if (!all(colNames[toRm] %in% colNames)) {
+       message("\nWrong indices!")
+    } else {
+      shp <- shp[, -toRm]
+      tempShp <- tempfile()
+      tryWrite <- tryCatch({sf::st_write(shp, dsn = paste0(tempShp, ".shp"), append = FALSE)}, error = function (e) 0)
+    }
+  }
+  if (k == 10) {
+    stop_quietly("Too many attempts.")
+  }
+  filesToCopy <- list.files(dirname(paste0(tempShp, ".shp")), pattern = basename(tempShp), full.names = TRUE)
+  for (i in 1:length(filesToCopy)) {
+    fi <- basename(filesToCopy[i])
+    fi <- paste0(nameCSV, ".", gsub("^.*\\.", "", fi))
+    file.copy(filesToCopy[i], file.path(hfFolder, fi))
+  }
   inputFolder <- stringr::str_extract(hfFolder, "scenario[0-9]{3}/[0-9]{14}")
   write(paste0(Sys.time(), ": Health facility shapefile created - Input folder: ", inputFolder), fi = logTxt, append = TRUE)
+  cat(paste0("Done: ", file.path(hfFolder, paste0(nameCSV, ".shp")), "\n"))
 }

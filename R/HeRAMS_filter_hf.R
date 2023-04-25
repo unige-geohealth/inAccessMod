@@ -80,9 +80,9 @@ HeRAMS_filter_hf <- function (mainPath, country, pathTableCode = NULL, pathTable
   # Process the filtering with txt table, but check with code for stop filtering
   # tibTxtNames table are with full column names, for interactive selection (health services)
   # tibTxt <- tryCatch({tibble::as_tibble(read.csv(pathTableText, skip = 2))}, error = function(e){NULL})
-  tibTxt <- tryCatch({tibble::as_tibble(data.table::fread(pathTableText, skip = 2))}, error = function(e){NULL})
+  tibTxt <- tryCatch({tibble::as_tibble(data.table::fread(pathTableText, skip = 1, header = TRUE))}, error = function(e){NULL})
   # tibCode <- tryCatch({tibble::as_tibble(read.csv(pathTableCode, skip = 2))}, error = function(e){NULL})
-  tibCode <- tryCatch({tibble::as_tibble(data.table::fread(pathTableCode, skip = 2))}, error = function(e){NULL})
+  tibCode <- tryCatch({tibble::as_tibble(data.table::fread(pathTableCode, skip = 1, header = TRUE))}, error = function(e){NULL})
   tibTxtNames <- tryCatch({tibble::as_tibble(data.table::fread(pathTableText, header = TRUE, check.names = FALSE), .name_repair = "minimal")}, error = function(e){NULL})
   
   if (is.null(tibTxt) | is.null(tibCode) | is.null(tibTxtNames)) {
@@ -91,10 +91,21 @@ HeRAMS_filter_hf <- function (mainPath, country, pathTableCode = NULL, pathTable
       tibCode <- inAccessMod::fictitious_herams_data_code
       tibTxtNames <- inAccessMod::fictitious_herams_data_txt_colnames
     } else {
-      stop(paste(pathTableCode, "could not be opened."))
+      if (is.null(tibTxt) | is.null(tibTxtNames)) {
+        stop(paste(pathTableText, "could not be opened."))
+      } else {
+        stop(paste(pathTableCode, "could not be opened."))
+      }
     }
   }
   
+  if (nrow(tibTxt) == 0) {
+    stop(paste("Issues reading", pathTableText, "\nCould be caused by separator issue or line break within fields."))
+  }
+  
+  if (nrow(tibCode) == 0) {
+    stop(paste("Issues reading", pathTableCode, "\nCould be caused by separator issue or line break within fields"))
+  }
   # Check same order
   numRows <- nrow(tibCode) == nrow(tibTxt) & nrow(tibCode) == (nrow(tibTxtNames) - 1)
   if (!numRows) {
@@ -109,7 +120,7 @@ HeRAMS_filter_hf <- function (mainPath, country, pathTableCode = NULL, pathTable
     cat("\nReordering row orders of HeRAMS tables.")
     tibCode <- tibCode[match(tibCode$external_id, tibTxt$external_id), ]
   }
-  cat("\nHeRAMS tables: OK\n")
+  cat("\nHeRAMS tables: OK\n\n")
   pathFacilities <- file.path(mainPath, country, "data", "vFacilities")
   if (!dir.exists(pathFacilities)) {
     stop(paste(pathFacilities, " does not exist. Run the initiate_project function."))

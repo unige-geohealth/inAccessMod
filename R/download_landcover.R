@@ -139,6 +139,8 @@ download_landcover <- function (mainPath, country, alwaysDownload = FALSE, mostR
     # Some warnings can prevent the function from running. Let's check if the output has been created. 
     if (!file.exists(file.path(pathLandcover, paste0(country, awsLCSuffix)))) {
       mosaicGDAL <- FALSE
+    } else {
+      mosaicGDAL <- TRUE
     }
     if (!mosaicGDAL) {
       message("GDAL library not found/issues -> mosaicking the tiles using the terra::merge function (slower)\nPlease wait....")
