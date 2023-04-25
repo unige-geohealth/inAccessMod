@@ -83,8 +83,9 @@ download_dem <- function (mainPath, country, alwaysDownload = FALSE, mostRecent 
     # Some warnings can prevent the function from running. Let's check if the output has been created. 
     if (!file.exists(file.path(pathDEM, "srtm.tif"))) {
       mosaicGDAL <- FALSE
-    } else 
+    } else {
       mosaicGDAL <- TRUE
+    }
     if (!mosaicGDAL) {
       message("GDAL library not found/issues -> mosaicking the tiles using the terra::merge function (slower)\nPlease wait....")
       newRas <- tryCatch({do.call(terra::merge, srtmList)}, error = function (e) NULL)

@@ -179,8 +179,14 @@ multi_ts <- function (inputFolder, adminLayerName, landcoverFile, zones_ts = NUL
   check_path_length(outFolder)
   dir.create(outFolder, recursive = TRUE)
   message("\nMerging and writing ouptuts...")
-  mosaicGDAL <- tryCatch({gdalUtils::mosaic_rasters(gdalfile = allRast, dst_dataset = file.path(outFolder, "multi_ts_merged_landcover.tif"), of = "GTiff", verbose = FALSE)}, error = function (e) 0, warning = function (e) 0)
-  if (!is.null(mosaicGDAL) && mosaicGDAL == 0) {
+  mosaicGDAL <- try(gdalUtils::mosaic_rasters(gdalfile = allRast, dst_dataset = file.path(outFolder, "multi_ts_merged_landcover.tif"), of = "GTiff", verbose = FALSE))
+  # Some warnings can prevent the function from running. Let's check if the output has been created. 
+  if (!file.exists(file.path(outFolder, "multi_ts_merged_landcover.tif"))) {
+    mosaicGDAL <- FALSE
+  } else {
+    mosaicGDAL <- TRUE
+  }
+  if (!mosaicGDAL) {
     message("GDAL library not found/issues -> mosaicking the tiles using the terra::merge function (slower)...")
     newRas <- tryCatch({do.call(terra::merge, rasLst)}, error = function (e) NULL)
     if (is.null(newRas)) {
@@ -198,6 +204,6 @@ multi_ts <- function (inputFolder, adminLayerName, landcoverFile, zones_ts = NUL
   finalScenario <- do.call(rbind, scenarioLst)
   writexl::write_xlsx(finalScenario, path = file.path(outFolder, "multi_ts.xlsx"), col_names = TRUE)  
   writexl::write_xlsx(zoneScenario, path = file.path(outFolder, "zones_ts.xlsx"), col_names = TRUE)
-  message(paste("Output folder:", outFolder, "\n"))
+  cat(paste("\nDone. Output folder:", outFolder, "\n"))
   # message("If the outputs can not be well processed in AccessMod, try to use multi_ts_fast().")
 }
