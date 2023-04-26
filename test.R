@@ -1,6 +1,6 @@
 # Test
 devtools::load_all(".")
-mainPath <- "C:/Test"
+mainPath <- "C:/Users/timoner/Documents/GeoHealth/HeRAMS/"
 initiate_project(mainPath)
 country <- "Mozambique"
 download_boundaries(mainPath, country, adminLevel = 1, alwaysDownload = TRUE)
@@ -9,6 +9,11 @@ set_projection(mainPath, country)
 download_dem(mainPath, country)
 download_landcover(mainPath, country)
 download_osm("roads", mainPath, country)
+download_osm("waterLines", mainPath, country)
+download_osm("naturalPolygons", mainPath, country)
 download_population(mainPath, country)
+check_inputs(mainPath, country, "raw")
+
+
 process_inputs(mainPath, country)
 
