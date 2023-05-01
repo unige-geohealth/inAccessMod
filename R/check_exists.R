@@ -34,7 +34,7 @@ check_exists <- function (path, type, layer = TRUE, extension = NULL) {
   if (type == "raw"){
     # 20230420101040 => nchar = 14
     if (layer) {
-      folderLst <- substr(fileLst[grepl(paste0("/", type, "/.*\\.tif|/", type, "/.*\\.shp"), fileLst)], 1, 14)
+      folderLst <- substr(fileLst[grepl(paste0("/", type, "/.*\\.tif|/", type, "/.*\\.shp|/", type, "/.*\\.img"), fileLst)], 1, 14)
     } else {
       folderLst <- substr(fileLst[grepl(paste0("/", type, "/.*\\.", extension), fileLst)], 1, 14)
     }
@@ -42,7 +42,7 @@ check_exists <- function (path, type, layer = TRUE, extension = NULL) {
     # 25 = nchar up to processed timeFolder
     # 20230420101040/processed/20230420101040
     if (layer) {
-      folderLst <- substr(fileLst[grepl(paste0("/", type, "/.*\\.tif|/", type, "/.*\\.shp"), fileLst)], 1 + 25, 14 + 25)
+      folderLst <- substr(fileLst[grepl(paste0("/", type, "/.*\\.tif|/", type, "/.*\\.shp|/", type, "/.*\\.img"), fileLst)], 1 + 25, 14 + 25)
     } else {
       folderLst <- substr(fileLst[grepl(paste0("/", type, "/.*\\.", extension), fileLst)], 1 + 25, 14 + 25)
     }

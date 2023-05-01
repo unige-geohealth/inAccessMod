@@ -9,7 +9,7 @@
 #' @keywords internal
 #' @export
 to_process <- function (path, alwaysProcess) {
-  prFiles <- list.files(gsub("raw", "processed", path), recursive = TRUE, pattern = "\\.tif|\\.shp")
+  prFiles <- list.files(gsub("raw", "processed", path), recursive = TRUE, pattern = "\\.tif|\\.shp|\\.img")
   if (length(prFiles) > 0) {
     if (!alwaysProcess) {
       inputName <- gsub("/raw$", "", gsub("^.*/data/", "", path))

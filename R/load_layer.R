@@ -12,7 +12,7 @@ load_layer <- function (folder, multiMsg) {
   vectorLayer <- FALSE
   files <- list.files(folder)
   if (length(files) > 0) {
-    filesTif <- files[grepl("\\.tif$", files)]
+    filesTif <- files[grepl("\\.tif$|\\.img$", files)]
     if (length(filesTif) > 0) {
       rasterLayer <- TRUE
     }
