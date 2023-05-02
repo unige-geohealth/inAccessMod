@@ -12,7 +12,7 @@ masking, resampling, exporting processes are automated to a large degree, making
 ```
 if (!require("devtools")) install.packages("devtools")
 
-devtools::install_github("ptimoner/inAccessMod", build_vignettes = TRUE)
+devtools::install_github("unige-geohealth/inAccessMod", build_vignettes = TRUE)
 ```
 
 ## Main functions
