@@ -1,6 +1,6 @@
 #' Subset Regions
 #'
-#' Functions that allows to clip specific country regions from the 'raw' boundary shapefile when requiring analysis at the sub-national level
+#' Function that allows to clip specific country regions from the 'raw' boundary shapefile when requiring analysis at the sub-national level
 #' @param mainPath character; the parent directory of the country folder
 #' @param country character; the country folder name
 #' @param mostRecent logical; should the most recent boundary shapefile be selected? If FALSE and if there are multiple
