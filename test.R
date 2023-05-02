@@ -22,3 +22,5 @@ files <- c("C:/Users/timoner/Documents/GeoHealth/HeRAMS/MOZAMBIQUE/data/zToAcces
            "C:/Users/timoner/Documents/GeoHealth/HeRAMS/MOZAMBIQUE/data/zToAccessMod/multi_ts/rLandcover_merge.img.aux.xml")
 copy_input(mainPath, country, files)
 
+
+#
