@@ -26,7 +26,7 @@ download_landcover <- function (mainPath, country, alwaysDownload = FALSE, mostR
     stop("mostRecent must be 'logical'")
   }
   # Check directory
-  pathLandcover <- paste0(mainPath, "/", country, "/data/rLandcover")
+  pathLandcover <- file.path(mainPath, country, "data", "rLandcover")
   folders <- check_exists(pathLandcover, "raw", layer = TRUE)
   if (!is.null(folders)) {
     if (!alwaysDownload) {
@@ -107,47 +107,47 @@ download_landcover <- function (mainPath, country, alwaysDownload = FALSE, mostR
       urls <- c(urls, paste0(awsLCFolder, charX, charY, "/", charX, charY, awsLCSuffix))
     }
   }
-  logTxt <- paste0(mainPath, "/", country, "/data/log.txt")
-  sysTime <- Sys.time()
-  timeFolder <- gsub("-|[[:space:]]|\\:", "", sysTime)
-  check_path_length(paste0(pathLandcover, "/", timeFolder, "/raw"))
-  dir.create(paste0(pathLandcover, "/", timeFolder, "/raw"), recursive = TRUE)
-  pathLandcover <- paste0(pathLandcover, "/", timeFolder, "/raw")
+  logTxt <- file.path(mainPath, country, "data", "log.txt")
+  timeFolder <- format(Sys.time(), "%Y%m%d%H%M%S")
+  pathLandcover <- file.path(pathLandcover, timeFolder, "raw")
+  check_path_length(pathLandcover)
+  dir.create(pathLandcover, recursive = TRUE)
   if (length(urls) == 1) {
-    check_path_length(paste0(pathLandcover, "/", country, awsLCSuffix))
-    dw <- tryCatch({utils::download.file(urls, destfile = paste0(pathLandcover, "/", country, awsLCSuffix), mode = "wb")}, error = function(e) NULL)
+    check_path_length(file.path(pathLandcover, paste0(country, awsLCSuffix)))
+    dw <- tryCatch({utils::download.file(urls, destfile = file.path(pathLandcover, paste0(country, awsLCSuffix)), mode = "wb")}, error = function(e) NULL)
     if (is.null(dw)) {
       stop(paste("Error: cannot open URL (single tile)", urls[i]))
     }
     write(paste0(Sys.time(), ": Single landcover tile downloaded - Input folder ", timeFolder), file = logTxt, append = TRUE)
   }else{
-    # Download tiles shapefile in a temporary folder
-    tmpFolder <- paste0(pathLandcover, "/temp")
-    check_path_length(tmpFolder)
+    # Download tiles shapefile in a temporary folder (tempfile, this way is new and empty)
+    tmpFolder <- tempfile()
     dir.create(tmpFolder)
     for (i in 1:length(urls)) {
       cat(paste0("Downloading tile ", i, "/", length(urls), "...\n"))
       # If extent is outside the available tiles
-      check_path_length(paste0(tmpFolder, "/", codeFiles[i], ".tif"))
-      dw <- tryCatch({utils::download.file(urls[i], destfile = paste0(tmpFolder, "/", codeFiles[i], ".tif"), mode = "wb")}, error = function(e) NULL)
+      check_path_length(file.path(tmpFolder, paste0(codeFiles[i], ".tif")))
+      dw <- tryCatch({utils::download.file(urls[i], destfile = file.path(tmpFolder, paste0(codeFiles[i], ".tif")), mode = "wb")}, error = function(e) NULL)
       if (is.null(dw)) {
         next
       }
     }
     cat(paste0("Creating a mosaic with the downloaded rasters...\n"))
     files <- list.files(tmpFolder, pattern = "\\.tif", full.names=TRUE)
-    check_path_length(paste0(pathLandcover, "/", country, awsLCSuffix))
-    mosaicGDAL <- tryCatch({gdalUtils::mosaic_rasters(gdalfile = files, dst_dataset = paste0(pathLandcover, "/", country, awsLCSuffix), of="GTiff")}, error = function (e) NULL, warning = function (e) NULL)
-    # Warning if GDAL is not found also return NULL. Anyway we have NULL. Let's check if the output has been created. 
-    if (!file.exists(paste0(pathLandcover, "/", country, awsLCSuffix))) {
-      mosaicGDAL <- 1
+    check_path_length(file.path(pathLandcover, paste0(country, awsLCSuffix)))
+    mosaicGDAL <- try(gdalUtils::mosaic_rasters(gdalfile = files, dst_dataset = file.path(pathLandcover, paste0(country, awsLCSuffix)), of="GTiff"))
+    # Some warnings can prevent the function from running. Let's check if the output has been created. 
+    if (!file.exists(file.path(pathLandcover, paste0(country, awsLCSuffix)))) {
+      mosaicGDAL <- FALSE
+    } else {
+      mosaicGDAL <- TRUE
     }
-    if (!is.null(mosaicGDAL) && mosaicGDAL == 1) {
-      message("GDAL library not found/issues -> mosaicking the tiles using the terra::merge function (slower)")
+    if (!mosaicGDAL) {
+      message("GDAL library not found/issues -> mosaicking the tiles using the terra::merge function (slower)\nPlease wait....")
       lcLst <- list()
       for (i in 1:length(urls)) {
-        check_path_length(paste0(tmpFolder, "/", codeFiles[i], ".tif"))
-        ras <- tryCatch({terra::rast(paste0(tmpFolder, "/", codeFiles[i], ".tif"))}, error = function (e) NULL)
+        check_path_length(file.path(tmpFolder, paste0(codeFiles[i], ".tif")))
+        ras <- tryCatch({terra::rast(file.path(tmpFolder, paste0(codeFiles[i], ".tif")))}, error = function (e) NULL)
         if (!is.null(ras)){
           lcLst[[i]] <- ras
         }
@@ -163,11 +163,10 @@ download_landcover <- function (mainPath, country, alwaysDownload = FALSE, mostR
           lcLst <- lcLst[-c(1, length(vlcLst))]
         }
       }
-      check_path_length(paste0(pathLandcover, "/", country, awsLCSuffix))
-      terra::writeRaster(newRas, paste0(pathLandcover, "/", country, awsLCSuffix))
+      check_path_length(file.path(pathLandcover, paste0(country, awsLCSuffix)))
+      terra::writeRaster(newRas, file.path(pathLandcover, paste0(country, awsLCSuffix)))
     } 
     write(paste0(Sys.time(), ": Multiple landcover tiles downloaded and mosaicked - Input folder ", timeFolder), file = logTxt, append = TRUE)
-    unlink(tmpFolder, recursive = TRUE)
   }
-  cat(paste0(pathLandcover, "/", country, awsLCSuffix, "\n"))
+  cat(paste0("Done: ", pathLandcover, "/", country, awsLCSuffix, "\n"))
 }

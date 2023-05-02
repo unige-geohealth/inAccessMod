@@ -28,7 +28,7 @@ set_projection <- function (mainPath, country, mostRecent = FALSE, alwaysSet = F
   }
   message("\nSuitable coordinate reference systems based on boundaries")
   # Write the EPSG in the config.txt file
-  fileConn=file(paste0(mainPath, "/", country, "/data/config.txt"), open = "r")
+  fileConn=file(file.path(mainPath, country, "data", "config.txt"), open = "r")
   configTxt <- readLines(fileConn)
   close(fileConn)
   if (any(grepl(paste0("EPSG:"), configTxt))) {
@@ -47,7 +47,7 @@ set_projection <- function (mainPath, country, mostRecent = FALSE, alwaysSet = F
     }
   }
   # Get the admin boundaries
-  pathBorder <- paste0(mainPath, "/", country, "/data/vBorders")
+  pathBorder <- file.path(mainPath, country, "data", "vBorders")
   if (!dir.exists(pathBorder)) {
     stop(paste(pathBorder, "does not exist. Run the initiate_project function first or check the input parameters."))
   }
@@ -55,11 +55,11 @@ set_projection <- function (mainPath, country, mostRecent = FALSE, alwaysSet = F
   if (is.null(folders)) {
     stop("Raw boundary shapefile is missing.")
   } else {
-    timeFolderBound <- select_input(folders, "Shapefile downloaded at", mostRecent)
+    timeFolderBound <- select_input(folders, "Shapefile timestamped at", mostRecent)
     if (is.null(timeFolderBound)) {
       stop_quietly("You exit the function.")
     } else {
-      boundFolder <- paste0(pathBorder, "/", timeFolderBound, "/raw/")
+      boundFolder <- file.path(pathBorder, timeFolderBound, "raw")
       multipleFilesMsg <- "Select the boundary shapefile that you would like to use."
       message(paste("Loading raw boundaries..."))
       border <- load_layer(boundFolder, multipleFilesMsg)[[2]]
@@ -109,34 +109,34 @@ set_projection <- function (mainPath, country, mostRecent = FALSE, alwaysSet = F
     }
   }
   # Write the EPSG in the config.txt file
-  fileConn = file(paste0(mainPath, "/", country, "/data/config.txt"), open = "r")
+  fileConn = file(file.path(mainPath, country, "data", "config.txt"), open = "r")
   configTxt <- readLines(fileConn)
   close(fileConn)
-  logTxt <- paste0(mainPath, "/", country, "/data/log.txt")
+  logTxt <- file.path(mainPath, country, "data", "log.txt")
   if(any(grepl(paste0("EPSG:"), configTxt))){
     epsgOld <- get_param(mainPath, country, "EPSG")
     if (epsgOld == epsg) {
       stop_quietly("\nNew projection equal to the one previously set. No change has been made.")
     }
     newValues <- gsub("EPSG:.*", paste0("EPSG:", epsg), configTxt)
-    fileConn <- file(paste0(mainPath, "/", country, "/data/config.txt"), open = "w")
+    fileConn <- file(file.path(mainPath, country, "data", "config.txt"), open = "w")
     writeLines(newValues, fileConn)
     close(fileConn)
     write(paste0(Sys.time(), ": Projection parameter changed (", epsg, ")"), file = logTxt, append = TRUE)
     warning("\nProjection parameter had already been set and has been changed. Inputs might have to be processed again.")
   }else{
-    write(paste0("EPSG:", epsg), file = paste0(mainPath, "/", country, "/data/config.txt"), append = TRUE)
+    write(paste0("EPSG:", epsg), file = file.path(mainPath, country, "data", "config.txt"), append = TRUE)
     write(paste0(Sys.time(), ": Projection parameter set (", epsg, ")"), file = logTxt, append = TRUE)
   }
   # Project the boundary shapefile
   message("\nProjecting the boundary shapefile...")
   border <- sf::st_transform(border, sf::st_crs(paste0("EPSG:", epsg)))
   write(paste0(Sys.time(), ": vBorders shapefile projected (", paste0("EPSG:", epsg), ") - From input folder: ", timeFolderBound), file = logTxt, append = TRUE)
-  sysTime <- Sys.time()
-  outTimeFolder <- gsub("-|[[:space:]]|\\:", "", sysTime)
-  borderOutFolder <- paste0(gsub("raw", "processed", boundFolder), "/", outTimeFolder)
+  outTimeFolder <- format(Sys.time(), "%Y%m%d%H%M%S")
+  borderOutFolder <- file.path(gsub("raw", "processed", boundFolder), outTimeFolder)
+  check_path_length(borderOutFolder)
   dir.create(borderOutFolder, recursive = TRUE)
-  sf::st_write(border, paste0(borderOutFolder, "/vBorders.shp"), append=FALSE)
+  sf::st_write(border, file.path(borderOutFolder, "vBorders.shp"), append=FALSE)
   write(paste0(Sys.time(), ": Processed vBorders shapefile saved - Output folder: ", outTimeFolder), file = logTxt, append = TRUE)
   message("\nProjection parameter has been set and the boundary shapefile has been projected.")
 }

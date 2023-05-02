@@ -27,7 +27,7 @@ First, we make sure that the devtools package installed on our computer.
 if (!require("devtools")) install.packages("devtools")
 ```
 
-Then we use its *install_github* function to download and install the **inAccessMod** package from its github repository.
+Then we use its `install_github` function to download and install the `inAccessMod` package from its github repository.
 
 ```{r install, eval=FALSE}
 devtools::install_github("ptimoner/inAccessMod")
@@ -40,7 +40,7 @@ library(inAccessMod)
 ```
 
 ### Initiate Project
-With the *initiate_project* function, we can select the country and automatically, the ISO 3166-1 alpha-3 country code is stored in a config.txt file and the directory main structure for the project is created. This function also creates a log.txt file that will record and track the main operations related to the project. We will see that the final structure arises when downloading and processing the data with the corresponding functions, and it allows multiple ’raw’ inputs and multiple ’processed’ outputs for each input. This can be useful when performing different analyses for the same country (e.g. when we have updated data) or using different processing parameters. To initiate the project, the only parameter we need to provide is the path where the project, namely the country folder will be created.
+With the `initiate_project` function, we can select the country and automatically, the ISO 3166-1 alpha-3 country code is stored in a config.txt file and the directory main structure for the project is created. This function also creates a log.txt file that will record and track the main operations related to the project. We will see that the final structure arises when downloading and processing the data with the corresponding functions, and it allows multiple ’raw’ inputs and multiple ’processed’ outputs for each input. This can be useful when performing different analyses for the same country (e.g. when we have updated data) or using different processing parameters. To initiate the project, the only parameter we need to provide is the path where the project, namely the country folder will be created.
 
 ```{r initiate, eval=FALSE}
 mainPath <- "C:/inAccMod/tutorial"
@@ -59,7 +59,7 @@ There is a set of functions that allows to download all the required layers from
 
 ### Download the country boundaries
 
-Now, that the project is initiated, we can download the country boundary layer with the *download_boundaries* function. This layer will help to set the projected coordinate reference system and will be used for cropping, masking and clipping the other input layers. The function requires the name of the country folder, the boundary administrative level and a logical parameter (TRUE/FALSE) that indicates if the layer should always be downloaded, even if it has already been downloaded. If FALSE and if the administrative boundary shapefile has already been downloaded we are interactively asked whether we want to download it again or not. The layer is downloaded from the *geoboundaries* database. If the the administrative level is not available, the function tries a lower one and so on. Metadata file is also downloaded.
+Now, that the project is initiated, we can download the country boundary layer with the `download_boundaries` function. This layer will help to set the projected coordinate reference system and will be used for cropping, masking and clipping the other input layers. The function requires the name of the country folder, the boundary administrative level and a logical parameter (TRUE/FALSE) that indicates if the layer should always be downloaded, even if it has already been downloaded. If FALSE and if the administrative boundary shapefile has already been downloaded we are interactively asked whether we want to download it again or not. The layer is downloaded from the *geoboundaries* database. If the the administrative level is not available, the function tries a lower one and so on. Metadata file is also downloaded.
 
 ```{r boundaries, eval=FALSE}
 country <- "Switzerland"
@@ -68,7 +68,7 @@ download_boundaries(mainPath, country, adminLevel = 4, alwaysDownload = TRUE)
 
 ### Set the projected coordinate reference system
 
-Now, we will set the projected coordinate reference system with the *set_projection* function. The "best-fit" and the suitable projected coordinate reference systems are obtained with the *suggest_top_crs* and the *suggest_crs* functions, respectively, from the **crsuggest** package. Both functions work by analyzing the extent of the spatial layer and comparing it to the area extents in the EPSG's coordinate reference system database. By setting *bestCRS* = TRUE, the reference system is set based on the "best-fit" system? If FALSE, we are interactively asked to select the projected coordinate reference system from a list of the suitable reference systems. It has to be noted that the reference system is set for the entire project. If it is modified after having processed some input layers, we have to make sure to process these inputs again. The logical parameter *mostRecent* indicates if it is the most recent boundary shapefile that should be used (in case there were multiple ones). If FALSE and if there are multiple available inputs, we are interactively asked to select the input based on download time. Finally, the logical parameter *alwaysSet* indicates whether the projected coordinate reference system should always be set, even it it has already been set. If FALSE and if the projected coordinate reference system has already been set we are interactively asked whether we want to set it again or not.
+Now, we will set the projected coordinate reference system with the `set_projection` function. The "best-fit" and the suitable projected coordinate reference systems are obtained with the `suggest_top_crs` and the `suggest_crs` functions, respectively, from the `crsuggest` package. Both functions work by analyzing the extent of the spatial layer and comparing it to the area extents in the EPSG's coordinate reference system database. By setting *bestCRS* = TRUE, the reference system is set based on the "best-fit" system? If FALSE, we are interactively asked to select the projected coordinate reference system from a list of the suitable reference systems. It has to be noted that the reference system is set for the entire project. If it is modified after having processed some input layers, we have to make sure to process these inputs again. The logical parameter *mostRecent* indicates if it is the most recent boundary shapefile that should be used (in case there were multiple ones). If FALSE and if there are multiple available inputs, we are interactively asked to select the input based on download time. Finally, the logical parameter *alwaysSet* indicates whether the projected coordinate reference system should always be set, even it it has already been set. If FALSE and if the projected coordinate reference system has already been set we are interactively asked whether we want to set it again or not.
 
 ```{r set_projection, eval=FALSE}
 set_projection(mainPath, country, mostRecent = TRUE, alwaysSet = TRUE, bestCRS = TRUE)
@@ -84,11 +84,11 @@ The function also has projected the boundary shapefile and we can observe how th
 
 ### Filter the health facilities and create a point shapefile (HeRAMS table)
 
-This section is only compatible with the HeRAMS tables. If we are not working with HeRAMS data, we can just skip this part and use the *copy_input* function to copy a health facility shapefile into an appropriate sub-folder (it will copy the input to e.g. /vFacilities/20220524103021/raw).
+This section is only compatible with the HeRAMS tables. If we are not working with HeRAMS data, we can just skip this part and use the `copy_input` function to copy a health facility shapefile into an appropriate sub-folder (it will copy the input to e.g. /vFacilities/20220524103021/raw).
 
-Now, let's say that we are dealing with HeRAMS data and let's filter the health facilities from our raw health facility tables with the *filter_hf* function, and create a point shapefile of the filtered facilities with the *create_hf_facilities* function. We need two tables, the one with the responses as text (e.g. "Available"), and the one with responses as codes (e.g. "A1")  
+Now, let's say that we are dealing with HeRAMS data and let's filter the health facilities from our raw health facility tables with the `HeRAMS_filter_hf` function, and create a point shapefile of the filtered facilities with the `HeRAMS_create_hf_facilities` function. We need two tables, the one with the responses as text (e.g. "Available"), and the one with responses as codes (e.g. "A1")  
 
-The function *filter_hf* requires the main project folder and the country folder name. Besides, it also requires the paths to the raw text and code tables (if NULL, we are asked whether we want to take fictitious example data from Switzerland). We have fourteen other parameters: scenario, mostRecentObs, defaultParamaters, type, ownership, status, building, equipment, functionality, accessibility, support, services, partners and barriers.
+The function `HeRAMS_filter_hf` requires the main project folder and the country folder name. Besides, it also requires the paths to the raw text and code tables (if NULL, we are asked whether we want to take fictitious example data from Switzerland). We have fourteen other parameters: scenario, mostRecentObs, defaultParamaters, type, ownership, status, building, equipment, functionality, accessibility, support, services, partners and barriers.
 
 To understand these parameters, let's see how this function works.
 
@@ -121,7 +121,7 @@ inAccessMod::fictitious_herams_data_txt[1:6, c("last_synced", "subject_id", "dat
 
 
 ```{r filter_hf, eval=FALSE}
-filter_hf(mainPath, country, pathTable = NULL, barriers = FALSE, mostRecentObs = TRUE)
+HeRAMS_filter_hf(mainPath, country, pathTable = NULL, barriers = FALSE, mostRecentObs = TRUE)
 ```
 
 A folder "scenario001" was created in which we find the text file called "selected_hf.txt" with the selection criteria and a sub-folder whose name refers to the time at which the table was filtered. In this sub-folder, there is another text file called "time_frame.txt" informing about how the multiple responses per facility were handled, and a "raw" sub-folder that contains the filtered table.
@@ -135,7 +135,7 @@ A folder "scenario001" was created in which we find the text file called "select
 Let's say that we would like to re-run the function with different selection criteria.
 
 ```{r filter_hf2, eval=FALSE}
-filter_hf(mainPath, country, pathTable = NULL, scenario = NULL, mostRecentObs = TRUE)
+HeRAMS_filter_hf(mainPath, country, pathTable = NULL, scenario = NULL, mostRecentObs = TRUE)
 ```
 
 ![](tree_vFacilities2.png)
@@ -145,7 +145,7 @@ We can see that we have now two scenario sub-folders. Running again this functio
 Now let's create a shapefile from the first health facility filtered table. The function checks if there are missing coordinates and if the facilities fall within the country boundary. If so, we are asked whether we want to add/correct them or remove the corresponding facilities. The *mostRecentBoundaries* parameter indicates if the most recent downloaded boundaries has to be used. If FALSE and if there are multiple available boundary shapefiles, we are interactively asked to select the input based on file creation time. If *rmNA* and *rmOut* are TRUE, the function removes the facilities that have missing coordinates or that fall outside the country boundaries and create text files informing about the removed facilities. Finally the *lonlat* indicates if the coordinates reflect the WGS84 longitude and latitude. If FALSE, an *epsg* code is requires. Finally, the *scenario* parameter allows us to directly specify the sub-project from which we want to vectorize the health facilities. If NULL, we are interactively asked to choose the sub-project from the available ones (during this process we have the option of printing each sub-project selection criteria in the console).
 
 ```{r create_hf_shp, eval=FALSE}
-create_hf_shapefile(mainPath, country, mostRecentBoundaries = TRUE, lonlat = TRUE, rmNA = TRUE, rmOut = TRUE, scenario = "001")
+HeRAMS_create_hf_shapefile(mainPath, country, mostRecentBoundaries = TRUE, lonlat = TRUE, rmNA = TRUE, rmOut = TRUE, scenario = "001")
 ```
 
 ### Download open source layers
@@ -228,7 +228,7 @@ Let's have a look at the log.txt file
 ![](log.png)
 
 ### Label land cover classes
-The *label_landcover* function creates a CSV table with landcover codes and labels that can be imported into AccessMod. Besides the common arguments (mainPath, country, mostRecent) we have the *defaultLabels* logical parameter. It indicates if the Copernicus default labels should be associated with the the landcover raster values. If FALSE, we are interactively asked to enter the label names for each value.
+The `label_landcover` function creates a CSV table with landcover codes and labels that can be imported into AccessMod. Besides the common arguments (mainPath, country, mostRecent) we have the *defaultLabels* logical parameter. It indicates if the Copernicus default labels should be associated with the the landcover raster values. If FALSE, we are interactively asked to enter the label names for each value.
 
 ```{r labels, eval=FALSE}
 label_landcover(mainPath, country, mostRecent = TRUE, overwrite = TRUE, defaultLabels = TRUE)
@@ -236,7 +236,7 @@ label_landcover(mainPath, country, mostRecent = TRUE, overwrite = TRUE, defaultL
 
 ### Processed input compiling
 
-To facilitate the importation of processed inputs into AccessMod, we can use the *compile_processed_data* function. It compiles the available processed layers and copy them to a new folder called "zToAccessMod". Different runs of this function will create different sub-folder within the "zToAccessMod" folder. 
+To facilitate the importation of processed inputs into AccessMod, we can use the `compile_processed_data` function. It compiles the available processed layers and copy them to a new folder called "zToAccessMod". Different runs of this function will create different sub-folder within the "zToAccessMod" folder. 
 
 When *mostRecent* is TRUE, it is the most recent processed layer that is copied into the new folder.
 
@@ -247,7 +247,7 @@ compile_processed_data(mainPath, country, mostRecent = TRUE)
 ![](zToAccessMod.png)
 
 ### Sub-national travel scenarios
-We can use the *multi_ts* function to handle different travel scenarios for different administrative units. It creates an updated merged landcover and an updated travel scenario table. The required inputs are an administrative shapefile, a merged landcover imported from AccessMod, and an Excel (or CSV) table for each travel scenario. The function requires a folder that only contains the required inputs. When running the function, the user is asked to select the attribute table column of the shapefile that refers to each administrative unit, and then to select the travel scenario for each administrative unit.
+We can use the `multi_ts` function to handle different travel scenarios for different administrative units. It creates an updated merged landcover and an updated travel scenario table. The required inputs are an administrative shapefile, a merged landcover imported from AccessMod, and an Excel (or CSV) table for each travel scenario. The function requires a folder that only contains the required inputs. When running the function, the user is asked to select the attribute table column of the shapefile that refers to each administrative unit, and then to select the travel scenario for each administrative unit.
 
 ```{r multi_ts, eval=FALSE}
 multi_ts("C:/Test/TravelScenarios/", "adminLayerName", "landcoverFile.tif", zones_ts = NULL)
@@ -256,7 +256,7 @@ multi_ts("C:/Test/TravelScenarios/", "adminLayerName", "landcoverFile.tif", zone
 The *zones_ts* argument refers to an Excel or CSV table that relates the administrative units to the different scenarios. Two columns: the first one has the same name than the field name of the administrative layer attribute table that refers to each administrative unit, and the second one called 'scenario'. In the first all the different units (as indicated in the attribute table), in the second, the names (without the extension) of the different scenario tables. If set to NULL, the user is interactively asked to assign a scenario to each administrative unit, and a zones_ts table is created.
 
 ### Health facilities that provide the best coverage
-The *hf_best_cov* function allows to select the health facilities that offer the best population coverage using their catchments (calculated in AccessMod) and a raster of population. This function also offers the possibility to ensure that N facilities are selected for each administrative unit. The inputs required are the catchment shapefile and the population raster. When we would like to select a minimum number of facilities per administrative unit, we also need the health facility shapefile and the administrative unit shapefile. The outputs are a table with the selected facilities with their names, the population they cover, the cumulative sum of the covered population, and when corresponding, the region they are located in. A bar plot is also generated representing the cumulative sum of the covered population for the selected facilities. The algorithm works recursively. It orders the facility based and the total population located within their catchments, it selects the first facility and removes the population covered in its catchment in case we would have catchments that overlap, to avoid counting the same population multiple times. It repeats the process until the number of facilities to be selected is reached.
+The `hf_best_cov` function allows to select the health facilities that offer the best population coverage using their catchments (calculated in AccessMod) and a raster of population. This function also offers the possibility to ensure that N facilities are selected for each administrative unit. The inputs required are the catchment shapefile and the population raster. When we would like to select a minimum number of facilities per administrative unit, we also need the health facility shapefile and the administrative unit shapefile. The outputs are a table with the selected facilities with their names, the population they cover, the cumulative sum of the covered population, and when corresponding, the region they are located in. A bar plot is also generated representing the cumulative sum of the covered population for the selected facilities. The algorithm works recursively. It orders the facility based and the total population located within their catchments, it selects the first facility and removes the population covered in its catchment in case we would have catchments that overlap, to avoid counting the same population multiple times. It repeats the process until the number of facilities to be selected is reached.
 
 Let's say that we would like to select the 10 'best' facilities in terms of coverage regardless the administrative units they belong to. You will need to have all your inputs in one folder.
 

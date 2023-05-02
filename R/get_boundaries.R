@@ -21,7 +21,7 @@ get_boundaries <- function (mainPath, country, type, mostRecent) {
     stop("type must be 'raw' or 'processed")
   }
   # Check directory
-  pathBorder <- paste0(mainPath, "/", country, "/data/vBorders")
+  pathBorder <- file.path(mainPath, country, "data", "vBorders")
   if (!dir.exists(pathBorder)) {
     stop(paste(pathBorder,"does not exist. Run the initiate_project function first or check the input parameters."))
   }
@@ -30,23 +30,23 @@ get_boundaries <- function (mainPath, country, type, mostRecent) {
     stop(paste(stringr::str_to_title(type), "boundary shapefile is missing."))
   } else {
     if (type == "raw") {
-      timeFolder <- select_input(folders, "Shapefile downloaded at", mostRecent)
+      timeFolder <- select_input(folders, "Shapefile timestamped at", mostRecent)
       if (is.null(timeFolder)) {
         stop_quietly("You exit the function.")
       } else {
-        boundFolder <- paste0(pathBorder, "/", timeFolder, "/raw/")
+        boundFolder <- file.path(pathBorder, timeFolder, "raw")
         multipleFilesMsg <- "Select the boundary shapefile that you would like to use."
         message(paste("Loading", type, "boundary shapefile..."))
         border <- load_layer(boundFolder, multipleFilesMsg)[[2]]
         return(border)
       }
     } else {
-      timeFolder <- select_input(folders, "Shapefile processed at", mostRecent)
+      timeFolder <- select_input(folders, "Shapefile timestamped at", mostRecent)
       if (is.null(timeFolder)) {
         stop_quietly("You exit the function.")
       } else {
         folderLst <- list.dirs(pathBorder)
-        boundFolder <-   folderLst[grepl(paste0("processed/", timeFolder), folderLst)]
+        boundFolder <-   folderLst[grepl(file.path("processed", timeFolder), folderLst)]
         multipleFilesMsg <- "Select the boundary shapefile that you would like to use."
         message(paste("\nLoading", type, "boundary shapefile..."))
         border <- load_layer(boundFolder, multipleFilesMsg)[[2]]

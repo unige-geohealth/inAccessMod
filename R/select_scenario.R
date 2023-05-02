@@ -5,7 +5,7 @@
 #' @export
 select_scenario <- function (scenarioDirs) {
   if (length(scenarioDirs) == 0) {
-    stop("Filtered health facility table is missing. Run the filter_hf function.")
+    stop("Filtered health facility table is missing. Run the HeRAMS_filter_hf function.")
   }
   scenario <- stringr::str_extract(scenarioDirs, "scenario[0-9]{3}$")
   if (length(scenario) > 1) {

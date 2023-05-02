@@ -22,17 +22,17 @@
 #' @export
 
 hf_best_cov <- function (workDir, 
-                      catchShp, 
-                      popRaster, 
-                      catchHfColName, 
-                      nTot,
-                      adminCheck = FALSE,
-                      hfShp = NULL, 
-                      hfHfColName = NULL, 
-                      npAdmin = NULL,
-                      adminShp = NULL,
-                      adminColName = NULL) {
-  
+                        catchShp, 
+                        popRaster, 
+                        catchHfColName, 
+                        nTot,
+                        adminCheck = FALSE,
+                        hfShp = NULL, 
+                        hfHfColName = NULL, 
+                        npAdmin = NULL,
+                        adminShp = NULL,
+                        adminColName = NULL) {
+    
   #Loading the inputs
   message("Loading the inputs...")
   if (!dir.exists(workDir)) {
@@ -44,12 +44,12 @@ hf_best_cov <- function (workDir,
   if (!is.logical(adminCheck)) {
     stop("adminCheck must be 'logical'")
   }
-  tempCatch <- paste0(paste(workDir, catchShp, sep="/"), ".shp")
+  tempCatch <- file.path(workDir, paste0(catchShp, ".shp"))
   if (!file.exists(tempCatch)) {
     stop(paste(tempCatch, "does not exist."))
   }
-  tempCatch <- sf::st_read(paste0(paste(workDir, catchShp, sep="/"), ".shp"), quiet = TRUE)
-  pop <- paste0(workDir, "/", popRaster)
+  tempCatch <- sf::st_read(tempCatch, quiet = TRUE)
+  pop <- file.path(workDir, popRaster)
   if (!file.exists(pop)) {
     stop(paste(pop, "does not exist."))
   }
@@ -73,7 +73,7 @@ hf_best_cov <- function (workDir,
     if (is.null(hfShp)) {
       stop("If adminCheck = TRUE, hfShp is required.")
     }
-    hf <- paste0(paste(workDir, hfShp, sep="/"),".shp")
+    hf <- file.path(workDir, paste0(hfShp,".shp"))
     hf <- sf::st_read(hf, quiet = TRUE)
     if (!hfHfColName %in% colnames(hf)) {
       stop(paste(hfHfColName, "is not a valid column name in the facility shapefile."))
@@ -83,7 +83,8 @@ hf_best_cov <- function (workDir,
     if (!all(c(test1, test2))) {
       stop("Discrepancy between facility names in health facility and catchment shapefiles.")
     }
-    admin <- sf::st_read(paste0(paste(workDir, adminShp, sep="/"),".shp"), quiet = TRUE)
+    admin <- file.path(workDir, paste0(adminShp,".shp"))
+    admin <- sf::st_read(admin, quiet = TRUE)
     if (!adminColName %in% colnames(admin)) {
       stop(paste(hfHfColName, "is not a valid column name in the facility shapefile."))
     }
@@ -300,15 +301,15 @@ hf_best_cov <- function (workDir,
   }
   
   # Create output folder
-  outFolder <- file.path(workDir, "outputs", gsub("-|[[:space:]]|\\:", "", Sys.time()))
+  outFolder <- file.path(workDir, "outputs", format(Sys.time(), "%Y%m%d%H%M%S"))
   dir.create(outFolder, showWarnings = FALSE, recursive = TRUE)
-  
+
   # Write the csv of the ranked candidates and their population cover
-  write.csv(finalTable, paste0(outFolder, "/facilities_table.csv"), row.names = FALSE)
+  write.csv(finalTable, file.path(outFolder, "facilities_table.csv"), row.names = FALSE)
   
   # Create the plot png
   par(mar=c(8,4,4,2))
-  png(filename = paste0(outFolder, "/cumulative_sum.png"), width = 1000, height = 1000, units = "px")
+  png(filename = file.path(outFolder, "cumulative_sum.png"), width = 1000, height = 1000, units = "px")
   barplot((finalTable$`Cumulative sum`/10000), main = "Cumulative sum of the population covered (per 10000 habitants)", ylab = "", col = "dodgerblue3", las = 2, names.arg = paste("Rank", finalTable$Rank), las=2)
   invisible(dev.off())
   cat(paste("Calculations completed.\nOutputs can be found under:", outFolder))

@@ -1,5 +1,3 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
-^test_allocation\.R$
-^create_hf_shapefile_multi\.R$
-^multi_ts_json$
+^test.R$

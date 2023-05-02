@@ -50,7 +50,7 @@ multi_ts_fast <- function (inputFolder, adminLayerName, landcoverFile) {
     stop("landcoverFile must be 'character'")
   }
   admin <- sf::st_read(inputFolder, adminLayerName)
-  landcover <- terra::rast(paste(inputFolder, landcoverFile, sep = "/"))
+  landcover <- terra::rast(file.path(inputFolder, landcoverFile))
   # admin$shapeName <- paste0("Admin", 1:nrow(admin))
   vLc <- terra::values(landcover)[, 1]
   vLc <- unique(vLc[!is.na(vLc)])
@@ -94,10 +94,7 @@ multi_ts_fast <- function (inputFolder, adminLayerName, landcoverFile) {
     sc <- utils::menu(scenarios, title = paste("\nWhich scenario for", zoneScenario[i, 1], "?"))
     zoneScenario[i, 2] <- scenarios[sc]
   }
-  tempDir <- paste0(inputFolder, "/temp")
-  if (dir.exists(tempDir)) {
-    unlink(tempDir, recursive = TRUE)
-  }
+  tempDir <- tempfile()
   dir.create(tempDir)
   finalScenario <- xlsLst[[1]]
   finalScenario$newlabel <- character(nrow(finalScenario))
@@ -114,7 +111,7 @@ multi_ts_fast <- function (inputFolder, adminLayerName, landcoverFile) {
     if (i == 1) {
       newVal <- 1:nrow(newSc)
       newRas <- terra::subst(newRas, from = newSc$class, to = newVal)
-      terra::writeRaster(newRas, file = paste0(tempDir, "/scenario", i, ".tif"))
+      terra::writeRaster(newRas, file = file.path(tempDir, paste0("scenario", i, ".tif")))
       finalScenario$newclass <- newVal
       finalScenario$newlabel <- paste0(finalScenario$label, "_", i)
     } else {
@@ -131,25 +128,24 @@ multi_ts_fast <- function (inputFolder, adminLayerName, landcoverFile) {
         finalScenario <- rbind(finalScenario, noMatch)
       }
       newRas <- terra::subst(newRas, from = recode$class, to = recode$newclass)
-      terra::writeRaster(newRas, file = paste0(tempDir, "/scenario", i, ".tif"))
+      terra::writeRaster(newRas, file = file.path(tempDir, paste0("scenario", i, ".tif")))
     }
   }
   allRast <- paste0(tempDir, "/scenario", 1:length(xlsLst), ".tif")
-  sysTime <- Sys.time()
-  timeFolder <- gsub("-|[[:space:]]|\\:", "", sysTime)
-  outFolder <- paste0(inputFolder, "/out/", timeFolder)
+  timeFolder <- format(Sys.time(), "%Y%m%d%H%M%S")
+  outFolder <- file.path(inputFolder, "out", timeFolder)
+  check_path_length(outFolder)
   dir.create(outFolder, recursive = TRUE)
   message("\nMerging and writing ouptuts...")
-  terra::writeRaster(landcover, file = paste(outFolder, "multi_ts_merged_landcover.tif", sep = "/"), overwrite = TRUE, filetype = "GTiff")
-  gdalUtils::mosaic_rasters(gdalfile = allRast, dst_dataset = paste(outFolder, "multi_ts_merged_landcover.tif", sep = "/"), of="GTiff", verbose = FALSE)
+  terra::writeRaster(landcover, file = file.path(outFolder, "multi_ts_merged_landcover.tif"), overwrite = TRUE, filetype = "GTiff")
+  gdalUtils::mosaic_rasters(gdalfile = allRast, dst_dataset = file.path(outFolder, "multi_ts_merged_landcover.tif"), of="GTiff", verbose = FALSE)
   
   finalScenario <- finalScenario[, c(6, 5, 3, 4)]
   colnames(finalScenario) <- c("class", "label", "speed", "mode")
   finalScenario$speed <- as.integer(finalScenario$speed)
   finalScenario$class <- as.integer(finalScenario$class)
   
-  writexl::write_xlsx(finalScenario, path = paste(outFolder, "multi_ts.xlsx", sep = "/"), col_names = TRUE)  
-  writexl::write_xlsx(zoneScenario, path = paste(outFolder, "zones_ts.xlsx", sep = "/"), col_names = TRUE)
-  unlink(tempDir, recursive = TRUE)
+  writexl::write_xlsx(finalScenario, path = file.path(outFolder, "multi_ts.xlsx"), col_names = TRUE)  
+  writexl::write_xlsx(zoneScenario, path = file.path(outFolder, "zones_ts.xlsx"), col_names = TRUE)
   message(paste("Output folder:", outFolder, "\n"))
 }

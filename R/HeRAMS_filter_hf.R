@@ -26,7 +26,7 @@
 #' analysis scenario create new scenario folders. In the same scenario folder different 'raw' sub-folders may be created
 #' depending on the original Excel document modification time, and the selection of observations based on time. 
 #' @export
-filter_hf <- function (mainPath, country, pathTableCode = NULL, pathTableText = NULL, scenario = NULL, mostRecentObs = NULL, 
+HeRAMS_filter_hf <- function (mainPath, country, pathTableCode = NULL, pathTableText = NULL, scenario = NULL, mostRecentObs = NULL, 
                        defaultParameters = TRUE,
                        type = TRUE,
                        ownership = FALSE,
@@ -80,9 +80,9 @@ filter_hf <- function (mainPath, country, pathTableCode = NULL, pathTableText = 
   # Process the filtering with txt table, but check with code for stop filtering
   # tibTxtNames table are with full column names, for interactive selection (health services)
   # tibTxt <- tryCatch({tibble::as_tibble(read.csv(pathTableText, skip = 2))}, error = function(e){NULL})
-  tibTxt <- tryCatch({tibble::as_tibble(data.table::fread(pathTableText, skip = 2))}, error = function(e){NULL})
+  tibTxt <- tryCatch({tibble::as_tibble(data.table::fread(pathTableText, skip = 1, header = TRUE))}, error = function(e){NULL})
   # tibCode <- tryCatch({tibble::as_tibble(read.csv(pathTableCode, skip = 2))}, error = function(e){NULL})
-  tibCode <- tryCatch({tibble::as_tibble(data.table::fread(pathTableCode, skip = 2))}, error = function(e){NULL})
+  tibCode <- tryCatch({tibble::as_tibble(data.table::fread(pathTableCode, skip = 1, header = TRUE))}, error = function(e){NULL})
   tibTxtNames <- tryCatch({tibble::as_tibble(data.table::fread(pathTableText, header = TRUE, check.names = FALSE), .name_repair = "minimal")}, error = function(e){NULL})
   
   if (is.null(tibTxt) | is.null(tibCode) | is.null(tibTxtNames)) {
@@ -91,10 +91,21 @@ filter_hf <- function (mainPath, country, pathTableCode = NULL, pathTableText = 
       tibCode <- inAccessMod::fictitious_herams_data_code
       tibTxtNames <- inAccessMod::fictitious_herams_data_txt_colnames
     } else {
-      stop(paste(pathTableCode, "could not be opened."))
+      if (is.null(tibTxt) | is.null(tibTxtNames)) {
+        stop(paste(pathTableText, "could not be opened."))
+      } else {
+        stop(paste(pathTableCode, "could not be opened."))
+      }
     }
   }
   
+  if (nrow(tibTxt) == 0) {
+    stop(paste("Issues reading", pathTableText, "\nCould be caused by separator issue or line break within fields."))
+  }
+  
+  if (nrow(tibCode) == 0) {
+    stop(paste("Issues reading", pathTableCode, "\nCould be caused by separator issue or line break within fields"))
+  }
   # Check same order
   numRows <- nrow(tibCode) == nrow(tibTxt) & nrow(tibCode) == (nrow(tibTxtNames) - 1)
   if (!numRows) {
@@ -109,17 +120,17 @@ filter_hf <- function (mainPath, country, pathTableCode = NULL, pathTableText = 
     cat("\nReordering row orders of HeRAMS tables.")
     tibCode <- tibCode[match(tibCode$external_id, tibTxt$external_id), ]
   }
-  cat("\nHeRAMS tables: OK\n")
-  pathFacilities <- paste0(mainPath, "/", country, "/data/vFacilities")
-  if (!dir.exists(paste0(pathFacilities))) {
+  cat("\nHeRAMS tables: OK\n\n")
+  pathFacilities <- file.path(mainPath, country, "data", "vFacilities")
+  if (!dir.exists(pathFacilities)) {
     stop(paste(pathFacilities, " does not exist. Run the initiate_project function."))
   }
 
   # Get column code and label
-  defaultCodeColumns <- HeRAMS_table_parameters()
-  defaultStopLst <- HeRAMS_stop_filtering()
+  defaultCodeColumns <- inAccessMod::HeRAMS_parameters$table_parameters
+  defaultStopLst <- inAccessMod::HeRAMS_parameters$stop
   # Get values that indicate that there is a partner support
-  defaultPartnership <- HeRAMS_partnership_values()
+  defaultPartnership <- inAccessMod::HeRAMS_parameters$values$partnership
   if (!defaultParameters) {
     codeColumns <- set_HeRAMS_table_parameters(defaultCodeColumns)
     stopLst <- set_HeRAMS_stop(defaultStopLst)
@@ -132,7 +143,7 @@ filter_hf <- function (mainPath, country, pathTableCode = NULL, pathTableText = 
  
   if (barriers) {
   # Get values that indicate that there is an impairment
-    defaultImpairmentValues <- HeRAMS_impairment_values()
+    defaultImpairmentValues <- inAccessMod::HeRAMS_parameters$values$impairment
     if (!defaultParameters) {
       impairmentValues <- set_HeRAMS_key_values(defaultImpairmentValues, "Values that indicate that there is an impairment")
     } else {
@@ -210,12 +221,9 @@ filter_hf <- function (mainPath, country, pathTableCode = NULL, pathTableText = 
   } else {
     mostRecentObs <- FALSE
   }
-  tempDir <- paste0(pathFacilities, "/temp")
-  if (dir.exists(tempDir)) {
-    unlink(tempDir, recursive = TRUE)
-  }
+  tempDir <- tempfile()
   dir.create(tempDir)
-  logscenarioTxt <-  paste(tempDir, "time_frame.txt", sep = "/")
+  logscenarioTxt <-  file.path(tempDir, "time_frame.txt")
   write(paste0("Modification time of the raw Excel table: ", mtime), file = logscenarioTxt, append = TRUE)
   optionsID <- c("Most recent", "Date limit", "Case by case")
   if (mostRecentObs) {
@@ -404,10 +412,10 @@ filter_hf <- function (mainPath, country, pathTableCode = NULL, pathTableText = 
         }
       }
     }
-    if (!file.exists(paste(tempDir, "selected_hf.txt", sep = "/"))){
-      write("All facilities", file = paste(tempDir, "selected_hf.txt", sep = "/"))
+    if (!file.exists(file.path(tempDir, "selected_hf.txt"))){
+      write("All facilities", file = file.path(tempDir, "selected_hf.txt"))
     }
-    lines1 <- readLines(paste(tempDir, "selected_hf.txt", sep = "/"))
+    lines1 <- readLines(file.path(tempDir, "selected_hf.txt"))
     fileLst <- list.files(pathFacilities, recursive = TRUE)
     logTxtLst <- fileLst[grepl("selected_hf\\.txt$", fileLst)]
     logTxtLst <- logTxtLst[!grepl("temp/", logTxtLst)]
@@ -438,11 +446,11 @@ filter_hf <- function (mainPath, country, pathTableCode = NULL, pathTableText = 
         scenarioDir <- paste0("scenario", paste(rep("0", 3 - ncharNbr), collapse = ""), as.numeric(nbr) + 1)
       }
       message(paste("\nNew scenario:", scenarioDir))
-      dir.create(paste(pathFacilities, scenarioDir, sep = "/"))
-      file.copy(paste(tempDir, "selected_hf.txt", sep = "/"), paste(pathFacilities, scenarioDir, sep = "/"))
+      dir.create(file.path(pathFacilities, scenarioDir))
+      file.copy(file.path(tempDir, "selected_hf.txt"), file.path(pathFacilities, scenarioDir))
     }
   } else {
-    txt <- paste0(pathFacilities, "/scenario", scenario, "/selected_hf.txt")
+    txt <- file.path(pathFacilities, "scenario", scenario, "selected_hf.txt")
     txt <- file(txt, open = "r")
     txtLines <- readLines(txt)
     close(txt)
@@ -474,25 +482,23 @@ filter_hf <- function (mainPath, country, pathTableCode = NULL, pathTableText = 
       }
     }
     if (nrow(tibTxt) == 0) {
-      unlink(tempDir, recursive = TRUE)
       stop_quietly(paste("The process has stopped has the number of remaining observations is 0. \nTry to modifiy the time option for selecting observations for scenario", scenario, "."))
     }
     scenarioDir <- paste0("scenario", scenario)
   }
-  sysTime <- Sys.time()
-  outTimeFolder <- gsub("-|[[:space:]]|\\:", "", sysTime)
-  outFolder <- paste(pathFacilities, scenarioDir, outTimeFolder, "raw", sep = "/")
+  outTimeFolder <- format(Sys.time(), "%Y%m%d%H%M%S")
+  outFolder <- file.path(pathFacilities, scenarioDir, outTimeFolder, "raw")
+  check_path_length(outFolder)
   dir.create(outFolder, recursive = TRUE)
-  file.copy(paste(tempDir, "time_frame.txt", sep = "/"), paste(pathFacilities, scenarioDir, outTimeFolder, sep = "/"))
-  unlink(tempDir, recursive = TRUE)
+  file.copy(file.path(tempDir, "time_frame.txt"), file.path(pathFacilities, scenarioDir, outTimeFolder))
   tibTxt <- abbr_col_names(tibTxt)
   tibCode <- abbr_col_names(tibCode)
   dfColnames <- data.frame(code = colnames(tibTxt), label = colnames(tibTxtNames))
   codeCol <- tibCode[, colnames(tibCode)[grepl("^QH[0-9]{3}$", colnames(tibCode))]]
   colnames(codeCol) <- paste0(colnames(codeCol), "_c")
   tibTxt <- dplyr::bind_cols(tibTxt, codeCol)
-  write.csv(dfColnames, file = paste(outFolder, "column_codes.csv", sep = "/"))
-  write.csv(tibTxt, file = paste(outFolder, "health_facilities.csv", sep = "/"))
+  write.csv(dfColnames, file = file.path(outFolder, "column_codes.csv"))
+  write.csv(tibTxt, file = file.path(outFolder, "health_facilities.csv"))
   write(paste0(Sys.time(), ": Health facilities where filtered - scenario folder: ", scenarioDir, " - input folder: ", outTimeFolder), file = logTxt, append = TRUE)
   cat(paste0("\n", outFolder, "/health_facilities.csv\n"))
 }

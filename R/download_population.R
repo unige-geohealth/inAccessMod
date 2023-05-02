@@ -21,7 +21,7 @@ download_population <- function (mainPath, country, alwaysDownload = FALSE) {
     stop("alwaysDownload must be 'logical'")
   }
   # Check directory
-  pathPop <- paste0(mainPath, "/", country, "/data/rPopulation")
+  pathPop <- file.path(mainPath, country, "data", "rPopulation")
   folders <- check_exists(pathPop, "raw", layer = TRUE)
   if (!is.null(folders)) {
     if (!alwaysDownload) {
@@ -67,18 +67,18 @@ download_population <- function (mainPath, country, alwaysDownload = FALSE) {
       downloadProcess <- TRUE
       pathFTP <- pathFTP0
     }else{
-      logTxt <- paste0(mainPath, "/", country, "/data/log.txt")
-      sysTime <- Sys.time()
-      timeFolder <- gsub("-|[[:space:]]|\\:", "", sysTime)
-      check_path_length(paste0(pathPop, "/", timeFolder, "/raw"))
-      dir.create(paste0(pathPop, "/", timeFolder, "/raw"), recursive = TRUE)
-      pathPop <- paste0(pathPop, "/", timeFolder, "/raw")
+      logTxt <- file.path(mainPath, country, "data", "log.txt")
+      timeFolder <- format(Sys.time(), "%Y%m%d%H%M%S")
+      pathPop <- file.path(pathPop, timeFolder, "/raw")
+      check_path_length(pathPop)
+      dir.create(pathPop, recursive = TRUE)
+      
       for (i in selInd) {
         filePath <- paste0(pathFTP, folderLst[i])
-        check_path_length(paste0(pathPop, "/", folderLst[i]))
-        utils::download.file(url = filePath, destfile = paste0(pathPop, "/", folderLst[i]), quiet = FALSE, mode = "wb", method = "libcurl")
+        check_path_length(file.path(pathPop, folderLst[i]))
+        utils::download.file(url = filePath, destfile = file.path(pathPop, folderLst[i]), quiet = FALSE, mode = "wb", method = "libcurl")
         write(paste0(Sys.time(), ": Population raster downloaded from ", filePath, " - Input folder ", timeFolder), file = logTxt, append = TRUE)
-        cat(paste0(pathPop, "/", folderLst[i], "\n"))
+        cat(paste0("Done: ", pathPop, "/", folderLst[i], "\n"))
       }
       downloadProcess <- FALSE
     }

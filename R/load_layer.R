@@ -12,7 +12,7 @@ load_layer <- function (folder, multiMsg) {
   vectorLayer <- FALSE
   files <- list.files(folder)
   if (length(files) > 0) {
-    filesTif <- files[grepl("\\.tif$", files)]
+    filesTif <- files[grepl("\\.tif$|\\.img$", files)]
     if (length(filesTif) > 0) {
       rasterLayer <- TRUE
     }
@@ -32,7 +32,7 @@ load_layer <- function (folder, multiMsg) {
     }else{
       file <- filesTif
     }
-    ras <- terra::rast(paste0(folder, "/", file))
+    ras <- terra::rast(file.path(folder, file))
   }else{
     ras <- NULL
   }
@@ -43,7 +43,7 @@ load_layer <- function (folder, multiMsg) {
     }else{
       file <- filesShp
     }
-    shp <- sf::st_read(paste0(folder, "/", file), quiet=TRUE)
+    shp <- sf::st_read(file.path(folder, file), quiet=TRUE)
   }else{
     shp <- NULL
   }
