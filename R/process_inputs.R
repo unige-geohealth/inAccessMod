@@ -244,5 +244,5 @@ process_inputs <- function (mainPath, country, selectedInputs = NULL, mostRecent
       write(paste0(Sys.time(), ": Processed ", shpName, " shapefile saved - Output folder: ", outTimeFolder), file = logTxt, append = TRUE)
     }
   }
-  cat("\nDone!\n")
+  cat("\nDone !\n")
 }

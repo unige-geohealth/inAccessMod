@@ -21,7 +21,7 @@ resample_raster <- function (ras1, ras0, rasInit, resampMeth) {
       resampMeth <- resamplingMethod[resm]
     }
   }
-  cat(paste("\nResampling:\n", rasInit %>% terra::sources(),"\n"))
+  cat(paste("Resampling:\n", rasInit %>% terra::sources(),"\n"))
   rasResamp <- terra::resample(ras1, ras0, method = resampMeth)
   return(list(rasResamp, resampMeth))
 }
