@@ -1,0 +1,36 @@
+{ 
+  "table_parameters": {
+    "Health_facility_type": "MoSD3",
+    "Ownership": "MoSD7",
+    "Health_facility_status": "MoSD4",
+    "Building_condition": "CONDB",
+    "Equipment_condition": "CONDE",
+    "Functionality": "HFFUNCT",
+    "Accessibility": "HFACC",
+    "Partner_support": "HFSUP1",
+    "Partners": "HFSUP3_SQ[0-9]{3}",
+    "Services": "QHeRAMS[0-9]{3}",
+    "Barrier_suffix": "x_[0-9]"
+  },
+  "values": {
+    "impairment": "A2|A3",
+    "partnership": "A1|A2"
+  },
+  "stop": {
+    "Health_facility_status": "A2|A3",
+    "Building_condition": "A3",
+    "Functionality": "A3",
+    "Accessibility": "A3"
+  },
+  "print": {
+    "external_id": "extern_id",
+    "workspace_id": "worksp_id",
+    "date": "date",
+    "MoSD3": "MoSD3",
+    "name": "NAME"
+  }
+}
+/*
+HeRAMS_parameters <- jsonlite::fromJSON("HeRAMS_parameters.json")
+usethis::use_data(HeRAMS_parameters, overwrite = TRUE)
+*/
