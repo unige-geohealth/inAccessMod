@@ -1,4 +1,5 @@
 # Test
+
 devtools::load_all(".")
 mainPath <- "C:/Users/timoner/Documents/GeoHealth/HeRAMS/"
 initiate_project(mainPath)
@@ -20,3 +21,4 @@ process_inputs(mainPath, country, defaultMethods = TRUE)
 files <- c("C:/Users/timoner/Documents/GeoHealth/HeRAMS/MOZAMBIQUE/data/zToAccessMod/multi_ts/rLandcover_merge.img",
            "C:/Users/timoner/Documents/GeoHealth/HeRAMS/MOZAMBIQUE/data/zToAccessMod/multi_ts/rLandcover_merge.img.aux.xml")
 copy_input(mainPath, country, files)
+
