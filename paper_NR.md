@@ -8,6 +8,7 @@ tags:
 - health coverage
 date: "14 April 2023"
 output:
+  pdf_document: default
   html_document:
     df_print: paged
 authors:
