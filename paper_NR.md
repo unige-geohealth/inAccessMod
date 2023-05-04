@@ -1,12 +1,15 @@
 ---
-title: 'inAccessMod: An R package to automate data downloading and processing for AccessMod'
+title: 'inAccessMod: An R package to automate data downloading and processing for
+  AccessMod'
 tags:
 - R
 - GIS
 - geographical accessibility
 - health coverage
 date: "14 April 2023"
-output: pdf_document
+output:
+  html_document:
+    df_print: paged
 authors:
 - name: Pablo Timoner
   orcid: "0000-0003-4757-4928"
@@ -17,6 +20,8 @@ authors:
   affiliation: 1
 - name: Loïc Baecher
   affiliation: 1
+- name: Caroline Fuhrer
+  affiliation: 2
 - name: Nicolas Ray
   orcid: "0000-0002-4696-5313"
   affiliation: 1
@@ -25,6 +30,9 @@ affiliations:
 - name: GeoHealth group, Institute of Global Health, Faculty of Medicine, University
     of Geneva, Geneva, Switzerland
   index: 1
+- name: Health Resources and Services Availability Monitoring System (HeRAMS) Initiative,
+    World Health Organization Headquarters. Geneva, Switzerland.
+  index: 2
 ---
 
 # Summary
@@ -47,8 +55,8 @@ Overall, `inAccessMod` simplifies the process of preparing geospatial input laye
 * `initiate_project`: Allows starting a new project by choosing the country and retrieving the official ISO alpha-3 code.
 * `download_boundaries`: Downloads the required administrative boundaries from the geoBoundaries database.
 * `set_projection`: Sets the projected coordinate reference system (CRS) for the project to ensure that all input layers have a consistent projection.
-* `filter_hf`: Filters the health facility data based on user criteria (only compatible with WHO/HeRAMS data).
-* `create_hf_shapefile`: Creates a shapefile of health facilities (only compatible with WHO/HeRAMS data).
+* `HeRAMS_filter_hf`: Filters the health facility data based on user criteria (only compatible with WHO/HeRAMS data).
+* `HeRAMS_create_hf_shapefile`: Creates a shapefile of health facilities (only compatible with WHO/HeRAMS data).
 * `download_dem`: Downloads the Digital Elevation Model (DEM) raster for the country/area of interest from the Shuttle Radar Topography Mission (SRTM) dataset.
 * `download_population`: Downloads the population count raster for the target country/area from the WorldPop project.
 * `download_landcover`: Downloads the land cover raster for the country/area of interest from the Copernicus Land Monitoring Service.
