@@ -28,7 +28,7 @@ check_inputs <- function (mainPath, country, type, onlyPrint = TRUE) {
   }
   fileLst <- list.files(paste0(mainPath, "/", country, "/data"), recursive = TRUE)
   fileLst <- fileLst[!grepl("zToAccessMod", fileLst)]
-  fileAv <- fileLst[grepl(paste0(type, "/.*(\\.tif|\\.shp)"), fileLst)]
+  fileAv <- fileLst[grepl(paste0(type, "/.*(\\.tif|\\.shp|\\.img)"), fileLst)]
   folderAv <- unique(gsub("/[0-9].*$", "", fileAv))
   folderLst <- list.dirs(paste0(mainPath, "/", country, "/data"), recursive = TRUE)[-1]
   folderLst <- folderLst[!grepl("zToAccessMod", folderLst)]

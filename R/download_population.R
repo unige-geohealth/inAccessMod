@@ -58,18 +58,18 @@ download_population <- function (mainPath, country, alwaysDownload = FALSE) {
     }else if (0 %in% selInd) {
       downloadProcess <- TRUE
       pathFTP <- pathFTP0
-    } else if (length(selInd) > 1) {
-      message("Multiple selection is not allowed.")
-      downloadProcess <- TRUE
-      pathFTP <- pathFTP0
+    # } else if (length(selInd) > 1) {
+    #   message("Multiple selection is not allowed.")
+    #   downloadProcess <- TRUE
+    #   pathFTP <- pathFTP0
     } else if (!all(selInd %in% nFile)) {
-      message("Multiple selection is not allowed.")
+      message("Invalid index.")
       downloadProcess <- TRUE
       pathFTP <- pathFTP0
     }else{
       logTxt <- file.path(mainPath, country, "data", "log.txt")
       timeFolder <- format(Sys.time(), "%Y%m%d%H%M%S")
-      pathPop <- file.path(pathPop, timeFolder, "/raw")
+      pathPop <- file.path(pathPop, timeFolder, "raw")
       check_path_length(pathPop)
       dir.create(pathPop, recursive = TRUE)
       
