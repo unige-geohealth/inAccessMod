@@ -28,6 +28,7 @@
 #' @export
 HeRAMS_filter_hf <- function (mainPath, country, pathTableCode = NULL, pathTableText = NULL, scenario = NULL, mostRecentObs = NULL, 
                        defaultParameters = TRUE,
+                       region = FALSE,
                        type = TRUE,
                        ownership = FALSE,
                        status = TRUE,
@@ -313,7 +314,7 @@ HeRAMS_filter_hf <- function (mainPath, country, pathTableCode = NULL, pathTable
   if (is.null(scenario)) {
     ## Sub Project
     # Position of parameter in the HeRAMS_table_parameters
-    posParam <- c(1, 2, 3, 4, 5, 6, 7, 8)
+    posParam <- c(1, 2, 3, 4, 5, 6, 7, 8, 9)
     for (i in 1:length(codeColumns)) {
       # Look if there is a perfect match
       varCol <- colnames(tibTxt)[grep(paste0("^", codeColumns[[i]], "$"), colnames(tibTxt))]
@@ -324,28 +325,31 @@ HeRAMS_filter_hf <- function (mainPath, country, pathTableCode = NULL, pathTable
       # If only one match (main info or operationality columns)
       if (length(varCol) == 1) {
         go <- FALSE
-        if (i == posParam[1] & type) {
+        if (i == posParam[1] & region) {
           go <- TRUE
         }
-        if (i == posParam[2] & ownership) {
+        if (i == posParam[2] & type) {
           go <- TRUE
         }
-        if (i == posParam[3] & status) {
+        if (i == posParam[3] & ownership) {
           go <- TRUE
         }
-        if (i == posParam[4] & building) {
+        if (i == posParam[4] & status) {
           go <- TRUE
         }
-        if (i == posParam[5] & equipment) {
+        if (i == posParam[5] & building) {
           go <- TRUE
         }
-        if (i == posParam[6] & functionality) {
+        if (i == posParam[6] & equipment) {
           go <- TRUE
         }
-        if (i == posParam[7] & accessibility) {
+        if (i == posParam[7] & functionality) {
           go <- TRUE
         }
-        if (i == posParam[8] & support) {
+        if (i == posParam[8] & accessibility) {
+          go <- TRUE
+        }
+        if (i == posParam[9] & support) {
           go <- TRUE
         }
         if (go) {

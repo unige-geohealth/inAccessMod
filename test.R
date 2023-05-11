@@ -3,7 +3,7 @@
 devtools::load_all(".")
 mainPath <- "C:/Users/timoner/Documents/GeoHealth/HeRAMS/"
 initiate_project(mainPath)
-country <- "Iraq"
+country <- "MOZAMBIQUE"
 download_boundaries(mainPath, country, adminLevel = 3, type = "gbOpen", alwaysDownload = TRUE)
 subset_regions(mainPath, country, mostRecent = FALSE)
 set_projection(mainPath, country)
@@ -22,23 +22,6 @@ files <- c("C:/Users/timoner/Documents/GeoHealth/HeRAMS/MOZAMBIQUE/data/zToAcces
            "C:/Users/timoner/Documents/GeoHealth/HeRAMS/MOZAMBIQUE/data/zToAccessMod/multi_ts/rLandcover_merge.img.aux.xml")
 copy_input(mainPath, country, files)
 
-<<<<<<< HEAD
-
-#
-=======
-raster_files <- list.files("C:/Users/timoner/Documents/GeoHealth/HeRAMS//Mozambique/data/rPopulation/20230508143129/raw", full.names = TRUE)
-library(raster)
-
-# create a list of raster file names
-raster_files <- c("file1.tif", "file2.tif", "file3.tif")
-
-# load the rasters from the files and stack them
-raster_stack <- stack(raster_files)
-
-# calculate the sum of all rasters in the stack
-raster_sum <- sum(raster_stack)
-
-# view the resulting raster
-plot(raster_sum)
-raster::writeRaster(raster_sum, "C:/Users/timoner/Documents/GeoHealth/HeRAMS//Mozambique/data/rPopulation/20230508143129/raw/rPopSum15_45.tif")
->>>>>>> paper
+pathTableCode <- "C:/Users/timoner/Documents/GeoHealth/HeRAMS/MOZAMBIQUE_backup/Facilities/MOZ_code.csv"
+pathTableText <- "C:/Users/timoner/Documents/GeoHealth/HeRAMS/MOZAMBIQUE_backup/Facilities/MOZ_text_en.csv"
+HeRAMS_filter_hf(mainPath, country, pathTableCode, pathTableText, region = TRUE)
