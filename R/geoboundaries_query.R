@@ -28,7 +28,7 @@ geoboundaries_query <- function (iso, adminLevel, type, validTypes) {
     print(avData)
     stop_quietly("Run the download_boundaries function again with valid parameters.")
   } else {
-    jsonData <- fromJSON(url)
+    jsonData <- jsonlite::fromJSON(url)
     return(jsonData)
   }
 }
