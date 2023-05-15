@@ -6,7 +6,7 @@
 #' @param country character; the country folder name
 #' @param input character; the absolute path of the raw input. Can be a single path (corresponding to e.g. a health facility table) 
 #' or a vector of different paths (corresponding to e.g. shapefile documents). Can also be the path of a folder. In this case, the function
-#' will copy all the file that are inside this folder.
+#' will copy all the files that are inside this folder.
 #' @details The user is interactively asked to select the 'input' folder destination.
 #' @export
 copy_input <- function (mainPath, country, input) {
@@ -49,7 +49,7 @@ copy_input <- function (mainPath, country, input) {
   }
   folders <- gsub("^.*/data/", "", list.dirs(path, recursive = FALSE))
   folders <- folders[!grepl("zToAccessMod", folders)]
-  fold <- utils::menu(folders, title = "Which data would you like to load?")
+  fold <- utils::menu(folders, title = "Which data would you like to copy ?")
   folder <- list.dirs(path, recursive = FALSE)[grepl(folders[fold], list.dirs(path, recursive = FALSE))]
   timeFolder <- format(Sys.time(), "%Y%m%d%H%M%S")
   folder <- file.path(folder, timeFolder, "raw")

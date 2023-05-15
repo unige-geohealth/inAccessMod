@@ -13,7 +13,7 @@ copy_input(mainPath, country, input)
 
 \item{input}{character; the absolute path of the raw input. Can be a single path (corresponding to e.g. a health facility table) 
 or a vector of different paths (corresponding to e.g. shapefile documents). Can also be the path of a folder. In this case, the function
-will copy all the file that are inside this folder.}
+will copy all the files that are inside this folder.}
 }
 \description{
 Copy a manually downloaded input to the project corresponding directory before being processed. To avoid possible further conflicts, 
