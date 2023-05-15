@@ -12,6 +12,7 @@ HeRAMS_filter_hf(
   scenario = NULL,
   mostRecentObs = NULL,
   defaultParameters = TRUE,
+  region = FALSE,
   type = TRUE,
   ownership = FALSE,
   status = TRUE,
