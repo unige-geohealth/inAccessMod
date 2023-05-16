@@ -78,7 +78,7 @@ download_boundaries(mainPath, country, adminLevel = 2, type = "gbAuthoritative",
 
 In case we would like to work only on specific country regions, we use the `subset_regions` function. It subsets the boundary shapefile based on region names included in the shapefile attribute table. We are first asked to select the column that contains the region names, and then the region that we want to keep. A new boundary shapefile will be created. The function only requires the project root path and the country folder name.
 
-```{r boundaries, eval=FALSE}
+```{r subset_regions, eval=FALSE}
 subset_regions(mainPath, country)
 ```
 
