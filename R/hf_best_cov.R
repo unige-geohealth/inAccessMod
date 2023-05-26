@@ -290,7 +290,8 @@ hf_best_cov <- function (workDir,
   
   # Retrieve facility names from groups (when corresponding)
   for (i in 1:nrow(finalTable)) {
-    ind <- grepl(paste0("^", finalTable$`Facility name`[i], "$"), similarTable$`Health Facilities`)
+    cond <- paste0("^", finalTable$`Facility name`[i], "//|//", finalTable$`Facility name`[i], "//|//", finalTable$`Facility name`[i], "$")
+    ind <- grepl(cond, similarTable$`Health Facilities`)
     if (any(ind)) {
       # In theory not possible.
       if (sum(ind) > 1) {
