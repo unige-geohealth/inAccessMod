@@ -101,7 +101,15 @@ HeRAMS_filter_hf <- function (mainPath, country, pathTableCode = NULL, pathTable
   }
   
   if (nrow(tibTxt) == 0) {
+    tibTxt <- tryCatch({tibble::as_tibble(read.csv(pathTableText, skip = 2))}, error = function(e){NULL})
+  }
+  
+  if (nrow(tibTxt) == 0) {
     stop(paste("Issues reading", pathTableText, "\nCould be caused by separator issue or line break within fields."))
+  }
+  
+  if (nrow(tibCode) == 0 | nrow(tibCode) != nrow(tibTxt)) {
+    tibCode <- tryCatch({tibble::as_tibble(read.csv(pathTableCode, skip = 2))}, error = function(e){NULL})
   }
   
   if (nrow(tibCode) == 0) {
