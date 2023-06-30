@@ -1,7 +1,0 @@
-Sub-regional analysis: subset_regions
-Mask original population raster when correcting, otherwise population outside region can be counted
-All HeRAMS_parameters in a list (.rda)
-Name of functions for HeRAMS start with HeRAMS_
-try GDAL instead of tryCatch and then just check output; if not, terra::merge; with tryCatch, issues with warnings (one is like an error (Yaniss issue), but not the others, when it is like an error, it's ok, but when not, it returns NULL and uses terra, although GDAL works)
-HeRAMS_filter_hf
-download_boundaries (query first; three options)
