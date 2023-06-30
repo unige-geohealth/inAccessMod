@@ -6,7 +6,7 @@ tags:
 - GIS
 - geographical accessibility
 - health coverage
-date: "14 April 2023"
+date: "30 June 2023"
 output:
   pdf_document: default
   html_document:
