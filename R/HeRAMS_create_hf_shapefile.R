@@ -108,9 +108,11 @@ HeRAMS_create_hf_shapefile <- function (mainPath, country, mostRecentBoundaries 
   if (!all(unlist(colNamesHeRAMS) %in% colnames(df))) {
     message(paste("\nCheck the column names of:", file.path(hfFolder, fi), "and change the parameters accordingly"))
     codeColumns <- unlist(set_HeRAMS_table_parameters(colNamesHeRAMS, regex = FALSE))
-  }
-  if (!all(codeColumns %in% colnames(df))) {
-    stop_quietly("Column name not valid !")
+    if (!all(codeColumns %in% colnames(df))) {
+      stop_quietly("Column name not valid !")
+    }
+  } else {
+    codeColumns <- unlist(colNamesHeRAMS)
   }
   
   xy <- data.frame(Lon = df[, "GPS_002", drop = TRUE], Lat = df[, "GPS_001", drop = TRUE])
