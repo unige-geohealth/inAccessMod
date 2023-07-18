@@ -17,7 +17,7 @@ compile_processed_data <- function (mainPath, country, mostRecent = TRUE) {
     stop("mostRecent must be 'logical'")
   }
   logTxt <- paste0(mainPath, "/", country, "/data/log.txt")
-  folderLst <- list.dirs(paste0(mainPath, "/", country))
+  folderLst <- list.dirs(paste0(mainPath, "/", country, "/data"))
   inputsAv <- folderLst[grepl("processed", folderLst)]
   inputsAv <- unique(gsub("/[0-9]{14}/processed.*", "", gsub("^.*/data/", "", inputsAv)))
   if (length(inputsAv) == 0) {

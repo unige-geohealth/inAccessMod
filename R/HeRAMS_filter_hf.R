@@ -510,12 +510,26 @@ HeRAMS_filter_hf <- function (mainPath, country, pathTableCode = NULL, pathTable
   check_path_length(outFolder)
   dir.create(outFolder, recursive = TRUE)
   file.copy(file.path(tempDir, "time_frame.txt"), file.path(pathFacilities, scenarioDir, outTimeFolder))
-  tibTxt <- abbr_col_names(tibTxt)
-  tibCode <- abbr_col_names(tibCode)
-  dfColnames <- data.frame(code = colnames(tibTxt), label = colnames(tibTxtNames))
-  codeCol <- tibCode[, colnames(tibCode)[grepl("^QH[0-9]{3}$", colnames(tibCode))]]
+  codeCol <- tibCode[, colnames(tibCode)[grepl("^QHeRAMS[0-9]{3}$", colnames(tibCode))]]
   colnames(codeCol) <- paste0(colnames(codeCol), "_c")
-  tibTxt <- dplyr::bind_cols(tibTxt, codeCol)
+  codeCol <- abbr_col_names(codeCol)
+  
+  codeColHfInfo <- tibCode[, colnames(tibCode)[grepl(paste0(codeColumns$Health_facility_status, "$|^", codeColumns$Functionality, "$"), 
+                                                     colnames(tibCode))]]
+  # Status - Funct
+  colnames(codeColHfInfo) <- c("qh901_c", "qh902_c")
+  
+  # Keep track
+  write(paste0(codeColumns$Health_facility_status, ": QH901"), file = file.path(outFolder, "code_HF_level.txt"))
+  write(paste0(codeColumns$Functionality, ": QH902"), file = file.path(outFolder, "code_HF_level.txt"), append = TRUE)
+  
+  # Abbreviate some of the field names
+  tibTxt <- abbr_col_names(tibTxt)
+  dfColnames <- data.frame(code = colnames(tibTxt), label = colnames(tibTxtNames))
+  
+  # Bind tibTxt and new column with codes (standard names)
+  tibTxt <- dplyr::bind_cols(tibTxt, codeCol, codeColHfInfo)
+
   write.csv(dfColnames, file = file.path(outFolder, "column_codes.csv"))
   write.csv(tibTxt, file = file.path(outFolder, "health_facilities.csv"))
   write(paste0(Sys.time(), ": Health facilities where filtered - scenario folder: ", scenarioDir, " - input folder: ", outTimeFolder), file = logTxt, append = TRUE)
