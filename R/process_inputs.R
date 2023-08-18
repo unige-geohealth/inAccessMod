@@ -145,7 +145,6 @@ process_inputs <- function (mainPath, country, selectedInputs = NULL, mostRecent
       border <- get_boundaries(mainPath, country, "processed", mostRecent)
       # If we don't need/want to process the boundary shapefile, load it
     } else {
-      message("\nLoading raw shapefile of boundaries...")
       border <- get_boundaries(mainPath, country, "processed", mostRecent)
     }
     # If we want to process the population raster
