@@ -27,7 +27,13 @@
 #' for processing any other raster. These conditions are taken into account and the processing of these
 #' layers is performed even if they are not selected and if 'processed' layers are not available.
 #' @export
-process_inputs <- function (mainPath, country, selectedInputs = NULL, mostRecent = FALSE, alwaysProcess = FALSE, defaultMethods = NULL, changeRes = NULL, newRes = NULL, popCorrection = NULL, gridRes = NULL) {
+process_inputs <- function (mainPath, country, selectedInputs = NULL, mostRecent = FALSE, 
+                            alwaysProcess = FALSE, 
+                            defaultMethods = NULL, 
+                            changeRes = NULL, 
+                            newRes = NULL, 
+                            popCorrection = NULL, 
+                            gridRes = NULL) {
   if (!is.character(mainPath)) {
     stop("mainPath must be 'character'")
   }
@@ -148,7 +154,7 @@ process_inputs <- function (mainPath, country, selectedInputs = NULL, mostRecent
       selectedFolders <- selectedFolders[!grepl("rPopulation", selectedFolders)]
       # Check if other inputs to be processed
       if (length(selectedFolders) < 1) {
-        cat("\nDone!\n")
+        stop_quietly("No more input to be processed!")
       }
       # Check whether we still have rasters to be processed
       filesRasTrue <- NULL
