@@ -29,5 +29,13 @@ set_HeRAMS_table_parameters <- function (tableParam, regex = TRUE) {
       }
     }
   }
+  ynN <- utils::menu(c("YES", "NO"), title = "\n\nWould you like to add another field used for filtering ?")
+  while (ynN == 1) {
+    cat(paste("\nType the column code name"))
+    newCode <- readline(prompt = "Field: ")
+    tableParam[[newCode]] <- newCode
+    ynN <- utils::menu(c("YES", "NO"), title = "\n\nWould you like to add another field used for filtering ?")
+  }
+  
   return(tableParam)
 }

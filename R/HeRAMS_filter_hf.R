@@ -367,6 +367,10 @@ HeRAMS_filter_hf <- function (mainPath, country, pathTableCode = NULL, pathTable
         if (i == posParam[9] & support) {
           go <- TRUE
         }
+        # New code as been added
+        if (i > 12) {
+          go <- TRUE
+        }
         if (go) {
           codeName <- names(codeColumns)[i]
           message(paste0("\n", gsub("_", " ", codeName)))
