@@ -137,8 +137,9 @@ process_inputs <- function (mainPath, country, selectedInputs = NULL, mostRecent
         borderOutFolder <- file.path(gsub("raw", "processed", borderFolder), outTimeFolder)
         check_path_length(borderOutFolder)
         dir.create(borderOutFolder, recursive = TRUE)
-        check_path_length(file.path(borderOutFolder, "vBorders.shp"))
-        sf::st_write(border, file.path(borderOutFolder, "vBorders.shp"), append=FALSE)
+        label <- readline(prompt = "Enter a label for vBorders: ")
+        check_path_length(file.path(borderOutFolder, paste0("vBorders", "_", label,".shp")))
+        sf::st_write(border, file.path(borderOutFolder, paste0("vBorders", "_", label,".shp")), append=FALSE)
         write(paste0(Sys.time(), ": Processed vBorders shapefile saved - Output folder: ", outTimeFolder), file = logTxt, append = TRUE)
       }
       selectedFolders <- selectedFolders[!grepl("vBorders", selectedFolders)]
@@ -230,9 +231,10 @@ process_inputs <- function (mainPath, country, selectedInputs = NULL, mostRecent
       outFolder <- file.path(gsub("raw", "processed", inputFolder), outTimeFolder)
       check_path_length(outFolder)
       dir.create(outFolder, recursive = TRUE)
-      check_path_length(file.path(outFolder, paste0(selectedFolders[i], ".tif")))
-      terra::writeRaster(rasResampled, file.path(outFolder, paste0(selectedFolders[i], ".tif")), overwrite=TRUE)
-      write(paste0(Sys.time(), ": Processed ", selectedFolders[i], " raster saved - Output folder: ", outTimeFolder), file = logTxt, append = TRUE)
+      label <- readline(prompt = paste0("Enter a label for ", selectedFolders[i], ": "))
+      check_path_length(file.path(outFolder, paste0(selectedFolders[i], "_", label, ".tif")))
+      terra::writeRaster(rasResampled, file.path(outFolder, paste0(selectedFolders[i], "_", label, ".tif")), overwrite=TRUE)
+      write(paste0(Sys.time(), ": Processed ", paste0(selectedFolders[i], "_", label), " raster saved - Output folder: ", outTimeFolder), file = logTxt, append = TRUE)
     }
     if (!is.null(inputLayers[[2]])) {
       shpProcessed <- process_shapefile(inputLayers[[2]], epsg, selectedFolders[i])
@@ -241,7 +243,8 @@ process_inputs <- function (mainPath, country, selectedInputs = NULL, mostRecent
       outFolder <- paste0(gsub("raw", "processed", inputFolder), "/", outTimeFolder)
       check_path_length(outFolder)
       dir.create(outFolder, recursive = TRUE)
-      shpName <- paste0(selectedFolders[i], ".shp")
+      label <- readline(prompt = paste0("Enter a label for ", selectedFolders[i], ": "))
+      shpName <- paste0(selectedFolders[i], "_", label, ".shp")
       # In case we have scenario for HeRAMS data
       shpName <- gsub("/scenario[0-9]{3}", "", shpName)
       check_path_length(file.path(outFolder, shpName))
