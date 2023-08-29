@@ -185,6 +185,7 @@ hf_best_cov <- function (workDir,
   
   # Keep only the catchments that are different for the main algorithm
   tempCatchUnique <- tempCatch[!duplicated(tempCatch$geometry), ]
+  tempCatchUnique$totalpop0 <- tempCatchUnique$totalpop
   
   # Main algorithm
   message("Main algorithm...")
@@ -224,12 +225,20 @@ hf_best_cov <- function (workDir,
       if (length(notComplete) == 0) {
         # If all complete, no constraint
         indMax <- which(tempCatchUnique$totalpop == max(tempCatchUnique$totalpop))
+        if (length(indMax) > 1) {
+          # [1] In case they had the exact same initial covered population (but not identical catchment)
+          indMax <- indMax[which(tempCatchUnique$totalpop0[indMax] == max(tempCatchUnique$totalpop0[indMax]))][1]
+        }
       } else {
         # Which are the admin that have priority
         tempAdmin <- sf::st_drop_geometry(tempCatchUnique[, adminColName])[, 1]
         validRows <- tempAdmin %in% notComplete
         # Look for the max among them
         indMax <- which(tempCatchUnique$totalpop == max(tempCatchUnique$totalpop[validRows]))
+        if (length(indMax) > 1) {
+          # [1] In case they had the exact same initial covered population (but not identical catchment)
+          indMax <- indMax[which(tempCatchUnique$totalpop0[indMax] == max(tempCatchUnique$totalpop0[indMax]))][1]
+        }
         # Increment the count for the selected admin
         selAdmin <- sf::st_drop_geometry(tempCatchUnique[, adminColName])[indMax, ]
         hfCounts$count[hfCounts$admin == selAdmin] <- hfCounts$count[hfCounts$admin == selAdmin] + 1
@@ -237,17 +246,16 @@ hf_best_cov <- function (workDir,
     } else {
       # Max with no constraint
       indMax <- which(tempCatchUnique$totalpop == max(tempCatchUnique$totalpop))
-    }
-    # Usually only one catchment (same population in two non-identical catchments is very unlikely)
-    # But we never knows.
-    for (j in 1:length(indMax)) {
-      # Increment of i
-      i <- i + 1
-      finalTable[i, "Facility name"] <- sf::st_drop_geometry(tempCatchUnique[indMax, catchHfColName])[j, 1]
-      finalTable[i, "Population covered"] <- tempCatchUnique$totalpop[indMax][j]
-      if (adminCheck) {
-        finalTable[i, "Region"] <- sf::st_drop_geometry(tempCatchUnique[indMax, adminColName])[j, 1]
+      if (length(indMax) > 1) {
+        # [1] In case they had the exact same initial covered population (but not identical catchment)
+        indMax <- indMax[which(tempCatchUnique$totalpop0[indMax] == max(tempCatchUnique$totalpop0[indMax]))][1]
       }
+    }
+    i <- i + 1
+    finalTable[i, "Facility name"] <- sf::st_drop_geometry(tempCatchUnique[indMax, catchHfColName])[1, 1]
+    finalTable[i, "Population covered"] <- tempCatchUnique$totalpop[indMax]
+    if (adminCheck) {
+      finalTable[i, "Region"] <- sf::st_drop_geometry(tempCatchUnique[indMax, adminColName])[1, 1]
     }
     # Get catchment(s) with max population
     top <- tempCatchUnique[indMax, ]
@@ -276,42 +284,36 @@ hf_best_cov <- function (workDir,
     }
   }
   close(bar)
-  
-  # Calculation of outputs
   colNamesFT <- colnames(finalTable)
+  finalTable <- finalTable[complete.cases(finalTable), ]
   for (i in 1:nrow(finalTable)) {
     finalTable$Rank[i] <- i
     finalTable$cumul[i] <- sum(finalTable[, "Population covered"][1:i])
   }
-  
-  # Calculation of cumulative sum
   finalTable <- finalTable[, c("Rank", colNamesFT, "cumul")]
   colnames(finalTable)[ncol(finalTable)] <- "Cumulative sum"
-  
-  # Retrieve facility names from groups (when corresponding)
   for (i in 1:nrow(finalTable)) {
-    cond <- paste0("^", finalTable$`Facility name`[i], "//|//", finalTable$`Facility name`[i], "//|//", finalTable$`Facility name`[i], "$")
-    ind <- grepl(cond, similarTable$`Health Facilities`)
+    ind <- grepl(finalTable$`Facility name`[i], similarTable$`Health Facilities`)
     if (any(ind)) {
-      # In theory not possible.
       if (sum(ind) > 1) {
-        stop(paste("Health facility in multiple groups:", finalTable$`Facility name`[i]))
+        stop(paste("Health facility in multiple groups:", 
+                   finalTable$`Facility name`[i]))
       }
       finalTable$`Facility name`[i] <- similarTable$`Health Facilities`[ind]
     }
   }
-  
-  # Create output folder
-  outFolder <- file.path(workDir, "outputs", format(Sys.time(), "%Y%m%d%H%M%S"))
+  outFolder <- file.path(workDir, "outputs", format(Sys.time(), 
+                                                    "%Y%m%d%H%M%S"))
   dir.create(outFolder, showWarnings = FALSE, recursive = TRUE)
-
-  # Write the csv of the ranked candidates and their population cover
-  write.csv(finalTable, file.path(outFolder, "facilities_table.csv"), row.names = FALSE)
-  
-  # Create the plot png
-  par(mar=c(8,4,4,2))
-  png(filename = file.path(outFolder, "cumulative_sum.png"), width = 1000, height = 1000, units = "px")
-  barplot((finalTable$`Cumulative sum`/10000), main = "Cumulative sum of the population covered (per 10000 habitants)", ylab = "", col = "dodgerblue3", las = 2, names.arg = paste("Rank", finalTable$Rank), las=2)
+  write.csv(finalTable, file.path(outFolder, "facilities_table.csv"), 
+            row.names = FALSE)
+  par(mar = c(8, 4, 4, 2))
+  png(filename = file.path(outFolder, "cumulative_sum.png"), 
+      width = 1000, height = 1000, units = "px")
+  barplot((finalTable$`Cumulative sum`/10000), main = "Cumulative sum of the population covered (per 10000 habitants)", 
+          ylab = "", col = "dodgerblue3", las = 2, names.arg = paste("Rank", 
+                                                                     finalTable$Rank), las = 2)
   invisible(dev.off())
-  cat(paste("Calculations completed.\nOutputs can be found under:", outFolder))
+  cat(paste("Calculations completed.\nOutputs can be found under:", 
+            outFolder))
 }
