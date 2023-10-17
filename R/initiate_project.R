@@ -59,7 +59,7 @@ initiate_project <- function (mainPath) {
     }
   }
   # Create directories
-  pathData <- file.path(mainPath, toupper(country), "data")
+  pathData <- file.path(mainPath, country, "data")
   check_path_length(pathData)
   dir.create(pathData, recursive = TRUE, showWarnings = FALSE)
   for (inputName in inputNames) {

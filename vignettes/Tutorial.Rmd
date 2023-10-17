@@ -58,7 +58,7 @@ As indicated in the console, some input folders are created by default. We are a
 Now, that the project is initiated we can use a set of functions that allow to download all the required layers from open databases. However, if we would like to use other input data, we can run the `copy_input` function which only requires the project root path, the country name, and the path of the file or the folder that we would like to import. To avoid possible further conflicts, the input is highly recommended to be a "raw" input (i.e. not projected). For instance, we want to use a country boundary shapefile from another source than the one available through inAccessMod. We call the function `copy_input` and indicate, as third parameter, the path to the shapefile folder.
 
 ```{r copy_input, eval=FALSE}
-country <- "SWITZERLAND"
+country <- "Switzerland"
 copy_input(mainPath, country, "C:/example/boundaries")
 ```
 
