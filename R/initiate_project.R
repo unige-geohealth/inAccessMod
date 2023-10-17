@@ -68,15 +68,14 @@ initiate_project <- function (mainPath) {
     dir.create(pathInput, showWarnings = FALSE)
   }
   # Create config.txt for ISO code, and then EPSG as well
-  pathCountry <- file.path(mainPath, country, "data")
-  fileConn <- file(file.path(pathCountry, "config.txt"))
+  fileConn <- file(file.path(pathData, "config.txt"))
   writeLines(c(paste0("COUNTRY:", countryOriginalName), paste0("ISO:", iso3)), fileConn)
   close(fileConn)
   # Create log.txt for operation tracking
-  fileConn <- file(file.path(pathCountry, "log.txt"))
+  fileConn <- file(file.path(pathData, "log.txt"))
   writeLines(countryOriginalName, fileConn)
   writeLines(paste0(Sys.time(), ": Project initiated"), fileConn)
   close(fileConn)
   # Print directory tree
-  fs::dir_tree(file.path(mainPath, country, "data"))
+  fs::dir_tree(pathData)
 }
