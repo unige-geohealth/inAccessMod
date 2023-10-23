@@ -39,7 +39,7 @@
 #' }
 #' @examples 
 #' inputPathMulti <- system.file("extdata", "multi_ts_example", package="inAccessMod")
-#' multi_ts(inputPathMulti, "admin", "raster_land_cover_merged.img", zones_ts = NULL)}
+#' multi_ts(inputPathMulti, "admin", "raster_land_cover_merged.img", zones_ts = NULL)
 #' @export
 multi_ts <- function (inputFolder, adminLayerName, landcoverFile, zones_ts = NULL) {
   if (!is.character(inputFolder)) {

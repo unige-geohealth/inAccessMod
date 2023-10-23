@@ -52,3 +52,7 @@ The function works are the following:
 \item Writing the final raster, the final table, and the table that relates the different administrative units and the different travel scenarios. The final number of classes are N-classes x N-units.
 }
 }
+\examples{
+inputPathMulti <- system.file("extdata", "multi_ts_example", package="inAccessMod")
+multi_ts(inputPathMulti, "admin", "raster_land_cover_merged.img", zones_ts = NULL)
+}
