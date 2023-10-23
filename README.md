@@ -23,8 +23,8 @@ devtools::install_github("unige-geohealth/inAccessMod", build_vignettes = TRUE)
 * `download_landcover`: Downloads the land cover raster for the country/area of interest from the Copernicus Land Monitoring Service.
 * `download_osm`: Downloads road, river, lake, and other natural barriers shapefiles from the OpenStreetMap (OSM) platform
 * `process_inputs`: Processes all the raw input data by cropping, masking, projecting, and resampling the geospatial layers with customizable user parameters.
-* `multi_ts`: Handles different travel scenarios for different administrative units.
 * `compile_processed_data`: Compiles all the processed data into one single folder, making it easier to import the input data into AccessMod.
+* `multi_ts`: Handles different travel scenarios for different administrative units.
 * `hf_best_cov`: Selects the health facilities that provide the best population coverage based on their catchments and a population raster.
 
 ## Tutorial
