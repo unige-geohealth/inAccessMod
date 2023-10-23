@@ -22,3 +22,17 @@ the input has to be a "raw" input (i.e. not projected).
 \details{
 The user is interactively asked to select the 'input' folder destination.
 }
+\examples{
+# Replace workDir with the actual path to your working directory
+\dontrun{
+mainPath <- "workDir"
+intiate_project(mainPath, country)}
+
+# Replace myCountry with the country name you are working on (workDir subfolder)
+# Replace myInputPath with the actual path to the file to be copied or to the directory
+# that contains the files to be copied (e.g., shapfile documents)
+\dontrun{
+country <- "myCountry"
+inputPath <- "myInputPath"
+copy_input(mainPath, country, inputPath)}
+}

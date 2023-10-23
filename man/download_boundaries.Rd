@@ -33,6 +33,17 @@ Download the administraive boundary shapefile from \emph{geoboundaries} and copy
 The ISO code used to download the shapefile is retrieved by the internal \code{get_param} function. Another internal function
 will query the geoBoundaries database (geoboundaries_query) to check availability and retrieve a json file that contains the download link.
 }
+\examples{
+# Replace workDir with the actual path to your working directory
+\dontrun{
+mainPath <- "workDir"
+intiate_project(mainPath, country)}
+
+# Replace myCountry with the country name you are working on (workDir subfolder)
+\dontrun{
+country <- "myCountry"
+download_boundaries(mainPath, country, adminLevel = 1, type = "gbOpen", alwaysDownload = TRUE)}
+}
 \references{
 Runfola, D. et al. (2020) geoBoundaries: A global database of political administrative boundaries. PLoS ONE 15(4): 
 e0231866. https://doi.org/10.1371/journal.pone.0231866

@@ -11,7 +11,6 @@ masking, resampling, exporting processes are automated to a large degree, making
 ## Installation
 ```
 if (!require("devtools")) install.packages("devtools")
-
 devtools::install_github("unige-geohealth/inAccessMod", build_vignettes = TRUE)
 ```
 
@@ -31,4 +30,8 @@ devtools::install_github("unige-geohealth/inAccessMod", build_vignettes = TRUE)
 * `hf_best_cov`: Selects the health facilities that provide the best population coverage based on their catchments and a population raster.
 
 ## Tutorial
-See the package vignette.
+Make sure to set
+```
+vignette("Tutorial", package = "inAccessMod") 
+```
+

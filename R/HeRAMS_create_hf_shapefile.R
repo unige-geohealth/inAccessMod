@@ -19,6 +19,24 @@
 #' @details Once the missing coordinate issue is addressed, the function checks whether the health facilities fall within the
 #' country boundary. There is a track record of both the facilities with missing coordinates and the ones that fall
 #' outside the country boundary.
+#' @examples
+#' # Replace workDir with the actual path to your working directory
+#' \dontrun{
+#' mainPath <- "workDir"
+#' intiate_project(mainPath, country)}
+#' 
+#' # Replace myCountry with the country name you are working on (workDir subfolder)
+#' \dontrun{
+#' country <- "myCountry"
+#' download_boundaries(mainPath, country, adminLevel = 1, type = "gbOpen", alwaysDownload = TRUE)}
+#' 
+#' # Replace myHeRAMScodeTable with the path of the HeRAMS table that contains codes; set to NULL to use example data
+#' # Replace myHeRAMStextTable with the path of the HeRAMS table that contains text; set to NULL to use example data
+#' \dontrun{
+#' pathTableCode <- "myHeRAMScodeTable"
+#' pathTableText <- "myHeRAMStextTable"
+#' HeRAMS_filter_hf(mainPath, country, pathTableCode, pathTableText, barriers = FALSE, mostRecentObs = TRUE)
+#' HeRAMS_create_hf_shapefile(mainPath, country, mostRecentBoundaries = TRUE, lonlat = TRUE, rmNA = TRUE, rmOut = TRUE, scenario = NULL)} 
 #' @export
 HeRAMS_create_hf_shapefile <- function (mainPath, country, mostRecentBoundaries = TRUE, lonlat = TRUE, epsg = NULL, rmNA = NULL, rmOut = NULL, scenario = NULL, nameCSV = NULL) {
   if (!is.character(mainPath)) {
@@ -126,8 +144,9 @@ HeRAMS_create_hf_shapefile <- function (mainPath, country, mostRecentBoundaries 
     dfPrint <- tryCatch({dfNA[, codeColumns]}, error = function (e) NULL)
     cat("\n")
     if (is.null(dfPrint)) {
-      dfPrint <- dfNA[, codeColumns[-which(names(codeColumns) == "name")]]
+      dfPrint <- dfNA[, codeColumns[-which(names(codeColumns) == "HF name")]]
     }
+    
     print(dfPrint)
     cat("\n")
     message(paste("Coordinates are missing the facilities printed above."))
@@ -159,7 +178,7 @@ HeRAMS_create_hf_shapefile <- function (mainPath, country, mostRecentBoundaries 
       dfPrint <- df[!inter, codeColumns[-which(names(codeColumns) == "name")]]
     }
     print(dfPrint)
-    message("The facilities indicated above are outside the country boundaries")
+    message("The facilities indicated above are outside the selected boundaries")
     if (rmOut) {
       yn <- 2
     } else {

@@ -17,3 +17,15 @@ available inputs, the user is interactively asked to select the input based on f
 \description{
 Function that allows to clip specific country regions from the 'raw' boundary shapefile when requiring analysis at the sub-national level
 }
+\examples{
+# Replace workDir with the actual path to your working directory
+\dontrun{
+mainPath <- "workDir"
+intiate_project(mainPath, country)}
+
+# Replace myCountry with the country name you are working on (workDir subfolder)
+\dontrun{
+country <- "myCountry"
+download_boundaries(mainPath, country, adminLevel = 1, type = "gbOpen", alwaysDownload = TRUE)
+subset_regions(mainPath, country, mostRecent = TRUE)}
+}

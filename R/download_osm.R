@@ -16,7 +16,19 @@
 #' they want to keep. For 'roads', default classes are: trunk, trunk_link, primary, primary_link, 
 #' motorway, motorway_link, secondary, secondary_link, tertiary, tertiary_link, road, raceway, residential, 
 #' living_street, service, track, pedestrian, path, footway, piste, bridleway, cycleway, steps, unclassified and bridge. For waterLines and naturalPolygons, 
-#' default classes are river and water, respectively.    
+#' default classes are river and water, respectively.
+#' @examples
+#' # Replace workDir with the actual path to your working directory
+#' \dontrun{
+#' mainPath <- "workDir"
+#' intiate_project(mainPath, country)}
+#' 
+#' # Replace myCountry with the country name you are working on (workDir subfolder)
+#' \dontrun{
+#' country <- "myCountry"
+#' download_osm(x = "roads", mainPath, country, alwaysDownload = TRUE, countryName = TRUE, mostRecent = NULL, defaultClasses = TRUE)
+#' download_osm(x = "waterLines", mainPath, country, alwaysDownload = TRUE, countryName = TRUE, mostRecent = NULL, defaultClasses = TRUE)
+#' download_osm(x = "naturalPolygons", mainPath, country, alwaysDownload = TRUE, countryName = TRUE, mostRecent = NULL, defaultClasses = TRUE)}
 #' @export
 download_osm <- function (x, mainPath, country, alwaysDownload = FALSE, countryName = TRUE, mostRecent = NULL, defaultClasses = TRUE) {
   if (!is.character(mainPath)) {

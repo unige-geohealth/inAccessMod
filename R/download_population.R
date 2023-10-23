@@ -9,6 +9,16 @@
 #' @details The function accesses the World Pop FTP and uses an internal function (\code{navigate_ftp}) in order to interactively navigate 
 #' through the folders and select the population raster to be downloaded. The ISO code retrieved internally by the \code{get_param} function 
 #' is used to match the country FTP folder when available.
+#' @examples
+#' # Replace workDir with the actual path to your working directory
+#' \dontrun{
+#' mainPath <- "workDir"
+#' intiate_project(mainPath, country)}
+#' 
+#' # Replace myCountry with the country name you are working on (workDir subfolder)
+#' \dontrun{
+#' country <- "myCountry"
+#' download_population(mainPath, country, alwaysDownload = TRUE)}
 #' @export
 download_population <- function (mainPath, country, alwaysDownload = FALSE) {
   if (!is.character(mainPath)) {

@@ -40,10 +40,10 @@ library(inAccessMod)
 ```
 
 ### Initiate Project
-With the `initiate_project` function, we can select the country and automatically, the ISO 3166-1 alpha-3 country code is stored in a config.txt file and the directory main structure for the project is created. This function also creates a log.txt file that will record and track the main operations related to the project. We will see that the final structure arises when downloading and processing the data with the corresponding functions, and it allows multiple ’raw’ inputs and multiple ’processed’ outputs for each input. This can be useful when performing different analyses for the same country (e.g. when we have updated data) or using different processing parameters. To initiate the project, the only parameter we need to provide is the path where the project, namely the country folder will be created.
+With the `initiate_project` function, we can select the country and automatically, the ISO 3166-1 alpha-3 country code is stored in a config.txt file and the directory main structure for the project is created. This function also creates a log.txt file that will record and track the main operations related to the project. We will see that the final structure arises when downloading and processing the data with the corresponding functions, and it allows multiple ’raw’ inputs and multiple ’processed’ outputs for each input. This can be useful when performing different analyses for the same country (e.g. when we have updated data) or using different processing parameters. To initiate the project, the only parameter we need to provide is the path where the project, namely the country folder will be created. Let's run the function and select "Switzerland" for this tutorial.
 
 ```{r initiate, eval=FALSE}
-mainPath <- "C:/inAccMod/tutorial"
+mainPath <- "/yourPath/tutorial"
 initiate_project(mainPath)
 ```
 
@@ -77,7 +77,7 @@ download_boundaries(mainPath, country, adminLevel = 1, type = "gbOpen", alwaysDo
 
 ### Subset regions
 
-In case we would like to work only on specific country regions, we use the `subset_regions` function. It subsets the boundary shapefile based on region names included in the shapefile attribute table. We are first asked to select the column that contains the region names, and then the region that we want to keep. A new boundary shapefile will be created. The function only requires the project root path and the country folder name. In the example below we also set the parameter `mostRecent` to TRUE so it will automatically load the most recent downloaded shapefile. We will be asked to select the column that we would like to use for subsetting the regions, let's select the column 1 that refers to the names of the regions. A list of the region names will be displayed so we can select the regions. Let's select the regions "Genève" and "Vaud", by indicating their indices separated by whitespaces: 7 8 11 13 23 24 
+In case we would like to work only on specific country regions, we use the `subset_regions` function. It subsets the boundary shapefile based on region names included in the shapefile attribute table. We are first asked to select the column that contains the region names, and then the region that we want to keep. A new boundary shapefile will be created. The function only requires the project root path and the country folder name. In the example below we also set the parameter `mostRecent` to TRUE so it will automatically load the most recent downloaded shapefile. We will be asked to select the column that we would like to use for subsetting the regions, let's select the column 1 (shapeName) that refers to the names of the regions. A list of the region names will be displayed so we can select the regions. Let's select the regions "Genève" and "Vaud", by indicating their indices separated by a space: 8 24 
 
 ```{r subset_regions, eval=FALSE}
 subset_regions(mainPath, country, mostRecent = TRUE)
@@ -135,12 +135,11 @@ Let's see an example with the fictitious example data. The following command sho
 ```{r fictitious}
 inAccessMod::fictitious_herams_data_txt[1:6, c("last_synced", "subject_id", "date", "MoSD4", "CONDB", "HFFUNCT", "HFACC", "MoSDGPS_SQ001", "MoSDGPS_SQ002")]
 ```
-Let's filter the data:
+Let's filter the data: To the interactive questions, we select "1" twice in order to use the example data, and then let's select all the health facility types. We just skip (press Enter without any input) to select all the options. Then we are asked to filter the health facilities based on the existing status. Let's select only the ones that are "Existing" (index 1).
 
 ```{r filter_hf, eval=FALSE}
 HeRAMS_filter_hf(mainPath, country, pathTableCode = NULL, pathTableText = NULL, barriers = FALSE, mostRecentObs = TRUE)
 ```
-To the interactive questions, we select "1" twice in order to use the example data, and then let's select all the health facility types. We just skip (press Enter without any input) to select all the options. Then we are asked to filter the health facilities based on the existing status. Let's select only the ones that are "Existing" (index 1).
 
 A folder "scenario001" was created in which we find the text file called "selected_hf.txt" with the selection criteria and a sub-folder whose name refers to the time at which the table was filtered. In this sub-folder, there is another text file called "time_frame.txt" informing about how the multiple responses per facility were handled, and a "raw" sub-folder that contains the filtered table.
 
@@ -150,7 +149,7 @@ A folder "scenario001" was created in which we find the text file called "select
 
 ![](time_frame.png)
 
-Let's say that we would like to re-run the function with different selection criteria. For instance, we select only the "Hospital" type.
+Let's say that we would like to re-run the function with different selection criteria. For instance, we select only the "Hospital" type (index 8).
 
 ```{r filter_hf2, eval=FALSE}
 HeRAMS_filter_hf(mainPath, country, pathTableCode = NULL, pathTableText = NULL, barriers = FALSE, mostRecentObs = TRUE)
@@ -160,13 +159,11 @@ HeRAMS_filter_hf(mainPath, country, pathTableCode = NULL, pathTableText = NULL, 
 
 We can see that we have now two scenario sub-folders. Running again this function with the same criteria used in "scenario001" would create a new sub-folder within "scenario001" and a new time_frame.txt file. 
 
-Now let's create a shapefile from the first health facility filtered table. The function checks if there are missing coordinates and if the facilities fall within the country boundary. If so, we are asked whether we want to add/correct them or remove the corresponding facilities. The *mostRecentBoundaries* parameter indicates if the most recent downloaded boundaries has to be used. If FALSE and if there are multiple available boundary shapefiles, we are interactively asked to select the input based on file creation time. If *rmNA* and *rmOut* are TRUE, the function removes the facilities that have missing coordinates or that fall outside the country boundaries and create text files informing about the removed facilities. Finally the *lonlat* indicates if the coordinates reflect the WGS84 longitude and latitude. If FALSE, an *epsg* code is requires. Finally, the *scenario* parameter allows us to directly specify the sub-project from which we want to vectorize the health facilities. If NULL, we are interactively asked to choose the sub-project from the available ones (during this process we have the option of printing each sub-project selection criteria in the console).
+Now let's create a shapefile from the first health facility filtered table. The function checks if there are missing coordinates and if the facilities fall within the country boundary. If so, we are asked whether we want to add/correct them or remove the corresponding facilities. The *mostRecentBoundaries* parameter indicates if the most recent downloaded boundaries has to be used. If FALSE and if there are multiple available boundary shapefiles, we are interactively asked to select the input based on file creation time. If *rmNA* and *rmOut* are TRUE, the function removes the facilities that have missing coordinates or that fall outside the country boundaries and create text files informing about the removed facilities. Finally the *lonlat* indicates if the coordinates reflect the WGS84 longitude and latitude. If FALSE, an *epsg* code is requires. Finally, the *scenario* parameter allows us to directly specify the sub-project from which we want to vectorize the health facilities. If NULL, we are interactively asked to choose the sub-project from the available ones (during this process we have the option of printing each sub-project selection criteria in the console). In the example below, many of the health facility entries in our original table will be removed from the process as we are only focusing on two regions/cantons of Switzerland.
 
 ```{r create_hf_shp, eval=FALSE}
 HeRAMS_create_hf_shapefile(mainPath, country, mostRecentBoundaries = TRUE, lonlat = TRUE, rmNA = TRUE, rmOut = TRUE, scenario = "001")
 ```
-
-We are asked to validate the column names for "external id", workspace id", "date", "HF type" and "HF name".
 
 ### Download open source layers
 
@@ -198,19 +195,15 @@ download_landcover(mainPath, country, alwaysDownload = TRUE, mostRecent = TRUE)
 
 #### Open Street Maps
 
-This function allows us to download the Open Street Map shapefiles corresponding to 'roads', 'rivers' or any other natural feature and copy them to their corresponding folders. The parameter *x* represents the target layer. Can be 'roads', 'waterLines' or 'naturalPolygons'. The logical parameter countryName indicates if the country name should be used to match with the osm.pbf file in the OSM server ? If FALSE, it is the extent of the boundary shapefile that is matched with the osm.pbf file in the Geofabrik's free download server. Matching by name is usually much faster and *countryName* should be always set TRUE, unless the country name is complex and not recognized by the server. The *mostRecent* parameter is ignored if *countryName* is TRUE. If x = "roads" and defaultClasses is TRUE, only the official OSM road classes are kept. For waterLines and naturalPolygons, default classes are river and water, respectively. If defaultClasses is FALSE, we can select the available classes we would like to keep.
+This function allows us to download the Open Street Map shapefiles corresponding to 'roads', 'rivers' or any other natural feature and copy them to their corresponding folders. The parameter *x* represents the target layer. Can be 'roads', 'waterLines' or 'naturalPolygons'. The logical parameter countryName indicates if the country name should be used to match with the osm.pbf file in the OSM server ? If FALSE, it is the extent of the boundary shapefile that is matched with the osm.pbf file in the Geofabrik's free download server. Matching by name is usually much faster and *countryName* should be always set TRUE, unless the country name is complex and not recognized by the server. The *mostRecent* parameter is ignored if *countryName* is TRUE. If x = "roads" and defaultClasses is TRUE, only the official OSM road classes are kept. For waterLines and naturalPolygons, default classes are river and water, respectively. If defaultClasses is FALSE, we can select the available classes we would like to keep. Let's download the OSM data setting the defaulClasses parameter to TRUE. The process can take time, as the data for the entire country is downloaded even though we are focusing on two single regions.
 
 ```{r roads, eval=FALSE}
-download_osm(x = "roads", mainPath, country, alwaysDownload = FALSE, countryName = TRUE, mostRecent = NULL, defaultClasses = TRUE)
+download_osm(x = "roads", mainPath, country, alwaysDownload = TRUE, countryName = TRUE, mostRecent = NULL, defaultClasses = TRUE)
 ```
 
 ```{r waterLines, eval=FALSE}
-download_osm("waterLines", mainPath, country, alwaysDownload = TRUE, countryName = TRUE, mostRecent = NULL, defaultClasses = FALSE)
+download_osm("waterLines", mainPath, country, alwaysDownload = TRUE, countryName = TRUE, mostRecent = NULL, defaultClasses = TRUE)
 ```
-
-As for the other OSM layers, we are asked which categories we want to keep.
-
-![](categories.png)
 
 At any time, we can check which inputs (either 'raw' or 'processed') are available and which are not available.
 
@@ -223,7 +216,7 @@ check_inputs(mainPath, country, type = "raw")
 Let's download the lakes from OSM before processing the inputs.
 
 ```{r naturalPolyg, eval=FALSE}
-download_osm("naturalPolygons", mainPath, country, alwaysDownload = TRUE, countryName = TRUE, mostRecent = NULL)
+download_osm("naturalPolygons", mainPath, country, alwaysDownload = TRUE, countryName = TRUE, mostRecent = NULL, defaultClasses = TRUE)
 ```
 
 ### Process layers
@@ -244,10 +237,6 @@ process_inputs(mainPath, country, selectedInputs = "All", mostRecent = TRUE, alw
 ```
 We are asked to add a label after each input is processed which will be append to the processed file name (useful when dealing with multiple inputs).
 
-Let's have a look at the log.txt file
-
-![](log.png)
-
 ### Label land cover classes
 
 The `label_landcover` function creates a CSV table with landcover codes and labels that can be imported into AccessMod. Besides the common arguments (mainPath, country, mostRecent) we have the *defaultLabels* logical parameter. It indicates if the Copernicus default labels should be associated with the the landcover raster values. If FALSE, we are interactively asked to enter the label names for each value.
@@ -266,19 +255,19 @@ When *mostRecent* is TRUE, it is the most recent processed layer that is copied 
 compile_processed_data(mainPath, country, mostRecent = TRUE)
 ```
 
-![](zToAccessMod.png)
-
 ## Other useful functions
 
 ### Sub-national travel scenarios
 
 We can use the `multi_ts` function to handle different travel scenarios for different administrative units. It creates an updated merged landcover and an updated travel scenario table. The required inputs are an administrative shapefile, a merged landcover imported from AccessMod, and an Excel (or CSV) table for each travel scenario. The function requires a folder that only contains the required inputs. When running the function, the user is asked to select the attribute table column of the shapefile that refers to each administrative unit, and then to select the travel scenario for each administrative unit.
 
+The *adminLayerName* parameter is the name of the administrative unit layer (without extension) and the *landcoverFile* parameter is the file name of the original merged landcover (with extension) imported from AccessMod after using the merge land cover tool. The *zones_ts* argument refers to an Excel or CSV table that relates the administrative units to the different scenarios. Two columns: the first one has the same name than the field name of the administrative layer attribute table that refers to each administrative unit, and the second one called 'scenario'. In the first all the different units (as indicated in the attribute table), in the second, the names (without the extension) of the different scenario tables. If set to NULL, the user is interactively asked to assign a scenario to each administrative unit, and a zones_ts table is created.
+
 ```{r multi_ts, eval=FALSE}
-multi_ts("C:/Test/TravelScenarios/", "adminLayerName", "landcoverFile.tif", zones_ts = NULL)
+inputPathMulti <- system.file("extdata", "multi_ts_example", package="inAccessMod")
+multi_ts(inputPathMulti, "admin", "raster_land_cover_merged.img", zones_ts = NULL)
 ```
 
-The *zones_ts* argument refers to an Excel or CSV table that relates the administrative units to the different scenarios. Two columns: the first one has the same name than the field name of the administrative layer attribute table that refers to each administrative unit, and the second one called 'scenario'. In the first all the different units (as indicated in the attribute table), in the second, the names (without the extension) of the different scenario tables. If set to NULL, the user is interactively asked to assign a scenario to each administrative unit, and a zones_ts table is created.
 
 ### Health facilities that provide the best coverage
 

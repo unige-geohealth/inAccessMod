@@ -31,3 +31,16 @@ Creates a CSV table with landcover codes and labels that can be imported into Ac
 \details{
 The function writes a CSV table with two columns (classes and labels) into the same folder as the processed landcover layer.
 }
+\examples{
+# Replace workDir with the actual path to your working directory
+\dontrun{
+mainPath <- "workDir"
+intiate_project(mainPath, country)}
+
+# Replace myCountry with the country name you are working on (workDir subfolder)
+\dontrun{
+country <- "myCountry"
+download_boundaries(mainPath, country, adminLevel = 1, type = "gbOpen", alwaysDownload = TRUE)
+download_landcover(mainPath, country, alwaysDownload = TRUE, mostRecent = TRUE)
+label_landcover(mainPath, country, mostRecent = TRUE, overwrite = TRUE, defaultLabels = TRUE)}
+}

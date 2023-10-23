@@ -160,8 +160,9 @@ process_pop <- function (mainPath, country, border, epsg, mostRecent, defaultMet
       outTimeFolder <- format(Sys.time(), "%Y%m%d%H%M%S")
       popOutFolder <- paste0(gsub("raw", "processed", popFolder), "/", outTimeFolder)
       dir.create(popOutFolder, recursive = TRUE)
-      check_path_length(file.path(popOutFolder, "rPopulation.tif"))
-      raster::writeRaster(popOut, file.path(popOutFolder, "rPopulation.tif"), overwrite=TRUE)
+      label <- readline(prompt = "Enter a label for rPopulation: ")
+      check_path_length(file.path(popOutFolder, paste0("rPopulation", "_", label,".tif")))
+      raster::writeRaster(popOut, file.path(popOutFolder, paste0("rPopulation", "_", label,".tif")), overwrite = TRUE)
       write(paste0(Sys.time(), ": Population raster corrected using a grid of ", gridRes, " x ", gridRes, " m cells"), file = logTxt, append = TRUE)
       cat("\nSumming values of the processed population raster per grid cell after correction\n")          
       popOutSum <- exactextractr::exact_extract(popOut, grd, "sum")
@@ -175,8 +176,9 @@ process_pop <- function (mainPath, country, border, epsg, mostRecent, defaultMet
       outTimeFolder <- format(Sys.time(), "%Y%m%d%H%M%S")
       popOutFolder <- file.path(gsub("raw", "processed", popFolder), outTimeFolder)
       dir.create(popOutFolder, recursive = TRUE)
-      check_path_length(file.path(popOutFolder, "rPopulation.tif"))
-      terra::writeRaster(popOut, file.path(popOutFolder, "rPopulation.tif"), overwrite=TRUE)
+      label <- readline(prompt = "Enter a label for rPopulation: ")
+      check_path_length(file.path(popOutFolder, paste0("rPopulation", "_", label,".tif")))
+      terra::writeRaster(popOut, file.path(popOutFolder, paste0("rPopulation", "_", label,".tif")), overwrite = TRUE)
       write(paste0(Sys.time(), ": Processed population raster saved - Output folder: ", outTimeFolder), file = logTxt, append = TRUE)
     }
   }

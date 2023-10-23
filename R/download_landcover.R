@@ -11,6 +11,17 @@
 #' time.
 #' @details The function downloads the landcover tiles from the AWS cloud and determines the file names based on the extent
 #' of the boundary shapefile. If there are multiple tiles, it produces a mosaic.
+#' @examples
+#' # Replace workDir with the actual path to your working directory
+#' \dontrun{
+#' mainPath <- "workDir"
+#' intiate_project(mainPath, country)}
+#' 
+#' # Replace myCountry with the country name you are working on (workDir subfolder)
+#' \dontrun{
+#' country <- "myCountry"
+#' download_boundaries(mainPath, country, adminLevel = 1, type = "gbOpen", alwaysDownload = TRUE)
+#' download_landcover(mainPath, country, alwaysDownload = TRUE, mostRecent = TRUE)}
 #' @export
 download_landcover <- function (mainPath, country, alwaysDownload = FALSE, mostRecent = FALSE) {
   if (!is.character(mainPath)) {

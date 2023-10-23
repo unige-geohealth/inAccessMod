@@ -41,3 +41,16 @@ default classes are river and water, respectively.}
 Download Open Street Map shapefiles from the Geofabrik's free download server that correspond to 'roads', 'rivers' or any other natural feature and copy them
 to their corresponding folders.
 }
+\examples{
+# Replace workDir with the actual path to your working directory
+\dontrun{
+mainPath <- "workDir"
+intiate_project(mainPath, country)}
+
+# Replace myCountry with the country name you are working on (workDir subfolder)
+\dontrun{
+country <- "myCountry"
+download_osm(x = "roads", mainPath, country, alwaysDownload = TRUE, countryName = TRUE, mostRecent = NULL, defaultClasses = TRUE)
+download_osm(x = "waterLines", mainPath, country, alwaysDownload = TRUE, countryName = TRUE, mostRecent = NULL, defaultClasses = TRUE)
+download_osm(x = "naturalPolygons", mainPath, country, alwaysDownload = TRUE, countryName = TRUE, mostRecent = NULL, defaultClasses = TRUE)}
+}

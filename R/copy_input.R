@@ -7,6 +7,19 @@
 #' @param input character; the absolute path of the raw input. Can be a single path (corresponding to e.g. a health facility table) 
 #' or a vector of different paths (corresponding to e.g. shapefile documents). Can also be the path of a folder. In this case, the function
 #' will copy all the files that are inside this folder.
+#' @examples
+#' # Replace workDir with the actual path to your working directory
+#' \dontrun{
+#' mainPath <- "workDir"
+#' intiate_project(mainPath, country)}
+#' 
+#' # Replace myCountry with the country name you are working on (workDir subfolder)
+#' # Replace myInputPath with the actual path to the file to be copied or to the directory
+#' # that contains the files to be copied (e.g., shapfile documents)
+#' \dontrun{
+#' country <- "myCountry"
+#' inputPath <- "myInputPath"
+#' copy_input(mainPath, country, inputPath)}
 #' @details The user is interactively asked to select the 'input' folder destination.
 #' @export
 copy_input <- function (mainPath, country, input) {

@@ -13,6 +13,16 @@
 #' will query the geoBoundaries database (geoboundaries_query) to check availability and retrieve a json file that contains the download link.
 #' @references Runfola, D. et al. (2020) geoBoundaries: A global database of political administrative boundaries. PLoS ONE 15(4): 
 #' e0231866. https://doi.org/10.1371/journal.pone.0231866
+#' @examples
+#' # Replace workDir with the actual path to your working directory
+#' \dontrun{
+#' mainPath <- "workDir"
+#' intiate_project(mainPath, country)}
+#' 
+#' # Replace myCountry with the country name you are working on (workDir subfolder)
+#' \dontrun{
+#' country <- "myCountry"
+#' download_boundaries(mainPath, country, adminLevel = 1, type = "gbOpen", alwaysDownload = TRUE)}
 #' @export
 download_boundaries <- function (mainPath, country, adminLevel, type = "gbAuthoritative", alwaysDownload = FALSE) {
   if (!is.character(mainPath)) {

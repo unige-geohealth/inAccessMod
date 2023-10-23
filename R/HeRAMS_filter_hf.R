@@ -24,7 +24,21 @@
 #' @param barriers logical; should the facilities also be filtered on the causes of possible impairment (e.g. service not available).
 #' @details The selection is recorded within a text file (selected_hf.txt) stored in the scenario folder. Different
 #' analysis scenario create new scenario folders. In the same scenario folder different 'raw' sub-folders may be created
-#' depending on the original Excel document modification time, and the selection of observations based on time. 
+#' depending on the original Excel document modification time, and the selection of observations based on time.
+#' @examples
+#' # Replace workDir with the actual path to your working directory
+#' \dontrun{
+#' mainPath <- "workDir"
+#' intiate_project(mainPath, country)}
+#' 
+#' # Replace myCountry with the country name you are working on (workDir subfolder)
+#' # Replace myHeRAMScodeTable with the path of the HeRAMS table that contains codes; set to NULL to use example data
+#' # Replace myHeRAMStextTable with the path of the HeRAMS table that contains text; set to NULL to use example data
+#' \dontrun{
+#' country <- "myCountry"
+#' pathTableCode <- "myHeRAMScodeTable"
+#' pathTableText <- "myHeRAMStextTable"
+#' HeRAMS_filter_hf(mainPath, country, pathTableCode, pathTableText, barriers = FALSE, mostRecentObs = TRUE)} 
 #' @export
 HeRAMS_filter_hf <- function (mainPath, country, pathTableCode = NULL, pathTableText = NULL, scenario = NULL, mostRecentObs = NULL, 
                        defaultParameters = TRUE,

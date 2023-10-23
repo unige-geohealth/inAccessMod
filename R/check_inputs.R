@@ -8,6 +8,16 @@
 #' @param onlyPrint logical; should the function just print which inputs are available and which are not available. Internally
 #' \code{onlyPrint} is set FALSE, but when the function is used directly by the user, print should be set to TRUE.
 #' @return character vector when \code{onlyPrint} = FALSE, and NULL when \code{onlyPrint} = TRUE
+##' @examples
+#' # Replace workDir with the actual path to your working directory
+#' \dontrun{
+#' mainPath <- "workDir"
+#' intiate_project(mainPath, country)}
+#' 
+#' # Replace myCountry with the country name you are working on (workDir subfolder)
+#' \dontrun{
+#' country <- "myCountry"
+#' check_inputs(mainPath, country, type = "raw")}
 #' @keywords internal
 #' @export
 check_inputs <- function (mainPath, country, type, onlyPrint = TRUE) {

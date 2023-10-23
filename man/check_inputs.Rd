@@ -23,4 +23,15 @@ character vector when \code{onlyPrint} = FALSE, and NULL when \code{onlyPrint} =
 \description{
 Check whether a raw or processed input exists
 }
+\examples{
+# Replace workDir with the actual path to your working directory
+\dontrun{
+mainPath <- "workDir"
+intiate_project(mainPath, country)}
+
+# Replace myCountry with the country name you are working on (workDir subfolder)
+\dontrun{
+country <- "myCountry"
+check_inputs(mainPath, country, type = "raw")}
+}
 \keyword{internal}

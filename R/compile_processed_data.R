@@ -5,6 +5,25 @@
 #' @param country character; the country folder name
 #' @param mostRecent logical; should the most recent 'processed' input be selected? If FALSE and if there are multiple
 #' available 'processed' inputs, the user is interactively asked to select the 'processed' input based on file creation time.
+#' @examples
+#' # Replace workDir with the actual path to your working directory
+#' \dontrun{
+#' mainPath <- "workDir"
+#' intiate_project(mainPath, country)}
+#' 
+#' # Replace myCountry with the country name you are working on (workDir subfolder)
+#' \dontrun{
+#' country <- "myCountry"
+#' download_boundaries(mainPath, country, adminLevel = 1, type = "gbOpen", alwaysDownload = TRUE)
+#' set_projection(mainPath, country, mostRecent = TRUE, alwaysSet = TRUE, bestCRS = TRUE)
+#' download_landcover(mainPath, country, alwaysDownload = TRUE, mostRecent = TRUE)
+#' download_population(mainPath, country, alwaysDownload = TRUE)
+#' download_dem(mainPath, country, alwaysDownload = TRUE, mostRecent = TRUE)
+#' download_osm(x = "roads", mainPath, country, alwaysDownload = TRUE, countryName = TRUE, mostRecent = NULL, defaultClasses = TRUE)
+#' download_osm(x = "waterLines", mainPath, country, alwaysDownload = TRUE, countryName = TRUE, mostRecent = NULL, defaultClasses = TRUE)
+#' download_osm(x = "naturalPolygons", mainPath, country, alwaysDownload = TRUE, countryName = TRUE, mostRecent = NULL, defaultClasses = TRUE)
+#' process_inputs(mainPath, country, selectedInputs = "All", mostRecent = TRUE, alwaysProcess = TRUE, defaultMethods = TRUE, changeRes = TRUE, newRes = 100, popCorrection = TRUE, gridRes = 3000)
+#' compile_processed_data(mainPath, country, mostRecent = TRUE)}
 #' @export
 compile_processed_data <- function (mainPath, country, mostRecent = TRUE) {
   if (!is.character(mainPath)) {

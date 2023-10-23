@@ -49,3 +49,22 @@ Once the missing coordinate issue is addressed, the function checks whether the 
 country boundary. There is a track record of both the facilities with missing coordinates and the ones that fall
 outside the country boundary.
 }
+\examples{
+# Replace workDir with the actual path to your working directory
+\dontrun{
+mainPath <- "workDir"
+intiate_project(mainPath, country)}
+
+# Replace myCountry with the country name you are working on (workDir subfolder)
+\dontrun{
+country <- "myCountry"
+download_boundaries(mainPath, country, adminLevel = 1, type = "gbOpen", alwaysDownload = TRUE)}
+
+# Replace myHeRAMScodeTable with the path of the HeRAMS table that contains codes; set to NULL to use example data
+# Replace myHeRAMStextTable with the path of the HeRAMS table that contains text; set to NULL to use example data
+\dontrun{
+pathTableCode <- "myHeRAMScodeTable"
+pathTableText <- "myHeRAMStextTable"
+HeRAMS_filter_hf(mainPath, country, pathTableCode, pathTableText, barriers = FALSE, mostRecentObs = TRUE)
+HeRAMS_create_hf_shapefile(mainPath, country, mostRecentBoundaries = TRUE, lonlat = TRUE, rmNA = TRUE, rmOut = TRUE, scenario = NULL)} 
+}

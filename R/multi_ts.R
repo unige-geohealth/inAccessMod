@@ -37,6 +37,9 @@
 #' \item Merging of the rasters of each unit (in case of overlap, the values get priority in the same order as the arguments), and merging of the tables of each unit.
 #' \item Writing the final raster, the final table, and the table that relates the different administrative units and the different travel scenarios. The final number of classes are N-classes x N-units.
 #' }
+#' @examples 
+#' inputPathMulti <- system.file("extdata", "multi_ts_example", package="inAccessMod")
+#' multi_ts(inputPathMulti, "admin", "raster_land_cover_merged.img", zones_ts = NULL)}
 #' @export
 multi_ts <- function (inputFolder, adminLayerName, landcoverFile, zones_ts = NULL) {
   if (!is.character(inputFolder)) {

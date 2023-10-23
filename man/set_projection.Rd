@@ -37,3 +37,15 @@ The "best-fit" and the suitable projected coordinate reference systems are obtai
 Both function work by analyzing the extent of the spatial dataset and comparing it to the area extents
 in the EPSG's coordinate reference system database.
 }
+\examples{
+# Replace workDir with the actual path to your working directory
+\dontrun{
+mainPath <- "workDir"
+intiate_project(mainPath, country)}
+
+# Replace myCountry with the country name you are working on (workDir subfolder)
+\dontrun{
+country <- "myCountry"
+download_boundaries(mainPath, country, adminLevel = 1, type = "gbOpen", alwaysDownload = TRUE)
+set_projection(mainPath, country, mostRecent = TRUE, alwaysSet = TRUE, bestCRS = TRUE)}
+}

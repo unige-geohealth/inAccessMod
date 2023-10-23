@@ -9,6 +9,18 @@
 #' @param defaultLabels logical; should the Copernicus default labels be associated with the the landcover raster values.
 #' If FALSE, the user is interactively asked to enter the label names for each value.
 #' @details The function writes a CSV table with two columns (classes and labels) into the same folder as the processed landcover layer.
+#' @examples
+#' # Replace workDir with the actual path to your working directory
+#' \dontrun{
+#' mainPath <- "workDir"
+#' intiate_project(mainPath, country)}
+#' 
+#' # Replace myCountry with the country name you are working on (workDir subfolder)
+#' \dontrun{
+#' country <- "myCountry"
+#' download_boundaries(mainPath, country, adminLevel = 1, type = "gbOpen", alwaysDownload = TRUE)
+#' download_landcover(mainPath, country, alwaysDownload = TRUE, mostRecent = TRUE)
+#' label_landcover(mainPath, country, mostRecent = TRUE, overwrite = TRUE, defaultLabels = TRUE)}
 #' @export
 label_landcover <- function(mainPath, country, mostRecent, overwrite = FALSE, defaultLabels = TRUE) {
   if (!is.character(mainPath)) {

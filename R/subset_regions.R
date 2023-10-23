@@ -5,6 +5,17 @@
 #' @param country character; the country folder name
 #' @param mostRecent logical; should the most recent boundary shapefile be selected? If FALSE and if there are multiple
 #' available inputs, the user is interactively asked to select the input based on file creation time.
+#' @examples
+#' # Replace workDir with the actual path to your working directory
+#' \dontrun{
+#' mainPath <- "workDir"
+#' intiate_project(mainPath, country)}
+#' 
+#' # Replace myCountry with the country name you are working on (workDir subfolder)
+#' \dontrun{
+#' country <- "myCountry"
+#' download_boundaries(mainPath, country, adminLevel = 1, type = "gbOpen", alwaysDownload = TRUE)
+#' subset_regions(mainPath, country, mostRecent = TRUE)}
 #' @export
 subset_regions <- function (mainPath, country, mostRecent = FALSE) {
   if (!is.character(mainPath)) {

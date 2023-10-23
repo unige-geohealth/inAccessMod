@@ -19,3 +19,9 @@ The final structure arises when downloading and processing the data with the cor
 and it allows multiple 'raw' inputs and multiple 'processed' outputs for each input. This can be useful when 
 performing different analyses for the same country (e.g. when we have updated data).
 }
+\examples{
+# Replace workDir with the actual path to your working directory
+\dontrun{
+mainPath <- "workDir"
+initiate_project(mainPath)}
+}
