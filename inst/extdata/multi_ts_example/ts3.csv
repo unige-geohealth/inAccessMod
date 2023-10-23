@@ -1,0 +1,41 @@
+﻿class,label,speed,mode
+20,Shrubs,3,WALKING
+30,Herbaceous_vegetation,3,WALKING
+40,Cultivated_and_managed_vegetation_agriculture,3,WALKING
+50,Urban_built_up,3,WALKING
+60,Bare_sparse_vegetation,3,WALKING
+70,Snow_and_Ice,1,WALKING
+80,Permanent_water_bodies,3,WALKING
+90,Herbaceous_wetland,3,WALKING
+100,Moss_and_lichen,3,WALKING
+111,Closed_forest_evergreen_needle_leaf,3,WALKING
+114,Closed_forest_deciduous_broad_leaf,3,WALKING
+115,Closed_forest_mixed,3,WALKING
+116,Closed_forest_unknown,3,WALKING
+121,Open_forest_evergreen_needle_leaf,3,WALKING
+124,Open_forest_deciduous_broad_leaf,3,WALKING
+125,Open_forest_mixed,3,WALKING
+126,Open_forest_unknown,3,WALKING
+1000,trunk,118,MOTORIZED
+1001,trunk link,78,MOTORIZED
+1002,primary,78,MOTORIZED
+1003,primary link,58,MOTORIZED
+1004,motorway,58,MOTORIZED
+1005,motorway link,38,MOTORIZED
+1006,secondary,38,MOTORIZED
+1007,secondary link,28,MOTORIZED
+1008,tertiary,28,MOTORIZED
+1009,tertiary link,18,MOTORIZED
+1010,road,18,MOTORIZED
+1011,raceway,0,MOTORIZED
+1012,residential,18,MOTORIZED
+1013,living street,18,MOTORIZED
+1014,service,8,MOTORIZED
+1015,track,3,WALKING
+1016,pedestrian,3,WALKING
+1017,path,3,WALKING
+1018,footway,3,WALKING
+1020,bridleway,3,WALKING
+1021,cycleway,8,BICYCLING
+1022,steps,0,WALKING
+1023,unclassified,3,WALKING

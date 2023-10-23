@@ -1,7 +1,5 @@
 # inAccessMod
-AccessMod is a World Health Organization-recognized, free and open source software tool that allows users to model the geographic accessibility of health services. 
-To model the geographic accessibility of health services, several layers of input data reflecting barriers and facilitators to the mobility of the target population 
-are required in conjunction with data on the location and availability of health services. 
+AccessMod is a World Health Organization-recognized, free and open source software tool that allows users to model the geographic accessibility of health services. To model the geographic accessibility of health services, several layers of input data reflecting barriers and facilitators to the mobility of the target population are required in conjunction with data on the location and availability of health services. More information on AccessMod installation and use can be found here: https://www.accessmod.org/ 
 
 inAccessMod is a R package that allows the user to easily download and prepare all the required layers for AccessMod. A proper folder structure is created in order 
 to manage multi-temporal data and/or multiple analysis scenarios. While the functions to process health facility tables are specifically designed to handle data
@@ -30,7 +28,6 @@ devtools::install_github("unige-geohealth/inAccessMod", build_vignettes = TRUE)
 * `hf_best_cov`: Selects the health facilities that provide the best population coverage based on their catchments and a population raster.
 
 ## Tutorial
-Make sure to set
 ```
 vignette("Tutorial", package = "inAccessMod") 
 ```

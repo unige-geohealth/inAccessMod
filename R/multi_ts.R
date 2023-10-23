@@ -14,6 +14,7 @@
 #' unit, and the second one called 'scenario'. In the first all the different units (as indicated in the attribute table), in the second,
 #' the names (without the extension) of the different scenario tables. If set to NULL, the user is interactively asked to assign
 #' a scenario to each administrative unit, and a zones_ts table is created.
+#' @param outputFolder character; the path to the output folder. If NULL, an output folder will be created within the inputFolder.
 #' @details An output folder called out is created within the input folder, as well as a subfolder whose name 
 #' is based on the system time that contains three outputs (e.g. ./out/20220826104842):
 #' \itemize{
@@ -37,11 +38,14 @@
 #' \item Merging of the rasters of each unit (in case of overlap, the values get priority in the same order as the arguments), and merging of the tables of each unit.
 #' \item Writing the final raster, the final table, and the table that relates the different administrative units and the different travel scenarios. The final number of classes are N-classes x N-units.
 #' }
-#' @examples 
+#' @examples
+#' # Replace "outDir" with the actual path to your outputFolder
+#' \dontrun{
+#' outputFolder <- "outDir"
 #' inputPathMulti <- system.file("extdata", "multi_ts_example", package="inAccessMod")
-#' multi_ts(inputPathMulti, "admin", "raster_land_cover_merged.img", zones_ts = NULL)
+#' multi_ts(inputPathMulti, "admin", "raster_land_cover_merged.img", zones_ts = NULL, outputFolder = outputFolder)}
 #' @export
-multi_ts <- function (inputFolder, adminLayerName, landcoverFile, zones_ts = NULL) {
+multi_ts <- function (inputFolder, adminLayerName, landcoverFile, zones_ts = NULL, outputFolder = NULL) {
   if (!is.character(inputFolder)) {
     stop("inputFolder must be 'character'")
   }
@@ -176,15 +180,18 @@ multi_ts <- function (inputFolder, adminLayerName, landcoverFile, zones_ts = NUL
     rasLst[[i]] <- newRas
     terra::writeRaster(newRas, file = paste0(tempDir, "/zone", i, ".tif"))
   }
+  cat("\n")
   allRast <- paste0(tempDir, "/zone", 1:nrow(zoneScenario), ".tif")
   timeFolder <- format(Sys.time(), "%Y%m%d%H%M%S")
-  outFolder <- file.path(inputFolder, "out", timeFolder)
-  check_path_length(outFolder)
-  dir.create(outFolder, recursive = TRUE)
+  if (is.null(outputFolder)) {
+    outputFolder <- file.path(inputFolder, "out", timeFolder)
+  }
+  check_path_length(outputFolder)
+  dir.create(outputFolder, recursive = TRUE)
   message("\nMerging and writing ouptuts...")
-  mosaicGDAL <- try(gdalUtils::mosaic_rasters(gdalfile = allRast, dst_dataset = file.path(outFolder, "multi_ts_merged_landcover.tif"), of = "GTiff", verbose = FALSE))
+  mosaicGDAL <- try(gdalUtils::mosaic_rasters(gdalfile = allRast, dst_dataset = file.path(outputFolder, "multi_ts_merged_landcover.tif"), of = "GTiff", verbose = FALSE))
   # Some warnings can prevent the function from running. Let's check if the output has been created. 
-  if (!file.exists(file.path(outFolder, "multi_ts_merged_landcover.tif"))) {
+  if (!file.exists(file.path(outputFolder, "multi_ts_merged_landcover.tif"))) {
     mosaicGDAL <- FALSE
   } else {
     mosaicGDAL <- TRUE
@@ -202,11 +209,11 @@ multi_ts <- function (inputFolder, adminLayerName, landcoverFile, zones_ts = NUL
         rasLst <- rasLst[-c(1, length(rasLst))]
       }
     }
-    terra::writeRaster(newRas, file.path(outFolder, "multi_ts_merged_landcover.tif"))
+    terra::writeRaster(newRas, file.path(outputFolder, "multi_ts_merged_landcover.tif"))
   }
   finalScenario <- do.call(rbind, scenarioLst)
-  writexl::write_xlsx(finalScenario, path = file.path(outFolder, "multi_ts.xlsx"), col_names = TRUE)  
-  writexl::write_xlsx(zoneScenario, path = file.path(outFolder, "zones_ts.xlsx"), col_names = TRUE)
-  cat(paste("\nDone. Output folder:", outFolder, "\n"))
+  writexl::write_xlsx(finalScenario, path = file.path(outputFolder, "multi_ts.xlsx"), col_names = TRUE)  
+  writexl::write_xlsx(zoneScenario, path = file.path(outputFolder, "zones_ts.xlsx"), col_names = TRUE)
+  cat(paste("\nDone. Output folder:", outputFolder, "\n"))
   # message("If the outputs can not be well processed in AccessMod, try to use multi_ts_fast().")
 }

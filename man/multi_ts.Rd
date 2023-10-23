@@ -4,7 +4,13 @@
 \alias{multi_ts}
 \title{Multiple travel scenarios}
 \usage{
-multi_ts(inputFolder, adminLayerName, landcoverFile, zones_ts = NULL)
+multi_ts(
+  inputFolder,
+  adminLayerName,
+  landcoverFile,
+  zones_ts = NULL,
+  outputFolder = NULL
+)
 }
 \arguments{
 \item{inputFolder}{character; the path to the input folder, which must contains an administrative unit shapefile, a merged 
@@ -19,6 +25,8 @@ the first one has the same name than the field name of the administrative layer 
 unit, and the second one called 'scenario'. In the first all the different units (as indicated in the attribute table), in the second,
 the names (without the extension) of the different scenario tables. If set to NULL, the user is interactively asked to assign
 a scenario to each administrative unit, and a zones_ts table is created.}
+
+\item{outputFolder}{character; the path to the output folder. If NULL, an output folder will be created within the inputFolder.}
 }
 \description{
 Function that allows to handle different travel scenarios for different administrative units. It creates an updated 
@@ -53,6 +61,9 @@ The function works are the following:
 }
 }
 \examples{
+# Replace "outDir" with the actual path to your outputFolder
+\dontrun{
+outputFolder <- "outDir"
 inputPathMulti <- system.file("extdata", "multi_ts_example", package="inAccessMod")
-multi_ts(inputPathMulti, "admin", "raster_land_cover_merged.img", zones_ts = NULL)
+multi_ts(inputPathMulti, "admin", "raster_land_cover_merged.img", zones_ts = NULL, outputFolder = outputFolder)}
 }

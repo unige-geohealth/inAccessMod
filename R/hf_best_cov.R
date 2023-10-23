@@ -3,7 +3,8 @@
 #' Select the health facilities that offer the best population coverage using their 
 #' catchments and a raster of population. This function also offers the possibility to ensure that N 
 #' facilities are selected for each administrative unit.
-#' @param workDir character; working directory that contains the inputs
+#' @param inputFolder character; working directory that contains the inputs
+#' @param outputFolder character; the path to the output folder. If NULL, an output folder will be created within the inputFolder.
 #' @param catchShp character; name of the catchment shapefile WITHOUT extension
 #' @param popRaster character; name of the population raster file WITH extension
 #' @param catchHfColName character; name of the health facility name column in the catchment shapefile
@@ -21,7 +22,8 @@
 #' It repeats the process until the number of facilities to be selected is reached.
 #' @export
 
-hf_best_cov <- function (workDir, 
+hf_best_cov <- function (inputFolder,
+                        outputFolder,
                         catchShp, 
                         popRaster, 
                         catchHfColName, 
@@ -35,8 +37,8 @@ hf_best_cov <- function (workDir,
     
   #Loading the inputs
   message("Loading the inputs...")
-  if (!dir.exists(workDir)) {
-    stop(paste(workDir, "does not exist."))
+  if (!dir.exists(inputFolder)) {
+    stop(paste(inputFolder, "does not exist."))
   }
   if (!is.numeric(nTot)) {
     stop("nTot must be 'numeric'")
@@ -44,12 +46,12 @@ hf_best_cov <- function (workDir,
   if (!is.logical(adminCheck)) {
     stop("adminCheck must be 'logical'")
   }
-  tempCatch <- file.path(workDir, paste0(catchShp, ".shp"))
+  tempCatch <- file.path(inputFolder, paste0(catchShp, ".shp"))
   if (!file.exists(tempCatch)) {
     stop(paste(tempCatch, "does not exist."))
   }
   tempCatch <- sf::st_read(tempCatch, quiet = TRUE)
-  pop <- file.path(workDir, popRaster)
+  pop <- file.path(inputFolder, popRaster)
   if (!file.exists(pop)) {
     stop(paste(pop, "does not exist."))
   }
@@ -73,7 +75,7 @@ hf_best_cov <- function (workDir,
     if (is.null(hfShp)) {
       stop("If adminCheck = TRUE, hfShp is required.")
     }
-    hf <- file.path(workDir, paste0(hfShp,".shp"))
+    hf <- file.path(inputFolder, paste0(hfShp,".shp"))
     hf <- sf::st_read(hf, quiet = TRUE)
     if (!hfHfColName %in% colnames(hf)) {
       stop(paste(hfHfColName, "is not a valid column name in the facility shapefile."))
@@ -83,7 +85,7 @@ hf_best_cov <- function (workDir,
     if (!all(c(test1, test2))) {
       stop("Discrepancy between facility names in health facility and catchment shapefiles.")
     }
-    admin <- file.path(workDir, paste0(adminShp,".shp"))
+    admin <- file.path(inputFolder, paste0(adminShp,".shp"))
     admin <- sf::st_read(admin, quiet = TRUE)
     if (!adminColName %in% colnames(admin)) {
       stop(paste(hfHfColName, "is not a valid column name in the facility shapefile."))
@@ -122,29 +124,46 @@ hf_best_cov <- function (workDir,
   tempCatch$totalpop <- exactextractr::exact_extract(pop, tempCatch, "sum", progress = FALSE)
   # Catchment having same population and potentially identical (verified using st_equals)
   similarCatch <- tempCatch[as.character(tempCatch$totalpop) %in% names(table(tempCatch$totalpop)[table(tempCatch$totalpop) > 1]), ]
-  simi <- similarCatch
-  simi$grp <- NA
-  # Group number
-  j <- 0
-  # Remaining rows to check
-  i <- nrow(simi)
-  bar <- txtProgressBar(min = 0, max = i, initial = 0, char = "=", width = NA, style = 3, file = "")
-  while (i > 1) {
-    # print(i)
-    x <- sf::st_equals(similarCatch$geometry[1], similarCatch$geometry, sparse = FALSE)
-    if (any(x)) {
-      j <- j + 1
-      hfIdent <- sf::st_drop_geometry(similarCatch[, catchHfColName])[x, 1]
-      ind <- which(sf::st_drop_geometry(simi[, catchHfColName])[, 1] %in% hfIdent)
-      simi$grp[ind] <- j
-      similarCatch <- similarCatch[-which(x), ] 
-    } else {
-      similarCatch <- similarCatch[-1, ] 
+  simiLogic <- FALSE
+  if (nrow(similarCatch) > 0) {
+    simiLogic <- TRUE
+    simi <- similarCatch
+    simi$grp <- NA
+    # Group number
+    j <- 0
+    # Remaining rows to check
+    i <- nrow(simi)
+    bar <- txtProgressBar(min = 0, max = i, initial = 0, char = "=", width = NA, style = 3, file = "")
+    while (i > 1) {
+      # print(i)
+      x <- sf::st_equals(similarCatch$geometry[1], similarCatch$geometry, sparse = FALSE)
+      if (any(x)) {
+        j <- j + 1
+        hfIdent <- sf::st_drop_geometry(similarCatch[, catchHfColName])[x, 1]
+        ind <- which(sf::st_drop_geometry(simi[, catchHfColName])[, 1] %in% hfIdent)
+        simi$grp[ind] <- j
+        similarCatch <- similarCatch[-which(x), ] 
+      } else {
+        similarCatch <- similarCatch[-1, ] 
+      }
+      i <- nrow(similarCatch)
+      setTxtProgressBar(bar, nrow(simi) - i)
     }
-    i <- nrow(similarCatch)
-    setTxtProgressBar(bar, nrow(simi) - i)
+    close(bar)
+    
+    # If first method is used (st_equals)
+    similarCatch <- sf::st_drop_geometry(simi)
+    
+    # Create a clean data frame with information on identical catchments
+    similarTable <- data.frame()
+    grp <- unique(similarCatch$grp)
+    grp <- grp[order(grp)]
+    for (i in 1:length(grp)){
+      similarTable[i, "Group"] <- grp[i]
+      similarTable[i, "Health Facilities"] <- paste(similarCatch[similarCatch$grp == grp[i], catchHfColName], collapse = " // ")
+      similarTable[i, "Population"] <- similarCatch[similarCatch$grp == grp[i], "totalpop"][1]
+    }
   }
-  close(bar)
   # # Other way to verify if they are identical, using the centroid and area. Although faster, this way may
   # # give some errors. Indeed, although it is very unlikely we could have two different catchments with the 
   # # same population, centroid and area. Very unlikely but still possible. Should give the same result anyway (see below)
@@ -169,19 +188,7 @@ hf_best_cov <- function (workDir,
   # }
   # print(all(sameResults))
   
-  
-  # If first method is used (st_equals)
-  similarCatch <- sf::st_drop_geometry(simi)
-  
-  # Create a clean data frame with information on identical catchments
-  similarTable <- data.frame()
-  grp <- unique(similarCatch$grp)
-  grp <- grp[order(grp)]
-  for (i in 1:length(grp)){
-    similarTable[i, "Group"] <- grp[i]
-    similarTable[i, "Health Facilities"] <- paste(similarCatch[similarCatch$grp == grp[i], catchHfColName], collapse = " // ")
-    similarTable[i, "Population"] <- similarCatch[similarCatch$grp == grp[i], "totalpop"][1]
-  }
+
   
   # Keep only the catchments that are different for the main algorithm
   tempCatchUnique <- tempCatch[!duplicated(tempCatch$geometry), ]
@@ -292,28 +299,32 @@ hf_best_cov <- function (workDir,
   }
   finalTable <- finalTable[, c("Rank", colNamesFT, "cumul")]
   colnames(finalTable)[ncol(finalTable)] <- "Cumulative sum"
-  for (i in 1:nrow(finalTable)) {
-    ind <- grepl(finalTable$`Facility name`[i], similarTable$`Health Facilities`)
-    if (any(ind)) {
-      if (sum(ind) > 1) {
-        stop(paste("Health facility in multiple groups:", 
-                   finalTable$`Facility name`[i]))
+  if (simiLogic) {
+    for (i in 1:nrow(finalTable)) {
+      ind <- grepl(finalTable$`Facility name`[i], similarTable$`Health Facilities`)
+      if (any(ind)) {
+        if (sum(ind) > 1) {
+          stop(paste("Health facility in multiple groups:", 
+                     finalTable$`Facility name`[i]))
+        }
+        finalTable$`Facility name`[i] <- similarTable$`Health Facilities`[ind]
       }
-      finalTable$`Facility name`[i] <- similarTable$`Health Facilities`[ind]
     }
   }
-  outFolder <- file.path(workDir, "outputs", format(Sys.time(), 
-                                                    "%Y%m%d%H%M%S"))
-  dir.create(outFolder, showWarnings = FALSE, recursive = TRUE)
-  write.csv(finalTable, file.path(outFolder, "facilities_table.csv"), 
+  if (is.null(outputFolder)) {
+    outputFolder <- file.path(inputFolder, "out", format(Sys.time(), 
+                                                          "%Y%m%d%H%M%S"))
+  }
+  dir.create(outputFolder, showWarnings = FALSE, recursive = TRUE)
+  write.csv(finalTable, file.path(outputFolder, "facilities_table.csv"), 
             row.names = FALSE)
   par(mar = c(8, 4, 4, 2))
-  png(filename = file.path(outFolder, "cumulative_sum.png"), 
+  png(filename = file.path(outputFolder, "cumulative_sum.png"), 
       width = 1000, height = 1000, units = "px")
   barplot((finalTable$`Cumulative sum`/10000), main = "Cumulative sum of the population covered (per 10000 habitants)", 
           ylab = "", col = "dodgerblue3", las = 2, names.arg = paste("Rank", 
                                                                      finalTable$Rank), las = 2)
   invisible(dev.off())
   cat(paste("Calculations completed.\nOutputs can be found under:", 
-            outFolder))
+            outputFolder))
 }

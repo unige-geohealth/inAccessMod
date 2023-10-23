@@ -5,7 +5,8 @@
 \title{hf_best_cov}
 \usage{
 hf_best_cov(
-  workDir,
+  inputFolder,
+  outputFolder,
   catchShp,
   popRaster,
   catchHfColName,
@@ -19,7 +20,9 @@ hf_best_cov(
 )
 }
 \arguments{
-\item{workDir}{character; working directory that contains the inputs}
+\item{inputFolder}{character; working directory that contains the inputs}
+
+\item{outputFolder}{character; the path to the output folder. If NULL, an output folder will be created within the inputFolder.}
 
 \item{catchShp}{character; name of the catchment shapefile WITHOUT extension}
 

@@ -19,7 +19,7 @@ library(inAccessMod)
 ```
 
 ### Description
-This package allows us to easily prepare all the required layers for AccessMod. A proper folder structure is created in order to manage multi-temporal data and/or multiple analysis scenarios for The Health Resources and Services Availability Monitoring System (HeRAMS). While the functions to process health facility tables are specifically designed to handle HeRAMS data, the other ones can be used for any other project. The downloading, cropping, masking, resampling and exporting processes are automated to a large degree, making the preparation of the inputs quick and straightforward.
+This package allows us to easily prepare all the required layers for AccessMod. A proper folder structure is created in order to manage multi-temporal data and/or multiple analysis scenarios for The Health Resources and Services Availability Monitoring System (HeRAMS). While the functions to process health facility tables are specifically designed to handle HeRAMS data, the other ones can be used for any other project. The downloading, cropping, masking, resampling and exporting processes are automated to a large degree, making the preparation of the inputs quick and straightforward. More information on AccessMod installation and use can be found here: https://www.accessmod.org/ 
 
 ### Installation
 First, we make sure that the devtools package installed on our computer.
@@ -43,7 +43,8 @@ library(inAccessMod)
 With the `initiate_project` function, we can select the country and automatically, the ISO 3166-1 alpha-3 country code is stored in a config.txt file and the directory main structure for the project is created. This function also creates a log.txt file that will record and track the main operations related to the project. We will see that the final structure arises when downloading and processing the data with the corresponding functions, and it allows multiple ’raw’ inputs and multiple ’processed’ outputs for each input. This can be useful when performing different analyses for the same country (e.g. when we have updated data) or using different processing parameters. To initiate the project, the only parameter we need to provide is the path where the project, namely the country folder will be created. Let's run the function and select "Switzerland" for this tutorial.
 
 ```{r initiate, eval=FALSE}
-mainPath <- "/yourPath/tutorial"
+# Replace workDir with the actual path to your working directory
+mainPath <- getwd()
 initiate_project(mainPath)
 ```
 
@@ -255,6 +256,8 @@ When *mostRecent* is TRUE, it is the most recent processed layer that is copied 
 compile_processed_data(mainPath, country, mostRecent = TRUE)
 ```
 
+Once you have the data processed (mandatory) and compiled (optional), you can create a project in AccessMod using the DEM and import the other data using the "Data" module. More information on AccessMod installation and use can be found here: https://www.accessmod.org/ 
+
 ## Other useful functions
 
 ### Sub-national travel scenarios
@@ -263,9 +266,20 @@ We can use the `multi_ts` function to handle different travel scenarios for diff
 
 The *adminLayerName* parameter is the name of the administrative unit layer (without extension) and the *landcoverFile* parameter is the file name of the original merged landcover (with extension) imported from AccessMod after using the merge land cover tool. The *zones_ts* argument refers to an Excel or CSV table that relates the administrative units to the different scenarios. Two columns: the first one has the same name than the field name of the administrative layer attribute table that refers to each administrative unit, and the second one called 'scenario'. In the first all the different units (as indicated in the attribute table), in the second, the names (without the extension) of the different scenario tables. If set to NULL, the user is interactively asked to assign a scenario to each administrative unit, and a zones_ts table is created.
 
+Let's see how it works with example data where we have three different travel scenarios for the different regions of Switzerland:
+
 ```{r multi_ts, eval=FALSE}
+# Replace outDir with the actual path to your output directory
+outputFolder <- getwd()
 inputPathMulti <- system.file("extdata", "multi_ts_example", package="inAccessMod")
-multi_ts(inputPathMulti, "admin", "raster_land_cover_merged.img", zones_ts = NULL)
+# Have a look at the different travel scenario tables
+ts1 <- read.csv(file.path(inputPathMulti, "ts1.csv"))
+head(ts1)
+ts2 <- read.csv(file.path(inputPathMulti, "ts2.csv"))
+head(ts2)
+ts3 <- read.csv(file.path(inputPathMulti, "ts3.csv"))
+head(ts3)
+multi_ts(inputPathMulti, "admin", "raster_land_cover_merged.img", zones_ts = NULL, outputFolder)
 ```
 
 
@@ -276,15 +290,10 @@ The `hf_best_cov` function allows to select the health facilities that offer the
 Let's say that we would like to select the 10 'best' facilities in terms of coverage regardless the administrative units they belong to. You will need to have all your inputs in one folder.
 
 ```{r cov, eval=FALSE}
-hf_best_cov(workDir = "C:/Test/BestCoverage/", catchShp = "catchment", popRaster = "population.tif", catchHfColName = "facilityName", nTot = 10)
+# Replace outDir with the actual path to your output directory
+outputFolder <- getwd()
+inputPathBestCov <- system.file("extdata", "hf_best_cov_example", package="inAccessMod")
+hf_best_cov(inputFolder = inputPathBestCov, outputFolder = outputFolder, catchShp = "shape_catchment_ex", popRaster = "raster_population_demo_patients.img", catchHfColName = "name", nTot = 5)
 ```
 
-*workDir* is the path of the folder that contains the inputs, *catchShp* is the name of the catchment shapefile WITHOUT extension, *popRaster* is the name of the population raster file WITH extension, *catchHfColName* is the name of the health facility name column in the catchment shapefile, and *nTot* the number of facilities to be selected.
-
-If we would like to select at least one facility per administrative unit:
-
-```{r cov2, eval=FALSE}
-hf_best_cov(workDir = "C:/Test/BestCoverage/", catchShp = "catchment", popRaster = "population.tif", catchHfColName = "facilityName", nTot = 10, adminCheck = TRUE, hfShp = "facilities", hfHfColName = "facilityName", npAdmin = 1, adminShp = "adminUnit", adminColName = "regionName")
-```
-
-*adminCheck = TRUE* indicates that at least N facilities per administrative unit are selected (by default adminCheck = FALSE), *hfShp* corresponds to the name of the health facility shapefile WITHOUT extension, *hfHfColName* is the name of the health facility name column in the health facility shapefile, *npAdmin* is the the minimum number of health facilities to be selected by administrative unit, *adminShp* is the shapefile of the administrative units WITHOUT extension, and *adminColName* is the name of the administrative unit name column in the administrative unit shapefile.
+*inputFolder* is the path of the folder that contains the inputs, *outputFolder* is the path to the output folder (if NULL, an output folder is created within the inputFolder), *catchShp* is the name of the catchment shapefile WITHOUT extension, *popRaster* is the name of the population raster file WITH extension, *catchHfColName* is the name of the health facility name column in the catchment shapefile, and *nTot* the number of facilities to be selected.
