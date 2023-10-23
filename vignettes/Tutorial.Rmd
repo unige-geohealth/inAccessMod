@@ -71,7 +71,7 @@ We are then asked to select the data we want to copy.
 Let's say that we do not have any boundary shapefile. We can download it with the `download_boundaries` function. This layer will help to set the projected coordinate reference system and will be used for cropping, masking and clipping the other input layers. The function requires the name of the country folder, the boundary administrative level, the data source, and a logical parameter (TRUE/FALSE) that indicates if the layer should always be downloaded, even if it has already been downloaded. Data source parameter (type) can be 'gbOpen' for geoBoundaries data, 'gbHumanitarian' for UN OCHA CODs data, or 'gbAuthoritative' for UN SALB data (default). The ISO code used to download the shapefile is retrieved by the internal \code{get_param} function. Another internal function will query the geoBoundaries database (geoboundaries_query) to check availability and retrieve a json file that contains the download link.
 
 ```{r boundaries, eval=FALSE}
-download_boundaries(mainPath, country, adminLevel = 2, type = "gbAuthoritative", alwaysDownload = TRUE)
+download_boundaries(mainPath, country, adminLevel = 1, type = "gbOpen", alwaysDownload = TRUE)
 ```
 
 ### Subset regions
