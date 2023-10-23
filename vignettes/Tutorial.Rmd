@@ -125,10 +125,10 @@ These logical parameters indicate whether the filtering process has to take into
 #### services
 It is a logical parameter that indicate whether we would like to focus on specific health services
 
-#### Partners
+#### partners
 It is a logical parameter that indicate whether we would like to focus on specific support partners (ignored if support = FALSE)
 
-#### Barriers
+#### barriers
 This logical parameter indicates whether we would like to also filter the health facilities on the causes of possible impairment such as dysfunctionality, unavailable services usually provided, etc. when impaired facilities are selected.
 
 Let's see an example with the fictitious example data. The following command shows the the six first rows of the table and some of the main variables.
