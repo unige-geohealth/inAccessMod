@@ -19,7 +19,7 @@ library(inAccessMod)
 ```
 
 ### Description
-This package allows us to easily prepare all the required layers for AccessMod. A proper folder structure is created in order to manage multi-temporal data and/or multiple HeRAMS analysis scenarios. While the functions to process health facility tables are specifically designed to handle HeRAMS data, the other ones can be used for any other project. The downloading, cropping, masking, resampling and exporting processes are automated to a large degree, making the preparation of the inputs quick and straightforward.
+This package allows us to easily prepare all the required layers for AccessMod. A proper folder structure is created in order to manage multi-temporal data and/or multiple analysis scenarios for The Health Resources and Services Availability Monitoring System (HeRAMS). While the functions to process health facility tables are specifically designed to handle HeRAMS data, the other ones can be used for any other project. The downloading, cropping, masking, resampling and exporting processes are automated to a large degree, making the preparation of the inputs quick and straightforward.
 
 ### Installation
 First, we make sure that the devtools package installed on our computer.
@@ -59,10 +59,11 @@ Now, that the project is initiated we can use a set of functions that allow to d
 
 ```{r copy_input, eval=FALSE}
 country <- "Switzerland"
-copy_input(mainPath, country, "C:/example/boundaries")
+inputPath <- system.file("extdata", "swiss_boundaries_example", package="inAccessMod")
+copy_input(mainPath, country, inputPath)
 ```
 
-We are then asked to select the data we want to copy.
+We are then asked to select the data we want to copy. In this case, as the folder contains shapefile of the boundaries, we would select index: 4
 
 ![](copy_inputs.png)
 
@@ -76,10 +77,10 @@ download_boundaries(mainPath, country, adminLevel = 1, type = "gbOpen", alwaysDo
 
 ### Subset regions
 
-In case we would like to work only on specific country regions, we use the `subset_regions` function. It subsets the boundary shapefile based on region names included in the shapefile attribute table. We are first asked to select the column that contains the region names, and then the region that we want to keep. A new boundary shapefile will be created. The function only requires the project root path and the country folder name.
+In case we would like to work only on specific country regions, we use the `subset_regions` function. It subsets the boundary shapefile based on region names included in the shapefile attribute table. We are first asked to select the column that contains the region names, and then the region that we want to keep. A new boundary shapefile will be created. The function only requires the project root path and the country folder name. In the example below we also set the parameter `mostRecent` to TRUE so it will automatically load the most recent downloaded shapefile. We will be asked to select the column that we would like to use for subsetting the regions, let's select the column 1 that refers to the names of the regions. A list of the region names will be displayed so we can select the regions. Let's select the regions "Genève" and "Vaud", by indicating their indices separated by whitespaces: 7 8 11 13 23 24 
 
 ```{r subset_regions, eval=FALSE}
-subset_regions(mainPath, country)
+subset_regions(mainPath, country, mostRecent = TRUE)
 ```
 
 ### Set the projected coordinate reference system
@@ -100,9 +101,9 @@ The function also has projected the boundary shapefile and we can observe how th
 
 ### Filter the health facilities and create a point shapefile (HeRAMS table)
 
-This section is only compatible with the HeRAMS tables. If we are not working with HeRAMS data, we can just skip this part and use the `copy_input` function to copy a health facility shapefile into an appropriate sub-folder (it will copy the input to e.g. /vFacilities/20220524103021/raw).
+This section is only compatible with the HeRAMS tables. If we are not working with HeRAMS data, we can just skip this part and use the `copy_input` function to copy a health facility shapefile into an appropriate sub-folder (it will copy the input to e.g. /vFacilities/20220524103021/raw). 
 
-Now, let's say that we are dealing with HeRAMS data and let's filter the health facilities from our raw health facility tables with the `HeRAMS_filter_hf` function, and create a point shapefile of the filtered facilities with the `HeRAMS_create_hf_facilities` function. We need two tables, the one with the responses as text (e.g. "Available"), and the one with responses as codes (e.g. "A1")  
+Now, let's say that we are dealing with HeRAMS data and let's filter the health facilities from our raw health facility tables with the `HeRAMS_filter_hf` function, and create a point shapefile of the filtered facilities with the `HeRAMS_create_hf_facilities` function. We need two tables, the one with the responses as text (e.g. "Available"), and the one with responses as codes (e.g. "A1"). The functions allows to use example data for Switzerland.  
 
 The function `HeRAMS_filter_hf` requires the main project folder and the country folder name. Besides, it also requires the paths to the raw text and code tables (if NULL, we are asked whether we want to take fictitious example data from Switzerland). We have fourteen other parameters: scenario, mostRecentObs, defaultParamaters, type, ownership, status, building, equipment, functionality, accessibility, support, services, partners and barriers.
 
@@ -134,11 +135,12 @@ Let's see an example with the fictitious example data. The following command sho
 ```{r fictitious}
 inAccessMod::fictitious_herams_data_txt[1:6, c("last_synced", "subject_id", "date", "MoSD4", "CONDB", "HFFUNCT", "HFACC", "MoSDGPS_SQ001", "MoSDGPS_SQ002")]
 ```
-
+Let's filter the data:
 
 ```{r filter_hf, eval=FALSE}
-HeRAMS_filter_hf(mainPath, country, pathTable = NULL, barriers = FALSE, mostRecentObs = TRUE)
+HeRAMS_filter_hf(mainPath, country, pathTableCode = NULL, pathTableText = NULL, barriers = FALSE, mostRecentObs = TRUE)
 ```
+To the interactive questions, we select "1" twice in order to use the example data, and then let's select all the health facility types. We just skip (press Enter without any input) to select all the options. Then we are asked to filter the health facilities based on the existing status. Let's select only the ones that are "Existing" (index 1).
 
 A folder "scenario001" was created in which we find the text file called "selected_hf.txt" with the selection criteria and a sub-folder whose name refers to the time at which the table was filtered. In this sub-folder, there is another text file called "time_frame.txt" informing about how the multiple responses per facility were handled, and a "raw" sub-folder that contains the filtered table.
 
@@ -148,10 +150,10 @@ A folder "scenario001" was created in which we find the text file called "select
 
 ![](time_frame.png)
 
-Let's say that we would like to re-run the function with different selection criteria.
+Let's say that we would like to re-run the function with different selection criteria. For instance, we select only the "Hospital" type.
 
 ```{r filter_hf2, eval=FALSE}
-HeRAMS_filter_hf(mainPath, country, pathTable = NULL, scenario = NULL, mostRecentObs = TRUE)
+HeRAMS_filter_hf(mainPath, country, pathTableCode = NULL, pathTableText = NULL, barriers = FALSE, mostRecentObs = TRUE)
 ```
 
 ![](tree_vFacilities2.png)
@@ -163,6 +165,8 @@ Now let's create a shapefile from the first health facility filtered table. The 
 ```{r create_hf_shp, eval=FALSE}
 HeRAMS_create_hf_shapefile(mainPath, country, mostRecentBoundaries = TRUE, lonlat = TRUE, rmNA = TRUE, rmOut = TRUE, scenario = "001")
 ```
+
+We are asked to validate the column names for "external id", workspace id", "date", "HF type" and "HF name".
 
 ### Download open source layers
 
@@ -176,7 +180,7 @@ download_dem(mainPath, country, alwaysDownload = TRUE, mostRecent = TRUE)
 
 #### Population raster
 
-This function allows us to download a population raster from the World Pop FTP and copy it to its corresponding folder. It allows to interactively navigate through the folders and select the population raster to be downloaded. The ISO code retrieved internally is used to match the country FTP folder when available. If *alwaysDownload* is TRUE, the raster is always be downloaded, even if it has already been downloaded ? If FALSE and if the raster has already been downloaded we are interactively asked whether we want to download it again or not.
+This function allows us to download a population raster from the World Pop FTP and copy it to its corresponding folder. It allows to interactively navigate through the folders and select the population raster to be downloaded. The ISO code retrieved internally is used to match the country FTP folder when available. If *alwaysDownload* is TRUE, the raster is always be downloaded, even if it has already been downloaded ? If FALSE and if the raster has already been downloaded we are interactively asked whether we want to download it again or not. Let's download the UN adjusted and constrained to building footprint population layer by selecting the folder "Global_2000_2020_Constrained", then "2020" and "BSGM", and finally "che_ppp_2020_UNadj_constrained.tif".
 
 ```{r pop, eval=FALSE}
 download_population(mainPath, country, alwaysDownload = TRUE)
@@ -238,6 +242,7 @@ The following function allows to process any input layer and copy it to its corr
 ```{r process_inputs, eval=FALSE}
 process_inputs(mainPath, country, selectedInputs = "All", mostRecent = TRUE, alwaysProcess = TRUE, defaultMethods = TRUE, changeRes = TRUE, newRes = 100, popCorrection = TRUE, gridRes = 3000)
 ```
+We are asked to add a label after each input is processed which will be append to the processed file name (useful when dealing with multiple inputs).
 
 Let's have a look at the log.txt file
 
@@ -262,6 +267,8 @@ compile_processed_data(mainPath, country, mostRecent = TRUE)
 ```
 
 ![](zToAccessMod.png)
+
+## Other useful functions
 
 ### Sub-national travel scenarios
 
