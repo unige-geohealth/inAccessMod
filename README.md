@@ -7,9 +7,12 @@ from The Health Resources and Services Availability Monitoring System (HeRAMS), 
 masking, resampling, exporting processes are automated to a large degree, making the preparation of the inputs quick and straightforward. 
 
 ## Installation
+
+This package requires R version 4.1.3 or later. It also requires the following packages: crsuggest, data.table, dplyr, exactextractr, fasterize, fs, gdalUtils (version 2.0.3.2 or later), geodata, jsonlite, lubridate, osmextract, purrr, raster, RCurl, readxl, rgdal, rgeoboundaries (version 0.0.0.9000 or later), rgeos, rmarkdown, sf, sp, stringi, stringr, tibble, utils, and writexl. These dependencies should be installed automatically when `dependencies = TRUE` is set in the command used to install the package.
+
 ```
 if (!require("devtools")) install.packages("devtools")
-devtools::install_github("unige-geohealth/inAccessMod", build_vignettes = TRUE)
+devtools::install_github("unige-geohealth/inAccessMod", build_vignettes = TRUE, dependencies = TRUE)
 ```
 
 ## Main functions
@@ -28,6 +31,9 @@ devtools::install_github("unige-geohealth/inAccessMod", build_vignettes = TRUE)
 * `hf_best_cov`: Selects the health facilities that provide the best population coverage based on their catchments and a population raster.
 
 ## Tutorial
+
+You can access the tutorial directly in R using the following command, or by opening the TUTORIAL file located in the main directory of the repository.
+ 
 ```
 vignette("Tutorial", package = "inAccessMod") 
 ```
