@@ -57,7 +57,7 @@ is not necessary. This is how the new directories look like in a
 tree-like format. Further, we will see how this tree can grow with the
 downloading and the processing of inputs.
 
-![](initiate2.png)
+![](vignettes/initiate2.png)
 
 ### Import inputs
 
@@ -80,7 +80,7 @@ We are then asked to select the data we want to copy. In this case, as
 the folder contains shapefile of the boundaries, we would select index:
 4
 
-![](copy_inputs.png)
+![](vignettes/copy_inputs.png)
 
 ### Download the country boundaries
 
@@ -149,7 +149,7 @@ Let’s have a look at the project config.txt file. It is used to retrieve
 the project parameters in other functions and should not be modified
 manually.
 
-![](configtxt.png)
+![](vignettes/configtxt.png)
 
 The function also has projected the boundary shapefile and we can
 observe how the directory structure has changed. The sub-folder names
@@ -159,7 +159,7 @@ following example, we observe that the raw boundary shapefile was
 downloaded at 2022-05-27 14:09:56 and was processed at 2022-05-27
 14:11:02.
 
-![](tree_after_setProj.png)
+![](vignettes/tree_after_setProj.png)
 
 ### Filter the health facilities and create a point shapefile (HeRAMS table)
 
@@ -282,11 +282,11 @@ sub-folder, there is another text file called “time\_frame.txt”
 informing about how the multiple responses per facility were handled,
 and a “raw” sub-folder that contains the filtered table.
 
-![](tree_vFacilities1.png)
+![](vignettes/tree_vFacilities1.png)
 
-![](selected_hf.png)
+![](vignettes/selected_hf.png)
 
-![](time_frame.png)
+![](vignettes/time_frame.png)
 
 Let’s say that we would like to re-run the function with different
 selection criteria. For instance, we select only the “Hospital” type
@@ -294,7 +294,7 @@ selection criteria. For instance, we select only the “Hospital” type
 
     HeRAMS_filter_hf(mainPath, country, pathTableCode = NULL, pathTableText = NULL, barriers = FALSE, mostRecentObs = TRUE)
 
-![](tree_vFacilities2.png)
+![](vignettes/tree_vFacilities2.png)
 
 We can see that we have now two scenario sub-folders. Running again this
 function with the same criteria used in “scenario001” would create a new
@@ -357,7 +357,7 @@ population layer by selecting the folder
 
     download_population(mainPath, country, alwaysDownload = TRUE)
 
-![](ftp.png)
+![](vignettes/ftp.png)
 
 #### Landcover
 
@@ -404,7 +404,7 @@ available and which are not available.
 
     check_inputs(mainPath, country, type = "raw")
 
-![](checkInputs.png)
+![](vignettes/checkInputs.png)
 
 Let’s download the lakes from OSM before processing the inputs.
 
@@ -455,8 +455,6 @@ are the specific parameters:
     correcting the raster. Ignored if *popCorrection* is FALSE. If NULL
     and popCorrection is TRUE, the user is interactively asked to
     provide the grid resolution.
-
-<!-- -->
 
     process_inputs(mainPath, country, selectedInputs = "All", mostRecent = TRUE, alwaysProcess = TRUE, defaultMethods = TRUE, changeRes = TRUE, newRes = 100, popCorrection = TRUE, gridRes = 3000)
 
@@ -564,7 +562,8 @@ need to have all your inputs in one folder.
     # Replace outDir with the actual path to your output directory
     outputFolder <- getwd()
     inputPathBestCov <- system.file("extdata", "hf_best_cov_example", package="inAccessMod")
-    hf_best_cov(inputFolder = inputPathBestCov, outputFolder = outputFolder, catchShp = "shape_catchment_ex", popRaster = "raster_population_demo_patients.img", catchHfColName = "name", nTot = 5)
+    hf_best_cov(inputFolder = inputPathBestCov, outputFolder = outputFolder, catchShp = "shape_catchment_ex", 
+    popRaster = "raster_population_demo_patients.img", catchHfColName = "name", nTot = 5)
 
 *inputFolder* is the path of the folder that contains the inputs,
 *outputFolder* is the path to the output folder (if NULL, an output
