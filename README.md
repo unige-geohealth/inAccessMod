@@ -15,6 +15,13 @@ if (!require("devtools")) install.packages("devtools")
 devtools::install_github("unige-geohealth/inAccessMod", build_vignettes = TRUE, dependencies = TRUE)
 ```
 
+I you decided to install the dependencies manually, please note that `gdalUtils` and `rgeoboundaries` must be installed using remotes or devtools:
+
+```
+devtools::install_github("gearslaboratory/gdalUtils")
+devtools::install_github("wmgeolab/rgeoboundaries")
+```
+
 ## Main functions
 * `initiate_project`: Allows starting a new project by choosing the country and retrieving the official ISO alpha-3 code.
 * `download_boundaries`: Downloads the required administrative boundaries from the geoBoundaries database.
