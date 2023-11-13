@@ -19,18 +19,23 @@ library(inAccessMod)
 ```
 
 ### Description
-This package allows us to easily prepare all the required layers for AccessMod. A proper folder structure is created in order to manage multi-temporal data and/or multiple analysis scenarios for The Health Resources and Services Availability Monitoring System (HeRAMS). While the functions to process health facility tables are specifically designed to handle HeRAMS data, the other ones can be used for any other project. The downloading, cropping, masking, resampling and exporting processes are automated to a large degree, making the preparation of the inputs quick and straightforward. More information on AccessMod installation and use can be found here: https://www.accessmod.org/ 
+AccessMod is a World Health Organization-recognized, free and open source software tool that allows users to model the geographic accessibility of health services. To model the geographic accessibility of health services, several layers of input data reflecting barriers and facilitators to the mobility of the target population are required in conjunction with data on the location and availability of health services. More information on AccessMod installation and use can be found here: https://www.accessmod.org/ 
+
+inAccessMod is a R package that allows the user to easily download and prepare all the required layers for AccessMod. A proper folder structure is created in order to manage multi-temporal data and/or multiple analysis scenarios. While the functions to process health facility tables are specifically designed to handle data from The Health Resources and Services Availability Monitoring System (HeRAMS), the other ones can be used for any other project. The layer downloading, cropping, masking, resampling, exporting processes are automated to a large degree, making the preparation of the inputs quick and straightforward. 
 
 ### Installation
-First, we make sure that the devtools package installed on our computer.
-```{r devtools, eval=FALSE}
-if (!require("devtools")) install.packages("devtools")
-```
-
-Then we use its `install_github` function to download and install the `inAccessMod` package from its github repository.
+This package requires R version 4.1.3 or later. It also requires the following packages: `crsuggest`, `data.table`, `dplyr`, `exactextractr`, `fasterize`, `fs`, `gdalUtils` (version 2.0.3.2 or later), `geodata`, `jsonlite`, `lubridate`, `osmextract`, `purrr`, `raster`, `RCurl`, `readxl`, `rgdal`, `rgeoboundaries` (version 0.0.0.9000 or later), `rgeos`, `rmarkdown`, `sf`, `sp`, `stringi`, `stringr`, `tibble`, `utils`, and `writexl`.. These dependencies should be installed automatically when `dependencies = TRUE` is set in the command used to install the package.
 
 ```{r install, eval=FALSE}
-devtools::install_github("https://github.com/unige-geohealth/inAccessMod", build_vignettes = TRUE)
+if (!require("devtools")) install.packages("devtools")
+devtools::install_github("unige-geohealth/inAccessMod", build_vignettes = TRUE, dependencies = TRUE)
+```
+
+I you decided to install the dependencies manually, please note that `gdalUtils` and `rgeoboundaries` must be installed using remotes or devtools:
+
+```{r installremotes, eval=FALSE}
+devtools::install_github("gearslaboratory/gdalUtils")
+devtools::install_github("wmgeolab/rgeoboundaries")
 ```
 
 Once it is installed, we can load the package in order to make its functions directly available.
