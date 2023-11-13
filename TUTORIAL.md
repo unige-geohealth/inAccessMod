@@ -562,8 +562,7 @@ need to have all your inputs in one folder.
     # Replace outDir with the actual path to your output directory
     outputFolder <- getwd()
     inputPathBestCov <- system.file("extdata", "hf_best_cov_example", package="inAccessMod")
-    hf_best_cov(inputFolder = inputPathBestCov, outputFolder = outputFolder, catchShp = "shape_catchment_ex", 
-    popRaster = "raster_population_demo_patients.img", catchHfColName = "name", nTot = 5)
+    hf_best_cov(inputFolder = inputPathBestCov, outputFolder = outputFolder, catchShp = "shape_catchment_ex", popRaster = "raster_population_demo_patients.img", catchHfColName = "name", nTot = 5)
 
 *inputFolder* is the path of the folder that contains the inputs,
 *outputFolder* is the path to the output folder (if NULL, an output
