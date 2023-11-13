@@ -49,7 +49,7 @@ function and select “Switzerland” for this tutorial.
     mainPath <- getwd()
     initiate_project(mainPath)
 
-![](initiate.png)
+![](vignettes/initiate.png)
 
 As indicated in the console, some input folders are created by default.
 We are asked if we want to add another input folder. Let’s say that it
