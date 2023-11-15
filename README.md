@@ -15,7 +15,7 @@ if (!require("devtools")) install.packages("devtools")
 devtools::install_github("unige-geohealth/inAccessMod", build_vignettes = TRUE, dependencies = TRUE)
 ```
 
-I you decided to install the dependencies manually, please note that `gdalUtils` and `rgeoboundaries` must be installed using remotes or devtools:
+If you decide to install the dependencies manually, please note that `gdalUtils` and `rgeoboundaries` must be installed using remotes or devtools:
 
 ```
 devtools::install_github("gearslaboratory/gdalUtils")
