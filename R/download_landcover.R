@@ -180,4 +180,5 @@ download_landcover <- function (mainPath, country, alwaysDownload = FALSE, mostR
     write(paste0(Sys.time(), ": Multiple landcover tiles downloaded and mosaicked - Input folder ", timeFolder), file = logTxt, append = TRUE)
   }
   cat(paste0("Done: ", pathLandcover, "/", country, awsLCSuffix, "\n"))
+  return(TRUE)
 }

@@ -15,7 +15,8 @@ process_pop(
   newRes,
   popCorrection,
   gridRes,
-  alwaysProcess
+  alwaysProcess,
+  testMode
 )
 }
 \arguments{
@@ -45,6 +46,10 @@ whether they want to run it or not.}
 
 \item{gridRes}{numeric; the resolution of the grid shapefile used for correcting the raster. Ignored if popCorrection is FALSE.
 If NULL and popCorrection is TRUE, the user is interactively asked to provide the grid resolution.}
+
+\item{alwaysProcess}{logical; if TRUE, the user is not asked if they want to process an input already processed.}
+
+\item{testMode}{logical; used for testing. If TRUE labels of processed population layer is not interactively asked.}
 }
 \value{
 a list of length 2; The first element is the processed \code{SpatRaster} object and the second element is the selected

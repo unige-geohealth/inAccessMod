@@ -4,10 +4,12 @@
 \alias{initiate_project}
 \title{Initiate Project}
 \usage{
-initiate_project(mainPath)
+initiate_project(mainPath, testMode = FALSE)
 }
 \arguments{
-\item{mainPath}{A path where the country folder will be created}
+\item{mainPath}{character; a path where the country folder will be created}
+
+\item{testMode}{logical; FALSE by default. Can be ignored. used for testing the function in the testthat context.}
 }
 \description{
 Select the country, get the ISO 3166-1 alpha-3 country code, store it in a config.txt file and create the directory 

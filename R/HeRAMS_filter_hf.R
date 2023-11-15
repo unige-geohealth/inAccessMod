@@ -22,6 +22,7 @@
 #' @param services logical; should the facilities be filtered based on health services information.
 #' @param partners logical; should the facilities also be filtered on the different possible supporting partners (ignored if support is FALSE)
 #' @param barriers logical; should the facilities also be filtered on the causes of possible impairment (e.g. service not available).
+#' @param testMode logical; FALSE by default. If TRUE, and pathTableCode and pathTableText are NULL, example data is automatically loaded.
 #' @details The selection is recorded within a text file (selected_hf.txt) stored in the scenario folder. Different
 #' analysis scenario create new scenario folders. In the same scenario folder different 'raw' sub-folders may be created
 #' depending on the original Excel document modification time, and the selection of observations based on time.
@@ -53,7 +54,8 @@ HeRAMS_filter_hf <- function (mainPath, country, pathTableCode = NULL, pathTable
                        support = FALSE,
                        services = FALSE,
                        partners = FALSE,
-                       barriers = FALSE) {
+                       barriers = FALSE,
+                       testMode = FALSE) {
 
   if (!is.character(mainPath)) {
     stop("mainPath must be 'character'")
@@ -71,7 +73,11 @@ HeRAMS_filter_hf <- function (mainPath, country, pathTableCode = NULL, pathTable
       }
     }
   } else {
-    yn <- utils::menu(c("YES", "NO"), title = "\npathTableCode is NULL; would like to load ficticious example data for Switzerland?")
+    if (testMode) {
+      yn <- 1
+    } else {
+      yn <- utils::menu(c("YES", "NO"), title = "\npathTableCode is NULL; would like to load ficticious example data for Switzerland?")
+    }
     if (yn == 2) {
       stop_quietly("No table to be filtered!")
     } 
@@ -86,7 +92,11 @@ HeRAMS_filter_hf <- function (mainPath, country, pathTableCode = NULL, pathTable
       }
     }
   } else {
-    yn <- utils::menu(c("YES", "NO"), title = "\npathTableText is NULL; would like to load ficticious example data for Switzerland?")
+    if (testMode) {
+      yn <- 1
+    } else {
+      yn <- utils::menu(c("YES", "NO"), title = "\npathTableText is NULL; would like to load ficticious example data for Switzerland?")
+    }
     if (yn == 2) {
       stop_quietly("No table to be filtered!")
     } 
@@ -552,4 +562,5 @@ HeRAMS_filter_hf <- function (mainPath, country, pathTableCode = NULL, pathTable
   write.csv(tibTxt, file = file.path(outFolder, "health_facilities.csv"))
   write(paste0(Sys.time(), ": Health facilities where filtered - scenario folder: ", scenarioDir, " - input folder: ", outTimeFolder), file = logTxt, append = TRUE)
   cat(paste0("\n", outFolder, "/health_facilities.csv\n"))
+  return(TRUE)
 }

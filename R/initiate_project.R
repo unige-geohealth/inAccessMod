@@ -3,7 +3,8 @@
 #' Select the country, get the ISO 3166-1 alpha-3 country code, store it in a config.txt file and create the directory 
 #' main structure for the project. This function also creates a log.txt file that will record and track the main operations 
 #' related to the project.
-#' @param mainPath A path where the country folder will be created
+#' @param mainPath character; a path where the country folder will be created
+#' @param testMode logical; FALSE by default. Can be ignored. used for testing the function in the testthat context.
 #' @details The final structure arises when downloading and processing the data with the corresponding functions,
 #' and it allows multiple 'raw' inputs and multiple 'processed' outputs for each input. This can be useful when 
 #' performing different analyses for the same country (e.g. when we have updated data).
@@ -13,7 +14,7 @@
 #' mainPath <- "workDir"
 #' initiate_project(mainPath)}
 #' @export
-initiate_project <- function (mainPath) {
+initiate_project <- function (mainPath, testMode = FALSE) {
   if (!is.character(mainPath)) {
     stop("mainPath must be 'character'")
   }
@@ -21,7 +22,11 @@ initiate_project <- function (mainPath) {
     stop(paste(mainPath, "folder does not exist."))
   }
   countryLst <- countrycode::codelist$country.name.en[!is.na(countrycode::codelist$un.name.en)]
-  countryInd <- utils::menu(countryLst, title="Select the country", graphics=FALSE)
+  if (testMode) {
+    countryInd <- 168
+  } else {
+    countryInd <- utils::menu(countryLst, title="Select the country", graphics=FALSE)
+  }
   if (countryInd == 0) {
     stop_quietly("You exit the function.")
   }
@@ -40,7 +45,11 @@ initiate_project <- function (mainPath) {
                "vNaturalPolygons", "vBorders","vFacilities")
   message(paste("\nThe following input folders will be created:", paste(inputNames,collapse=", ")))
   # Add other data ?
-  yn <- utils::menu(c("YES","NO"), title="\nDo you want to add another input folder (type 1 or 2)?")
+  if (testMode) {
+    yn <- 2
+  } else {
+    yn <- utils::menu(c("YES","NO"), title="\nDo you want to add another input folder (type 1 or 2)?")
+  }
   if (yn == 0) {
     stop_quietly("You exit the function.")
   }
@@ -83,4 +92,5 @@ initiate_project <- function (mainPath) {
   close(fileConn)
   # Print directory tree
   fs::dir_tree(pathData)
+  return(TRUE)
 }

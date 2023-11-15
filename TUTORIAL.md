@@ -8,7 +8,7 @@ inAccessMod is a R package that allows the user to easily download and prepare a
 
 ## Installation
 
-This package requires R version 4.1.3 or later. It also requires the following packages: `crsuggest`, `data.table`, `dplyr`, `exactextractr`, `fasterize`, `fs`, `gdalUtils` (version 2.0.3.2 or later), `geodata`, `jsonlite`, `lubridate`, `osmextract`, `purrr`, `raster`, `RCurl`, `readxl`, `rgdal`, `rgeoboundaries` (version 0.0.0.9000 or later), `rgeos`, `rmarkdown`, `sf`, `sp`, `stringi`, `stringr`, `tibble`, `utils`, and `writexl`.. These dependencies should be installed automatically when `dependencies = TRUE` is set in the command used to install the package.
+This package requires R version 4.1.3 or later. It also requires the following packages: `crsuggest`, `data.table`, `dplyr`, `exactextractr`, `fasterize`, `fs`, `gdalUtils` (version 2.0.3.2 or later), `geodata`, `jsonlite`, `lubridate`, `osmextract`, `purrr`, `raster`, `RCurl`, `readxl`, `rgdal`, `rgeoboundaries` (version 0.0.0.9000 or later), `rgeos`, `rmarkdown`, `sf`, `sp`, `stringi`, `stringr`, `testthat`, `tibble`, `utils`, and `writexl`.. These dependencies should be installed automatically when `dependencies = TRUE` is set in the command used to install the package.
 
     if (!require("devtools")) install.packages("devtools")
     devtools::install_github("unige-geohealth/inAccessMod", build_vignettes = TRUE, dependencies = TRUE)

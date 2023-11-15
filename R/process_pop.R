@@ -18,6 +18,8 @@
 #' whether they want to run it or not.
 #' @param gridRes numeric; the resolution of the grid shapefile used for correcting the raster. Ignored if popCorrection is FALSE.
 #' If NULL and popCorrection is TRUE, the user is interactively asked to provide the grid resolution.
+#' @param alwaysProcess logical; if TRUE, the user is not asked if they want to process an input already processed.
+#' @param testMode logical; used for testing. If TRUE labels of processed population layer is not interactively asked.
 #' @return a list of length 2; The first element is the processed \code{SpatRaster} object and the second element is the selected
 #' projection method (for track record)
 #' @details The algorithm for correcting the population raster works as following: it creates a grid shapefile, it sums up the population
@@ -26,7 +28,7 @@
 #' the 'processed' raster is multiplied by the rasterized ratio. The lower is the grid resolution, the finer is the correction.
 #' @keywords internal
 #' @export
-process_pop <- function (mainPath, country, border, epsg, mostRecent, defaultMethods, changeRes, newRes, popCorrection, gridRes, alwaysProcess) {
+process_pop <- function (mainPath, country, border, epsg, mostRecent, defaultMethods, changeRes, newRes, popCorrection, gridRes, alwaysProcess, testMode) {
   message("Processing population raster...")
   logTxt <- file.path(mainPath, country, "data", "log.txt")
   # message("\nProcessing population raster...")
@@ -160,7 +162,11 @@ process_pop <- function (mainPath, country, border, epsg, mostRecent, defaultMet
       outTimeFolder <- format(Sys.time(), "%Y%m%d%H%M%S")
       popOutFolder <- paste0(gsub("raw", "processed", popFolder), "/", outTimeFolder)
       dir.create(popOutFolder, recursive = TRUE)
-      label <- readline(prompt = "Enter a label for rPopulation: ")
+      if (testMode) {
+        label <- "test"
+      } else {
+        label <- readline(prompt = "Enter a label for rPopulation: ")
+      }
       check_path_length(file.path(popOutFolder, paste0("rPopulation", "_", label,".tif")))
       raster::writeRaster(popOut, file.path(popOutFolder, paste0("rPopulation", "_", label,".tif")), overwrite = TRUE)
       write(paste0(Sys.time(), ": Population raster corrected using a grid of ", gridRes, " x ", gridRes, " m cells"), file = logTxt, append = TRUE)
@@ -176,7 +182,11 @@ process_pop <- function (mainPath, country, border, epsg, mostRecent, defaultMet
       outTimeFolder <- format(Sys.time(), "%Y%m%d%H%M%S")
       popOutFolder <- file.path(gsub("raw", "processed", popFolder), outTimeFolder)
       dir.create(popOutFolder, recursive = TRUE)
-      label <- readline(prompt = "Enter a label for rPopulation: ")
+      if (testMode) {
+        label <- "test"
+      } else {
+        label <- readline(prompt = "Enter a label for rPopulation: ")
+      }
       check_path_length(file.path(popOutFolder, paste0("rPopulation", "_", label,".tif")))
       terra::writeRaster(popOut, file.path(popOutFolder, paste0("rPopulation", "_", label,".tif")), overwrite = TRUE)
       write(paste0(Sys.time(), ": Processed population raster saved - Output folder: ", outTimeFolder), file = logTxt, append = TRUE)

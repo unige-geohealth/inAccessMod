@@ -10,8 +10,12 @@
 #' @details The function keeps running while no folder whose name is the country ISO code is reached.
 #' @keywords internal
 #' @export
-navigate_ftp <- function (folderLst, iso, pathFTP, pathFTP0) {
+navigate_ftp <- function (folderLst, iso, pathFTP, pathFTP0, testMode) {
   navig <- TRUE
+  if (testMode) {
+    selInds <- c(4, 2, 2)
+  }
+  ki <- 0
   while (navig) {
     # If there is a folder with our country code, select it
     isoProp <- sum(grepl("^[A-Z]{3}$", folderLst)) / length(folderLst)
@@ -22,16 +26,21 @@ navigate_ftp <- function (folderLst, iso, pathFTP, pathFTP0) {
       if (isoProp == 1 & !any(grepl(paste0("^", iso, "$"), folderLst))) {
         pathFTP <- paste0(pathFTP,"../")
         message(paste(iso, "is not available in this dataset."))
-      }else{
+      } else {
         folderLst <- c(folderLst, "PREVIOUS DIRECTORY", "EXIT FUNCTION")
-        folderNb <- utils::menu(folderLst, title="\nSelect folder (type the corresponding number or zero to get back to the root directory)?")
+        if (testMode) {
+          ki <- ki + 1
+          folderNb <- selInds[ki]
+        } else {
+          folderNb <- utils::menu(folderLst, title="\nSelect folder (type the corresponding number or zero to get back to the root directory)?")
+        }
         if (folderNb == length(folderLst)) {
           return(NULL)
-        }else if (folderNb == (length(folderLst)-1)) {
+        } else if (folderNb == (length(folderLst) - 1)) {
           pathFTP <- paste0(pathFTP, "../")
-        }else if (folderNb == 0) {
+        } else if (folderNb == 0) {
           pathFTP <- pathFTP0
-        }else{
+        } else {
           selectedFolder <- folderLst[folderNb]
           pathFTP <- paste0(pathFTP, selectedFolder, "/")
         }

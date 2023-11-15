@@ -110,5 +110,6 @@ label_landcover <- function(mainPath, country, mostRecent, overwrite = FALSE, de
     labelDf <- data.frame(class = val, label = lcLabels)
   }
   write.csv(labelDf, file = landcoverTable, row.names =  FALSE)
-  cat(paste0("\nCSV table: ",landcoverTable))
+  cat(paste0("\nCSV table: ",landcoverTable, "\n"))
+  return(TRUE)
 }

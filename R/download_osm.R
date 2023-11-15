@@ -141,4 +141,5 @@ download_osm <- function (x, mainPath, country, alwaysDownload = FALSE, countryN
   write(paste0(Sys.time(), ": ", x, " downloaded from OSM; ", paste(categ, collapse = ", "), "- Input folder ", timeFolder), file = logTxt, append = TRUE)
   file.remove(file.path(pathFolder, list.files(pathFolder)[grepl("\\.gpkg$|\\.pbf$", list.files(pathFolder))]))
   cat(paste0("Done: ", pathFolder, "/v", stringr::str_to_title(x), "_", shapeName,".shp", "\n"))
+  return(TRUE)
 }

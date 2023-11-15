@@ -8,7 +8,7 @@ masking, resampling, exporting processes are automated to a large degree, making
 
 ## Installation
 
-This package requires R version 4.1.3 or later. It also requires the following packages: `crsuggest`, `data.table`, `dplyr`, `exactextractr`, `fasterize`, `fs`, `gdalUtils` (version 2.0.3.2 or later), `geodata`, `jsonlite`, `lubridate`, `osmextract`, `purrr`, `raster`, `RCurl`, `readxl`, `rgdal`, `rgeoboundaries` (version 0.0.0.9000 or later), `rgeos`, `rmarkdown`, `sf`, `sp`, `stringi`, `stringr`, `tibble`, `utils`, and `writexl`.. These dependencies should be installed automatically when `dependencies = TRUE` is set in the command used to install the package.
+This package requires R version 4.1.3 or later. It also requires the following packages: `crsuggest`, `data.table`, `dplyr`, `exactextractr`, `fasterize`, `fs`, `gdalUtils` (version 2.0.3.2 or later), `geodata`, `jsonlite`, `lubridate`, `osmextract`, `purrr`, `raster`, `RCurl`, `readxl`, `rgdal`, `rgeoboundaries` (version 0.0.0.9000 or later), `rgeos`, `rmarkdown`, `sf`, `sp`, `stringi`, `stringr`, `testthat`, `tibble`, `utils`, and `writexl`. These dependencies should be installed automatically when `dependencies = TRUE` is set in the command used to install the package.
 
 ```
 if (!require("devtools")) install.packages("devtools")
@@ -43,5 +43,29 @@ You can access the tutorial directly in R using the following command, or by ope
  
 ```
 vignette("Tutorial", package = "inAccessMod") 
+```
+
+## Automated tests
+
+You can automatically test the entire pipeline running the following command after loading the package.
+ 
+```
+testthat::test_file(system.file("tests/testthat/test-entire_pipeline.R", package = "inAccessMod"))
+```
+Other tests related to specific functions are also available:
+
+```
+testthat::test_file(system.file("tests/testthat/test-compile_processed_data.R", package = "inAccessMod"))
+testthat::test_file(system.file("tests/testthat/test-download_boundaries.R", package = "inAccessMod"))
+testthat::test_file(system.file("tests/testthat/test-download_dem.R", package = "inAccessMod"))
+testthat::test_file(system.file("tests/testthat/test-download_landcover.R", package = "inAccessMod"))
+testthat::test_file(system.file("tests/testthat/test-download_osm.R", package = "inAccessMod"))
+testthat::test_file(system.file("tests/testthat/test-download_population.R", package = "inAccessMod"))
+testthat::test_file(system.file("tests/testthat/test-HeRAMS_create_hf_shapefile.R", package = "inAccessMod"))
+testthat::test_file(system.file("tests/testthat/test-HeRAMS_filter_hf.R", package = "inAccessMod"))
+testthat::test_file(system.file("tests/testthat/test-initiate_project.R", package = "inAccessMod"))
+testthat::test_file(system.file("tests/testthat/test-label_landcover.R", package = "inAccessMod"))
+testthat::test_file(system.file("tests/testthat/test-process_inputs.R", package = "inAccessMod"))
+testthat::test_file(system.file("tests/testthat/test-set_projection.R", package = "inAccessMod"))
 ```
 

@@ -14,7 +14,8 @@ process_inputs(
   changeRes = NULL,
   newRes = NULL,
   popCorrection = NULL,
-  gridRes = NULL
+  gridRes = NULL,
+  testMode = FALSE
 )
 }
 \arguments{
@@ -49,6 +50,8 @@ whether they want to run it or not.}
 
 \item{gridRes}{numeric; the resolution (meters) of the grid shapefile used for correcting the raster. Ignored if \code{popCorrection} is FALSE.
 If NULL and \code{popCorrection} is TRUE, the user is interactively asked to provide the grid resolution.}
+
+\item{testMode}{logical; used for testing. If TRUE labels of processed inputs are not interactively asked.}
 }
 \description{
 Process any input layer and copy it to its corresponding folder

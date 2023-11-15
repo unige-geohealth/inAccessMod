@@ -150,4 +150,5 @@ set_projection <- function (mainPath, country, mostRecent = FALSE, alwaysSet = F
   sf::st_write(border, file.path(borderOutFolder, "vBorders.shp"), append=FALSE)
   write(paste0(Sys.time(), ": Processed vBorders shapefile saved - Output folder: ", outTimeFolder), file = logTxt, append = TRUE)
   message("\nProjection parameter has been set and the boundary shapefile has been projected.")
+  return(TRUE)
 }

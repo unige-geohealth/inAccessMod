@@ -77,4 +77,5 @@ download_boundaries <- function (mainPath, country, adminLevel, type = "gbAuthor
   logTxt <- file.path(mainPath, country, "data", "log.txt")
   write(paste0(Sys.time(), ": Boundaries downloaded from geoboundaries (ADMIN-", adminLevel, "; ", type, ") - Input folder ", timeFolder), file = logTxt, append = TRUE)
   cat(paste0("Done: ", shpFile, "\n"))
+  return(TRUE)
 }

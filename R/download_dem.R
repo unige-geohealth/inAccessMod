@@ -125,4 +125,5 @@ download_dem <- function (mainPath, country, alwaysDownload = FALSE, mostRecent 
   mtime <- file.info(list.files(path = pathDEM, pattern="\\.tif", full.names = TRUE))[,"mtime"]
   mostRecent <- which(order(as.POSIXct(mtime)) == 1)
   cat(paste0("Done: ", pathDEM, "/", filesTif[mostRecent], "\n"))
+  return(TRUE)
 }

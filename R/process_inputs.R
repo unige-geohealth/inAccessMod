@@ -23,6 +23,7 @@
 #' whether they want to run it or not.
 #' @param gridRes numeric; the resolution (meters) of the grid shapefile used for correcting the raster. Ignored if \code{popCorrection} is FALSE.
 #' If NULL and \code{popCorrection} is TRUE, the user is interactively asked to provide the grid resolution.
+#' @param testMode logical; used for testing. If TRUE labels of processed inputs are not interactively asked.
 #' @details A 'processed' boundary shapefile is required for processing any other inputs. A 'processed' population raster is required
 #' for processing any other raster. These conditions are taken into account and the processing of these
 #' layers is performed even if they are not selected and if 'processed' layers are not available.
@@ -51,7 +52,8 @@ process_inputs <- function (mainPath, country, selectedInputs = NULL, mostRecent
                             changeRes = NULL, 
                             newRes = NULL, 
                             popCorrection = NULL, 
-                            gridRes = NULL) {
+                            gridRes = NULL,
+                            testMode = FALSE) {
   if (!is.character(mainPath)) {
     stop("mainPath must be 'character'")
   }
@@ -155,7 +157,11 @@ process_inputs <- function (mainPath, country, selectedInputs = NULL, mostRecent
         borderOutFolder <- file.path(gsub("raw", "processed", borderFolder), outTimeFolder)
         check_path_length(borderOutFolder)
         dir.create(borderOutFolder, recursive = TRUE)
-        label <- readline(prompt = "Enter a label for vBorders: ")
+        if (testMode) {
+          label <- "test"
+        } else {
+          label <- readline(prompt = "Enter a label for vBorders: ")
+        }
         check_path_length(file.path(borderOutFolder, paste0("vBorders", "_", label,".shp")))
         sf::st_write(border, file.path(borderOutFolder, paste0("vBorders", "_", label,".shp")), append=FALSE)
         write(paste0(Sys.time(), ": Processed vBorders shapefile saved - Output folder: ", outTimeFolder), file = logTxt, append = TRUE)
@@ -168,7 +174,7 @@ process_inputs <- function (mainPath, country, selectedInputs = NULL, mostRecent
     }
     # If we want to process the population raster
     if ("rPopulation" %in% selectedFolders) {
-      process_pop(mainPath, country, border, epsg, mostRecent, defaultMethods, changeRes, newRes, popCorrection, gridRes, alwaysProcess)
+      process_pop(mainPath, country, border, epsg, mostRecent, defaultMethods, changeRes, newRes, popCorrection, gridRes, alwaysProcess, testMode)
       selectedFolders <- selectedFolders[!grepl("rPopulation", selectedFolders)]
       # Check if other inputs to be processed
       if (length(selectedFolders) < 1) {
@@ -188,7 +194,7 @@ process_inputs <- function (mainPath, country, selectedInputs = NULL, mostRecent
       popFolders <- check_exists(popFolder, "processed", layer = TRUE)
       if (is.null(popFolders)) {
         message("\nNo processed population raster is available.\nProcessing raw population raster...")
-        process_pop(mainPath, country, border, epsg, mostRecent, defaultMethods, changeRes, newRes, popCorrection, gridRes)
+        process_pop(mainPath, country, border, epsg, mostRecent, defaultMethods, changeRes, newRes, popCorrection, gridRes, testMode)
         popFolders <- check_exists(popFolder, "processed", layer = TRUE)
       }
       message("\nLoading processed population raster...")
@@ -249,7 +255,11 @@ process_inputs <- function (mainPath, country, selectedInputs = NULL, mostRecent
       outFolder <- file.path(gsub("raw", "processed", inputFolder), outTimeFolder)
       check_path_length(outFolder)
       dir.create(outFolder, recursive = TRUE)
-      label <- readline(prompt = paste0("Enter a label for ", selectedFolders[i], ": "))
+      if (testMode) {
+        label <- "test"
+      } else {
+        label <- readline(prompt = paste0("Enter a label for ", selectedFolders[i], ": "))
+      }
       check_path_length(file.path(outFolder, paste0(selectedFolders[i], "_", label, ".tif")))
       terra::writeRaster(rasResampled, file.path(outFolder, paste0(selectedFolders[i], "_", label, ".tif")), overwrite=TRUE)
       write(paste0(Sys.time(), ": Processed ", paste0(selectedFolders[i], "_", label), " raster saved - Output folder: ", outTimeFolder), file = logTxt, append = TRUE)
@@ -261,7 +271,11 @@ process_inputs <- function (mainPath, country, selectedInputs = NULL, mostRecent
       outFolder <- paste0(gsub("raw", "processed", inputFolder), "/", outTimeFolder)
       check_path_length(outFolder)
       dir.create(outFolder, recursive = TRUE)
-      label <- readline(prompt = paste0("Enter a label for ", selectedFolders[i], ": "))
+      if (testMode) {
+        label <- "test"
+      } else {
+        label <- readline(prompt = paste0("Enter a label for ", selectedFolders[i], ": "))
+      }
       shpName <- paste0(selectedFolders[i], "_", label, ".shp")
       # In case we have scenario for HeRAMS data
       shpName <- gsub("/scenario[0-9]{3}", "", shpName)
@@ -271,4 +285,5 @@ process_inputs <- function (mainPath, country, selectedInputs = NULL, mostRecent
     }
   }
   cat("\nDone !\n")
+  return(TRUE)
 }

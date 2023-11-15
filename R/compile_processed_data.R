@@ -58,5 +58,7 @@ compile_processed_data <- function (mainPath, country, mostRecent = TRUE) {
       file.copy(from = file, to = outFolder, copy.date = TRUE, overwrite = TRUE)
     }
   }
+  cat("\n")
   write(paste0(Sys.time(), ": ", paste(inputsAv, collapse = ", "), "copied to 'zToAccessMod' - Output folder: ", outTimeFolder), file = logTxt, append = TRUE)
+  return(TRUE)
 }

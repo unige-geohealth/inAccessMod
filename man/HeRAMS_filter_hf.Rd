@@ -23,7 +23,8 @@ HeRAMS_filter_hf(
   support = FALSE,
   services = FALSE,
   partners = FALSE,
-  barriers = FALSE
+  barriers = FALSE,
+  testMode = FALSE
 )
 }
 \arguments{
@@ -64,6 +65,8 @@ the user is asked to choose among four methods for selection based on time obser
 \item{partners}{logical; should the facilities also be filtered on the different possible supporting partners (ignored if support is FALSE)}
 
 \item{barriers}{logical; should the facilities also be filtered on the causes of possible impairment (e.g. service not available).}
+
+\item{testMode}{logical; FALSE by default. If TRUE, and pathTableCode and pathTableText are NULL, example data is automatically loaded.}
 }
 \description{
 Filter the HeRAMS health facility raw table for different analysis scenario and export a table that contains only 

@@ -4,7 +4,12 @@
 \alias{download_population}
 \title{Download Population Raster}
 \usage{
-download_population(mainPath, country, alwaysDownload = FALSE)
+download_population(
+  mainPath,
+  country,
+  alwaysDownload = FALSE,
+  testMode = FALSE
+)
 }
 \arguments{
 \item{mainPath}{character; the parent directory of the country folder}
@@ -14,6 +19,8 @@ download_population(mainPath, country, alwaysDownload = FALSE)
 \item{alwaysDownload}{logical; should the raster always be downloaded, even if it has already been 
 downloaded? If FALSE and if the raster has already been downloaded the user is 
 interactively asked whether they want to download it again or not.}
+
+\item{testMode}{logical; to be ignored. Only used when testing the function with testthat.}
 }
 \description{
 Download a population raster from the World Pop FTP and copy it to its corresponding folder.
