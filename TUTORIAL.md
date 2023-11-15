@@ -8,7 +8,7 @@ inAccessMod is a R package that allows the user to easily download and prepare a
 
 ## Installation
 
-This package requires R version 4.1.3 or later. It also requires the following packages: `crsuggest`, `data.table`, `dplyr`, `exactextractr`, `fasterize`, `fs`, `gdalUtils` (version 2.0.3.2 or later), `geodata`, `jsonlite`, `lubridate`, `osmextract`, `purrr`, `raster`, `RCurl`, `readxl`, `rgdal`, `rgeoboundaries` (version 0.0.0.9000 or later), `rgeos`, `rmarkdown`, `sf`, `sp`, `stringi`, `stringr`, `testthat`, `tibble`, `utils`, and `writexl`.. These dependencies should be installed automatically when `dependencies = TRUE` is set in the command used to install the package.
+This package requires R version 4.1.3 or later. It also requires the following packages: `crsuggest`, `data.table`, `dplyr`, `exactextractr`, `fasterize`, `fs`, `gdalUtils` (version 2.0.3.2 or later), `geodata`, `jsonlite`, `lubridate`, `osmextract`, `purrr`, `raster`, `RCurl`, `readxl`, `rgdal`, `rgeoboundaries` (version 0.0.0.9000 or later), `rgeos`, `rmarkdown`, `sf`, `sp`, `stringi`, `stringr`, `testthat`, `tibble`, `utils`, and `writexl`. These dependencies should be installed automatically when `dependencies = TRUE` is set in the command used to install the package.
 
     if (!require("devtools")) install.packages("devtools")
     devtools::install_github("unige-geohealth/inAccessMod", build_vignettes = TRUE, dependencies = TRUE)
@@ -33,7 +33,7 @@ track the main operations related to the project. We will see that the
 final structure arises when downloading and processing the data with the
 corresponding functions, and it allows multiple ’raw’ inputs and
 multiple ’processed’ outputs for each input. This can be useful when
-performing different analyses for the same country (e.g. when we have
+performing different analyses for the same country (e.g. when we have
 updated data) or using different processing parameters. To initiate the
 project, the only parameter we need to provide is the path where the
 project, namely the country folder will be created. Let’s run the
@@ -61,7 +61,7 @@ if we would like to use other input data, we can run the `copy_input`
 function which only requires the project root path, the country name,
 and the path of the file or the folder that we would like to import. To
 avoid possible further conflicts, the input is highly recommended to be
-a “raw” input (i.e. not projected). For instance, we want to use a
+a “raw” input (i.e. not projected). For instance, we want to use a
 country boundary shapefile from another source than the one available
 through inAccessMod. We call the function `copy_input` and indicate, as
 third parameter, the path to the shapefile folder.
@@ -161,14 +161,14 @@ This section is only compatible with the HeRAMS tables. If we are not
 working with HeRAMS data, we can just skip this part and use the
 `copy_input` function to copy a health facility shapefile into an
 appropriate sub-folder (it will copy the input to
-e.g. /vFacilities/20220524103021/raw).
+e.g. /vFacilities/20220524103021/raw).
 
 Now, let’s say that we are dealing with HeRAMS data and let’s filter the
 health facilities from our raw health facility tables with the
 `HeRAMS_filter_hf` function, and create a point shapefile of the
 filtered facilities with the `HeRAMS_create_hf_facilities` function. We
-need two tables, the one with the responses as text (e.g. “Available”),
-and the one with responses as codes (e.g. “A1”). The functions allows to
+need two tables, the one with the responses as text (e.g.“Available”),
+and the one with responses as codes (e.g. “A1”). The functions allows to
 use example data for Switzerland.
 
 The function `HeRAMS_filter_hf` requires the main project folder and the
@@ -185,8 +185,8 @@ To understand these parameters, let’s see how this function works.
 
 We are interactively asked to select the health facilities that we want
 to keep based on available attribute values. After a first filter on
-main information (e.g. health facility type) and operationality
-(e.g. status, building condition, functionality, etc.), we are asked
+main information (e.g. health facility type) and operationality
+(e.g. status, building condition, functionality, etc.), we are asked
 whether we would like to focus on specific health services. The overall
 information regarding the analysis scenario is recorded in a text file
 (selected\_hf.txt) which should not be modified manually. A new scenario
