@@ -66,6 +66,17 @@ Overall, `inAccessMod` simplifies the process of preparing geospatial input laye
 -   `compile_processed_data`: Compiles all the processed data into one single folder, making it easier to import the input data into AccessMod.
 -   `hf_best_cov`: Selects the health facilities that provide the best population coverage based on their catchments and a population raster.
 
+# Installation
+
+This package requires R version 4.1.3 or later. It also requires the following packages: `crsuggest`, `data.table`, `dplyr`, `exactextractr`, `fasterize`, `fs`, `gdalUtils` (version 2.0.3.2 or later), `geodata`, `jsonlite`, `lubridate`, `osmextract`, `purrr`, `raster`, `RCurl`, `readxl`, `rgdal`, `rgeoboundaries` (version 0.0.0.9000 or later), `rgeos`, `rmarkdown`, `sf`, `sp`, `stringi`, `stringr`, `testthat`, `tibble`, `utils`, and `writexl`. These dependencies should be installed automatically when `dependencies = TRUE` is set in the command used to install the package.
+
+    devtools::install_github("unige-geohealth/inAccessMod", build_vignettes = TRUE, dependencies = TRUE)
+
+
+# Author contributions
+
+Pablo Timoner authored the original version of the package, developed the pipeline and majority of its functions, maintained the package, wrote the documentation, debugged the code, and contributed to the drafting of the article. Fleur Hierink wrote the initial code, forming the base for the package's main functions. Loïc Baecher was responsible for the creation of the `hf_best_cov` function core. Caroline Fuhrer assisted in conceptualizing the HeRAMS-related functions. Nicolas Ray supervised the project and participated in the article drafting process.
+
 # Acknowledgements
 
 We acknowledge contributions from Andrew Curtis, Yaniss Guigoz, Camille Chênes, Carlos Ochoa and Zeynabou Sy for their help in testing the package. Their input and feedback were crucial in identifying and resolving technical issues, ensuring the accuracy and reliability of the results.
