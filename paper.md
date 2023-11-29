@@ -51,7 +51,7 @@ To use AccessMod, users need several geospatial input layers related to populati
 Overall, `inAccessMod` simplifies the process of preparing geospatial input layers for AccessMod into a quicker, more reliable, and more user-friendly experience. Familiarity with GIS and geospatial data formats is recommended to use `inAccessMod`.
 
 ![](folder_structure.png){width=80%}
-Figure 1: Directory structure we we have a folder for each input, and corresponding subfolders for raw and processed data.
+Figure 1: The directory structure. There is a folder for each input data, and their corresponding subfolders for raw and processed data.
 
 # Main functions
 
