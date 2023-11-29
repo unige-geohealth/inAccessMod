@@ -47,25 +47,28 @@ vignette("Tutorial", package = "inAccessMod")
 
 ## Automated tests
 
-You can automatically test the entire pipeline running the following command after loading the package.
+After cloning the repository, go to the package main directory and run:
  
 ```
-testthat::test_file(system.file("tests/testthat/test-entire_pipeline.R", package = "inAccessMod"))
-```
-Other tests related to specific functions are also available:
-
-```
-testthat::test_file(system.file("tests/testthat/test-compile_processed_data.R", package = "inAccessMod"))
-testthat::test_file(system.file("tests/testthat/test-download_boundaries.R", package = "inAccessMod"))
-testthat::test_file(system.file("tests/testthat/test-download_dem.R", package = "inAccessMod"))
-testthat::test_file(system.file("tests/testthat/test-download_landcover.R", package = "inAccessMod"))
-testthat::test_file(system.file("tests/testthat/test-download_osm.R", package = "inAccessMod"))
-testthat::test_file(system.file("tests/testthat/test-download_population.R", package = "inAccessMod"))
-testthat::test_file(system.file("tests/testthat/test-HeRAMS_create_hf_shapefile.R", package = "inAccessMod"))
-testthat::test_file(system.file("tests/testthat/test-HeRAMS_filter_hf.R", package = "inAccessMod"))
-testthat::test_file(system.file("tests/testthat/test-initiate_project.R", package = "inAccessMod"))
-testthat::test_file(system.file("tests/testthat/test-label_landcover.R", package = "inAccessMod"))
-testthat::test_file(system.file("tests/testthat/test-process_inputs.R", package = "inAccessMod"))
-testthat::test_file(system.file("tests/testthat/test-set_projection.R", package = "inAccessMod"))
+devtools::test()
 ```
 
+## Contributor guidelines
+
+Contributions are welcome and greatly appreciated! To contribute, please follow the following guidelines:
+
+### Reporting issues
+
+* Check that the issue has not already been reported on the [issue tracker](https://github.com/unige-geohealth/inAccessMod/issues).
+* Submit an issue on the [issue tracker](https://github.com/unige-geohealth/inAccessMod/issues).
+
+### Development process
+
+* Fork the repository, make changes in your fork, and submit a pull request.
+* Follow the existing coding style and structure.
+* Write tests for any new functionality.
+* Document any changes in the package documentation.
+
+### Where to get help
+
+* Maintainer: [Pablo Timoner](mailto:pablo.timoner@unige.ch)

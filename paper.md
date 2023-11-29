@@ -38,7 +38,7 @@ affiliations:
 
 # Summary
 
-`inAccessMod` is an R package that simplifies the process of downloading and preparing geospatial layers required for AccessMod, an official software from the World Health Organization (WHO) used to model physical accessibility to healthcare. The package makes it easy to prepare all necessary inputs by automating tasks such as data downloading, cropping, masking, projection, and resampling with easy-to-use functions. `inAccessMod` includes additional functions that help users modify inputs and perform complex analyses like merging sub-national travel scenarios. The package also facilitates handling of health facility data from The Health Resources and Services Availability Monitoring System (WHO/HeRAMS), and performs specialized result assessments like ranking of health facilities based on their coverage.
+`inAccessMod` is an R package that simplifies the process of downloading and preparing geospatial layers required for AccessMod, an official software from the World Health Organization (WHO) used to model physical accessibility to healthcare. The package makes it easy to prepare all necessary inputs by automating tasks such as data downloading, cropping, masking, projection, and resampling with easy-to-use functions. `inAccessMod` includes additional functions that help users modify inputs and perform complex analyses like merging sub-national travel scenarios. The package also facilitates handling of health facility data from The Health Resources and Services Availability Monitoring System (WHO/HeRAMS) [@herams_str:2022], and performs specialized result assessments like ranking of health facilities based on their coverage.
 
 # Statement of need
 
@@ -51,7 +51,8 @@ To use AccessMod, users need several geospatial input layers related to populati
 Overall, `inAccessMod` simplifies the process of preparing geospatial input layers for AccessMod into a quicker, more reliable, and more user-friendly experience. Familiarity with GIS and geospatial data formats is recommended to use `inAccessMod`.
 
 ![](folder_structure.png){width=80%}
-Figure 1: The directory structure. There is a folder for each input data, and their corresponding subfolders for raw and processed data.
+
+Figure 1: Example of the directory structure with all datasets allowing for data from different time periods. There is a folder for each input data, and corresponding subfolders for raw and processed data.
 
 # Main functions
 
