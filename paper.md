@@ -46,9 +46,12 @@ AccessMod is a free and open-source geospatial tool for modeling physical access
 
 To use AccessMod, users need several geospatial input layers related to population, elevation, land cover, roads, barriers, administrative boundaries, etc. These layers require downloading and processing by users before being used in AccessMod. However, the different GIS operations involved in pre-processing these input layers can be time-consuming and might cause issues with data consistency and quality.
 
-`inAccessMod` provides a simple solution that enables users to download and preprocess geospatial input layers required for AccessMod quickly and easily. The package automates several data processing tasks, including downloading corresponding layers from popular sources like WorldPop, SRTM, Copernicus, OpenStreetMap, and geoBoundaries. Users can automatically crop, mask, project and resample the inputs by following straightforward parametrizations provided by the package. A clear directory structure is created with all datasets, facilitating their import into Accessmod. The package also enables users to handle health facility data from the WHO/HeRAMS system effectively.
+`inAccessMod` provides a simple solution that enables users to download and preprocess geospatial input layers required for AccessMod quickly and easily. The package automates several data processing tasks, including downloading corresponding layers from popular sources like WorldPop, SRTM, Copernicus, OpenStreetMap, and geoBoundaries. Users can automatically crop, mask, project and resample the inputs by following straightforward parametrizations provided by the package. A clear directory structure is created with all datasets (Figure 1), facilitating their import into Accessmod. The package also enables users to handle health facility data from the WHO/HeRAMS system effectively.
 
 Overall, `inAccessMod` simplifies the process of preparing geospatial input layers for AccessMod into a quicker, more reliable, and more user-friendly experience. Familiarity with GIS and geospatial data formats is recommended to use `inAccessMod`.
+
+![](folder_structure.png){width=80%}
+Figure 1: Directory structure we we have a folder for each input, and corresponding subfolders for raw and processed data.
 
 # Main functions
 
