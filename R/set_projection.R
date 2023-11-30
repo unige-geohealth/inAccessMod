@@ -11,6 +11,7 @@
 #' @param bestCRS logical; should the projected coordinate reference system be set automatically based on the "best-fit" 
 #' projected coordinate reference system? If FALSE, the user is interactively asked to select the projected coordinate reference 
 #' system from a list of suitable reference systems.
+#' @param testMode logical; used for testing. If TRUE labels of processed inputs are not interactively asked.
 #' @details The "best-fit" and the suitable projected coordinate reference systems are obtained with the 
 #' \code{suggest_top_crs} and the \code{suggest_crs}, respectively, from the \pkg{crsuggest} package.
 #' Both function work by analyzing the extent of the spatial dataset and comparing it to the area extents
@@ -27,7 +28,7 @@
 #' download_boundaries(mainPath, country, adminLevel = 1, type = "gbOpen", alwaysDownload = TRUE)
 #' set_projection(mainPath, country, mostRecent = TRUE, alwaysSet = TRUE, bestCRS = TRUE)}
 #' @export
-set_projection <- function (mainPath, country, mostRecent = FALSE, alwaysSet = FALSE, bestCRS = FALSE) {
+set_projection <- function (mainPath, country, mostRecent = FALSE, alwaysSet = FALSE, bestCRS = FALSE, testMode = FALSE) {
   if (!is.character(mainPath)) {
     stop("mainPath must be 'character'")
   }
@@ -147,7 +148,13 @@ set_projection <- function (mainPath, country, mostRecent = FALSE, alwaysSet = F
   borderOutFolder <- file.path(gsub("raw", "processed", boundFolder), outTimeFolder)
   check_path_length(borderOutFolder)
   dir.create(borderOutFolder, recursive = TRUE)
-  sf::st_write(border, file.path(borderOutFolder, "vBorders.shp"), append=FALSE)
+  if (testMode) {
+    label <- "test"
+  } else {
+    label <- readline(prompt = paste0("Enter a label for vBorders: "))
+  }
+  check_path_length(file.path(borderOutFolder, paste0("vBorders", "_", label,".shp")))
+  sf::st_write(border, file.path(borderOutFolder, paste0("vBorders", "_", label,".shp")), append = FALSE)
   write(paste0(Sys.time(), ": Processed vBorders shapefile saved - Output folder: ", outTimeFolder), file = logTxt, append = TRUE)
   message("\nProjection parameter has been set and the boundary shapefile has been projected.")
   return(TRUE)
