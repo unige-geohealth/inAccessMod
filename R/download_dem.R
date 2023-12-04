@@ -46,8 +46,8 @@ download_dem <- function (mainPath, country, alwaysDownload = FALSE, mostRecent 
     }
   }
   border <- get_boundaries(mainPath, country, "raw", mostRecent)
-  border <- as(sf::st_combine(border), "Spatial")
-  # Download SRTM tiles shapefile in a temporary folder
+
+    # Download SRTM tiles shapefile in a temporary folder
   timeFolder <- format(Sys.time(), "%Y%m%d%H%M%S")
   pathDEM <- file.path(pathDEM, timeFolder, "raw")
   check_path_length(pathDEM)
@@ -58,21 +58,21 @@ download_dem <- function (mainPath, country, alwaysDownload = FALSE, mostRecent 
   urlSRTM <- "https://github.com/sikli/srtm_country/archive/master.zip"
   utils::download.file(url = urlSRTM, destfile = paste0(tmpFolder, "/srtm.zip"))
   utils::unzip(zipfile = paste0(tmpFolder, "/srtm.zip"), overwrite = TRUE, exdir= tmpFolder)
-  shp <- raster::shapefile(file.path(tmpFolder, "srtm_country-master", "srtm", "tiles.shp"))
+  shp <- sf::st_read(file.path(tmpFolder, "srtm_country-master", "srtm", "tiles.shp"))
+  
   # Here it does not matter if border is not in lon lat (for land cover, we have a check)
-  border <- sp::spTransform(border, shp@proj4string)
-  intersects <- rgeos::gIntersects(border, shp, byid=TRUE)
-  tiles <- shp[intersects[,1],]
+  border <- sf::st_transform(border, crs = sf::st_crs(shp))
+  intersects <- suppressWarnings(sf::st_intersects(border, shp))
+  tiles <- shp[unique(unlist(intersects)), ]
   logTxt <- file.path(mainPath, country, "data", "log.txt")
   revertDownloadOptions <- FALSE
-  #Download tiles
-  if (length(tiles) > 1) {
+  # Download tiles
+  if (nrow(tiles) > 1) {
     srtmList  <- list()
-    for (i in 1:length(tiles)) {
-      cat(paste0("Downloading tile ", i, "/", length(tiles), "...\n"))
+    for (i in 1:nrow(tiles)) {
+      cat(paste0("Downloading tile ", i, "/", nrow(tiles), "...\n"))
       lon <- raster::extent(tiles[i,])[1]  + (raster::extent(tiles[i,])[2] - raster::extent(tiles[i,])[1]) / 2
       lat <- raster::extent(tiles[i,])[3]  + (raster::extent(tiles[i,])[4] - raster::extent(tiles[i,])[3]) / 2
-      # List and write (list ready if mosaic_gdal doesn't work)
       tile <- tryCatch({geodata::elevation_3s(lon = lon, lat = lat, path = tmpFolder)}, error = function (e) NULL)
       if (is.null(tile)) {
         message("Cannot open URL. Trying with 'curl' and ignoring potential SSL issues.")
@@ -86,37 +86,23 @@ download_dem <- function (mainPath, country, alwaysDownload = FALSE, mostRecent 
       options(download.file.method=NULL, download.file.extra=NULL)
     }
     cat(paste0("Creating a mosaic with the downloaded rasters...\n"))
-    # Gdal mosaic (faster)
-    files <- list.files(tmpFolder, pattern = "tif", full.names = TRUE)
-    # Try gdal (tryCatch to avoid function to stop)
-    # mosaicGDAL <- tryCatch({gdalUtils::mosaic_rasters(gdalfile = files, dst_dataset = file.path(pathDEM, "srtm.tif"), of = "GTiff")}, error = function (e) NULL, warning = function (e) NULL)
-    try(gdalUtils::mosaic_rasters(gdalfile = files, dst_dataset = file.path(pathDEM, "srtm.tif"), of = "GTiff"))
-    # Some warnings can prevent the function from running. Let's check if the output has been created. 
-    if (!file.exists(file.path(pathDEM, "srtm.tif"))) {
-      mosaicGDAL <- FALSE
-    } else {
-      mosaicGDAL <- TRUE
-    }
-    if (!mosaicGDAL) {
-      message("GDAL library not found/issues -> mosaicking the tiles using the terra::merge function (slower)\nPlease wait....")
-      newRas <- tryCatch({do.call(terra::merge, srtmList)}, error = function (e) NULL)
-      if (is.null(newRas)) {
-        message("Memory issues: Too large ? Trying to mosaicking the tiles incrementally...")
-        newRas <- do.call(terra::merge, srtmList[1:2])
-        srtmList <- srtmList[-c(1:2)]
-        while(length(srtmList) > 0) {
-          srtmList[[length(srtmList) + 1]] <- newRas
-          newRas <- do.call(terra::merge, srtmList[c(1, length(srtmList))])
-          srtmList <- srtmList[-c(1, length(srtmList))]
-        }
+    rasCollect <- terra::sprc(srtmList) 
+    newRas <- tryCatch({terra::merge(rasCollect)}, error = function (e) NULL)
+    if (is.null(newRas)) {
+      message("Memory issues: Too large ? Trying to mosaicking the tiles incrementally...")
+      newRas <- do.call(terra::merge, srtmList[1:2])
+      srtmList <- srtmList[-c(1:2)]
+      while (length(srtmList) > 0) {
+        srtmList[[length(srtmList) + 1]] <- newRas
+        newRas <- do.call(terra::merge, srtmList[c(1, length(srtmList))])
+        srtmList <- srtmList[-c(1, length(srtmList))]
       }
-      terra::writeRaster(newRas, file.path(pathDEM, "srtm.tif"))
     }
+    terra::writeRaster(newRas, file.path(pathDEM, "srtm.tif"))
     write(paste0(Sys.time(), ": Multiple DEM tiles downloaded and mosaicked"), file = logTxt, append = TRUE)
-  }else{
+  } else {
     lon <- raster::extent(tiles[1,])[1]  + (raster::extent(tiles[1,])[2] - raster::extent(tiles[1,])[1]) / 2
     lat <- raster::extent(tiles[1,])[3]  + (raster::extent(tiles[1,])[4] - raster::extent(tiles[1,])[3]) / 2
-    # tile <- raster::getData('SRTM', lon = lon, lat = lat, path = pathDEM)
     tile <- geodata::elevation_3s(lon = lon, lat = lat, path = pathDEM)
     write(paste0(Sys.time(), ": Single DEM tile downloaded - Input folder ", timeFolder), file = logTxt, append = TRUE)
   }

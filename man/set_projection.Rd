@@ -9,7 +9,8 @@ set_projection(
   country,
   mostRecent = FALSE,
   alwaysSet = FALSE,
-  bestCRS = FALSE
+  bestCRS = FALSE,
+  testMode = FALSE
 )
 }
 \arguments{
@@ -27,6 +28,8 @@ interactively asked whether they want to set it again or not.}
 \item{bestCRS}{logical; should the projected coordinate reference system be set automatically based on the "best-fit" 
 projected coordinate reference system? If FALSE, the user is interactively asked to select the projected coordinate reference 
 system from a list of suitable reference systems.}
+
+\item{testMode}{logical; used for testing. If TRUE labels of processed inputs are not interactively asked.}
 }
 \description{
 Set the projected coordinate reference system of the project based on the extent of the boundary shapefile.

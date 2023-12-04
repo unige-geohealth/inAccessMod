@@ -162,15 +162,14 @@ HeRAMS_create_hf_shapefile <- function (mainPath, country, mostRecentBoundaries 
       message(paste("\nYou can access the removed HFs at:\n", file.path(hfFolder, paste0(nameCSV, "_coordinates_NA.txt")), "\n"))
     }
   }
-  pts <- sp::SpatialPointsDataFrame(coords = xy[complete.cases(xy), ], data = df, proj4string = sp::CRS(epsg))
-  border <- rgeos::gUnaryUnion(as(sf::st_transform(border, raster::crs(pts)), "Spatial"))
-  border <- sp::spTransform(border, pts@proj4string)
+  pts <- cbind(sf::st_as_sf(xy[complete.cases(xy), ], coords = c(1,2), crs = epsg), df)
+  border <- sf::st_union(sf::st_transform(border, crs = sf::st_crs(pts)))
   # Tolerance
-  border <- suppressWarnings(rgeos::gBuffer(border, width = 0.2))
+  border <- sf::st_buffer(border, dist = 0.2)
   # Intersection
-  inter <- rgeos::gIntersects(border, pts, byid = TRUE)
+  inter <- suppressWarnings(sf::st_intersects(border, pts, sparse = FALSE))[1, ]
   interOutside <- FALSE
-  if (!all(inter[, 1])) {
+  if (!all(inter)) {
     interOutside <- TRUE
     # Try with names (if not available => without)
     dfPrint <- tryCatch({df[!inter, codeColumns]}, error = function (e) NULL)
@@ -189,11 +188,10 @@ HeRAMS_create_hf_shapefile <- function (mainPath, country, mostRecentBoundaries 
     }
   }
   if (interOutside) {
-    write.table(df[!inter[, 1], ], file.path(hfFolder, paste0(nameCSV, "_coordinates_outside.txt")))
+    write.table(df[!inter, ], file.path(hfFolder, paste0(nameCSV, "_coordinates_outside.txt")))
     message(paste("\nYou can access the removed HFs at:\n", file.path(hfFolder, paste0(nameCSV, "_coordinates_outside.txt")), "\n"))
   }
-  # shp <- pts[inter[, 1], -1]
-  shp <- sf::st_as_sf(pts[inter[, 1], -1])
+  shp <- sf::st_as_sf(pts[inter, -1])
   cat("Saving the HFs' shapefile...\n")
   tempShp <- tempfile()
   tryWrite <- tryCatch({sf::st_write(shp, dsn = paste0(tempShp, ".shp"), append = FALSE)}, error = function (e) 0)

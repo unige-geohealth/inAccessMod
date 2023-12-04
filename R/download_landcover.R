@@ -144,39 +144,28 @@ download_landcover <- function (mainPath, country, alwaysDownload = FALSE, mostR
       }
     }
     cat(paste0("Creating a mosaic with the downloaded rasters...\n"))
-    files <- list.files(tmpFolder, pattern = "\\.tif", full.names=TRUE)
-    check_path_length(file.path(pathLandcover, paste0(country, awsLCSuffix)))
-    mosaicGDAL <- try(gdalUtils::mosaic_rasters(gdalfile = files, dst_dataset = file.path(pathLandcover, paste0(country, awsLCSuffix)), of="GTiff"))
-    # Some warnings can prevent the function from running. Let's check if the output has been created. 
-    if (!file.exists(file.path(pathLandcover, paste0(country, awsLCSuffix)))) {
-      mosaicGDAL <- FALSE
-    } else {
-      mosaicGDAL <- TRUE
+    lcLst <- list()
+    for (i in 1:length(urls)) {
+      check_path_length(file.path(tmpFolder, paste0(codeFiles[i], ".tif")))
+      ras <- tryCatch({terra::rast(file.path(tmpFolder, paste0(codeFiles[i], ".tif")))}, error = function (e) NULL)
+      if (!is.null(ras)){
+        lcLst[[i]] <- ras
+      }
     }
-    if (!mosaicGDAL) {
-      message("GDAL library not found/issues -> mosaicking the tiles using the terra::merge function (slower)\nPlease wait....")
-      lcLst <- list()
-      for (i in 1:length(urls)) {
-        check_path_length(file.path(tmpFolder, paste0(codeFiles[i], ".tif")))
-        ras <- tryCatch({terra::rast(file.path(tmpFolder, paste0(codeFiles[i], ".tif")))}, error = function (e) NULL)
-        if (!is.null(ras)){
-          lcLst[[i]] <- ras
-        }
+    rasCollect <- terra::sprc(lcLst) 
+    newRas <- tryCatch({terra::merge(rasCollect)}, error = function (e) NULL)
+    if (is.null(newRas)) {
+      message("Memory issues: Too large ? Trying to mosaicking the tiles incrementally...")
+      newRas <- do.call(terra::merge, lcLst[1:2])
+      lcLst <- lcLst[-c(1:2)]
+      while (length(lcLst) > 0) {
+        lcLst[[length(lcLst) + 1]] <- newRas
+        newRas <- do.call(terra::merge, lcLst[c(1, length(lcLst))])
+        lcLst <- lcLst[-c(1, length(vlcLst))]
       }
-      newRas <- tryCatch({do.call(terra::merge, lcLst)}, error = function (e) NULL)
-      if (is.null(newRas)) {
-        message("Memory issues: Too large ? Trying to mosaicking the tiles incrementally...")
-        newRas <- do.call(terra::merge, lcLst[1:2])
-        lcLst <- lcLst[-c(1:2)]
-        while(length(lcLst) > 0) {
-          lcLst[[length(lcLst) + 1]] <- newRas
-          newRas <- do.call(terra::merge, lcLst[c(1, length(lcLst))])
-          lcLst <- lcLst[-c(1, length(vlcLst))]
-        }
-      }
-      check_path_length(file.path(pathLandcover, paste0(country, awsLCSuffix)))
-      terra::writeRaster(newRas, file.path(pathLandcover, paste0(country, awsLCSuffix)))
-    } 
+    }
+    check_path_length(file.path(pathLandcover, paste0(country, awsLCSuffix)))
+    terra::writeRaster(newRas, file.path(pathLandcover, paste0(country, awsLCSuffix)))
     write(paste0(Sys.time(), ": Multiple landcover tiles downloaded and mosaicked - Input folder ", timeFolder), file = logTxt, append = TRUE)
   }
   cat(paste0("Done: ", pathLandcover, "/", country, awsLCSuffix, "\n"))
