@@ -38,7 +38,7 @@ devtools::install_github("wmgeolab/rgeoboundaries")
 
 ## Tutorial
 
-You can access the tutorial directly in R using the following command, or by opening the TUTORIAL file located in the main directory of the repository.
+You can access the tutorial directly in R using the following command, or by opening the TUTORIAL file located in the main directory of the repository. Remember that you must have a working internet connection in order to access all the functions that allow you to download data.
  
 ```
 vignette("Tutorial", package = "inAccessMod") 

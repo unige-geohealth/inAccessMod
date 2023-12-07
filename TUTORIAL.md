@@ -18,7 +18,7 @@ I you decided to install the dependencies manually, please note that `rgeobounda
     devtools::install_github("wmgeolab/rgeoboundaries")
 
 Once it is installed, we can load the package in order to make its
-functions directly available.
+functions directly available. Remember that you must have a working internet connection in order to access all the functions that allow you to download data.
 
     library(inAccessMod)
 
