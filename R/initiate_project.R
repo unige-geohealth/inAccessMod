@@ -23,7 +23,7 @@ initiate_project <- function (mainPath, testMode = FALSE) {
   }
   countryLst <- countrycode::codelist$country.name.en[!is.na(countrycode::codelist$un.name.en)]
   if (testMode) {
-    countryInd <- 168
+    countryInd <- which(countryLst == "Switzerland")
   } else {
     countryInd <- utils::menu(countryLst, title="Select the country", graphics=FALSE)
   }
