@@ -57,7 +57,8 @@ download_osm <- function (x, mainPath, country, alwaysDownload = FALSE, countryN
   if(!is.logical(defaultClasses)){
     stop("defaultClasses must 'logical'")
   }
-  pathFolder <- file.path(mainPath, country, "data", paste0("v", stringr::str_to_title(x)))
+  xData <- sub("^.", toupper(substr(x, 1, 1)), x)
+  pathFolder <- file.path(mainPath, country, "data", paste0("v", xData))
   folders <- check_exists(pathFolder, "raw", layer = TRUE)
   if (!is.null(folders)) {
     if (!alwaysDownload) {
@@ -135,8 +136,8 @@ download_osm <- function (x, mainPath, country, alwaysDownload = FALSE, countryN
     shp$class <- classLab$class[match(shp$highway, classLab$highway)]
   }
   shapeName <- gsub("\\.gpkg$", "", list.files(pathFolder)[grepl("\\.gpkg$", list.files(pathFolder))])
-  check_path_length(file.path(pathFolder, paste0("/v", stringr::str_to_title(x), "_", shapeName, ".shp")))
-  suppressWarnings(sf::st_write(shp, file.path(pathFolder, paste0("/v", stringr::str_to_title(x), "_", shapeName, ".shp")), append=FALSE)) # Save the layer
+  check_path_length(file.path(pathFolder, paste0("/v", xData, "_", shapeName, ".shp")))
+  suppressWarnings(sf::st_write(shp, file.path(pathFolder, paste0("/v", xData, "_", shapeName, ".shp")), append=FALSE)) # Save the layer
   logTxt <- file.path(mainPath, country, "data", "log.txt")
   write(paste0(Sys.time(), ": ", x, " downloaded from OSM; ", paste(categ, collapse = ", "), "- Input folder ", timeFolder), file = logTxt, append = TRUE)
   file.remove(file.path(pathFolder, list.files(pathFolder)[grepl("\\.gpkg$|\\.pbf$", list.files(pathFolder))]))
