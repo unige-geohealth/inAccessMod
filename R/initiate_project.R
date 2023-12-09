@@ -41,8 +41,8 @@ initiate_project <- function (mainPath, testMode = FALSE) {
   country <- gsub("[[:space:]]", "_", country)
   country <- stringi::stri_trans_general(str = country, id = "Latin-ASCII")
   # Main standard inputs
-  inputNames=c("rDEM", "rPopulation", "rLandcover", "vRoads", "vWaterLines", 
-               "vNaturalPolygons", "vBorders","vFacilities")
+  inputNames=c("rDEM", "rPopulation", "rLandcover", "vRoads", "vWaterlines", 
+               "vNaturalpolygons", "vBorders","vFacilities")
   message(paste("\nThe following input folders will be created:", paste(inputNames,collapse=", ")))
   # Add other data ?
   if (testMode) {
