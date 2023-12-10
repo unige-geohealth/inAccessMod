@@ -455,7 +455,7 @@ We are asked to add a label after each input is processed which will be
 append to the processed file name (useful when dealing with multiple
 inputs).
 
-### Label land cover classes
+### Label land cover classes (processed landcover required)
 
 The `label_landcover` function creates a CSV table with landcover codes
 and labels that can be imported into AccessMod. Besides the common

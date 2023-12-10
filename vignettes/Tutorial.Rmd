@@ -242,7 +242,7 @@ process_inputs(mainPath, country, selectedInputs = "All", mostRecent = TRUE, alw
 ```
 We are asked to add a label after each input is processed which will be append to the processed file name (useful when dealing with multiple inputs).
 
-### Label land cover classes
+### Label land cover classes (processed landcover required)
 
 The `label_landcover` function creates a CSV table with landcover codes and labels that can be imported into AccessMod. Besides the common arguments (mainPath, country, mostRecent) we have the *defaultLabels* logical parameter. It indicates if the Copernicus default labels should be associated with the the landcover raster values. If FALSE, we are interactively asked to enter the label names for each value.
 
