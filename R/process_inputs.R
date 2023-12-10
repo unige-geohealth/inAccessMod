@@ -194,7 +194,7 @@ process_inputs <- function (mainPath, country, selectedInputs = NULL, mostRecent
       popFolders <- check_exists(popFolder, "processed", layer = TRUE)
       if (is.null(popFolders)) {
         message("\nNo processed population raster is available.\nProcessing raw population raster...")
-        process_pop(mainPath, country, border, epsg, mostRecent, defaultMethods, changeRes, newRes, popCorrection, gridRes, testMode)
+        process_pop(mainPath, country, border, epsg, mostRecent, defaultMethods, changeRes, newRes, popCorrection, gridRes, alwaysProcess, testMode)
         popFolders <- check_exists(popFolder, "processed", layer = TRUE)
       }
       message("\nLoading processed population raster...")

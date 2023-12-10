@@ -20,6 +20,8 @@
 #' country <- "myCountry"
 #' download_boundaries(mainPath, country, adminLevel = 1, type = "gbOpen", alwaysDownload = TRUE)
 #' download_landcover(mainPath, country, alwaysDownload = TRUE, mostRecent = TRUE)
+#' download_population(mainPath, country, alwaysDownload = TRUE, mostRecent = TRUE) #required for processing the landcover
+#' process_inputs(mainPath, country, "rLandcover", defaultMethods = TRUE, changeRes = FALSE, popCorrection = FALSE)
 #' label_landcover(mainPath, country, mostRecent = TRUE, overwrite = TRUE, defaultLabels = TRUE)}
 #' @export
 label_landcover <- function(mainPath, country, mostRecent, overwrite = FALSE, defaultLabels = TRUE) {
