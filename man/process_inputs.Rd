@@ -65,7 +65,7 @@ layers is performed even if they are not selected and if 'processed' layers are 
 # Replace workDir with the actual path to your working directory
 \dontrun{
 mainPath <- "workDir"
-initiate_project(mainPath, country)}
+initiate_project(mainPath)}
 
 # Replace myCountry with the country name you are working on (workDir subfolder)
 \dontrun{
