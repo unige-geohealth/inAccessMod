@@ -19,7 +19,7 @@
 #' \dontrun{
 #' country <- "myCountry"
 #' download_boundaries(mainPath, country, adminLevel = 1, type = "gbOpen", alwaysDownload = TRUE)
-#' set_projection(mainPath, country) #required for processing the landcover
+#' set_projection(mainPath, country, mostRecent = TRUE, alwaysSet = TRUE, bestCRS = TRUE) #required for processing the landcover
 #' download_landcover(mainPath, country, alwaysDownload = TRUE, mostRecent = TRUE)
 #' download_population(mainPath, country, alwaysDownload = TRUE) #required for processing the landcover
 #' process_inputs(mainPath, country, "rLandcover", defaultMethods = TRUE, changeRes = FALSE, popCorrection = FALSE)
