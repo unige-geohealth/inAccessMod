@@ -35,7 +35,7 @@ of the boundary shapefile. If there are multiple tiles, it produces a mosaic.
 # Replace workDir with the actual path to your working directory
 \dontrun{
 mainPath <- "workDir"
-intiate_project(mainPath, country)}
+initiate_project(mainPath, country)}
 
 # Replace myCountry with the country name you are working on (workDir subfolder)
 \dontrun{

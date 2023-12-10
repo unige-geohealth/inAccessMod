@@ -1,6 +1,6 @@
 #' Label landcover layer
 #' 
-#' Creates a CSV table with landcover codes and labels that can be imported into AccessMod.
+#' Creates a CSV table with landcover codes and labels that can be imported into AccessMod. Requires processed landcover.
 #' @param mainPath character; the parent directory of the country folder
 #' @param country character; the country folder name
 #' @param mostRecent logical; should the most recent processed landcover raster be selected? If FALSE and if there are multiple
@@ -13,12 +13,13 @@
 #' # Replace workDir with the actual path to your working directory
 #' \dontrun{
 #' mainPath <- "workDir"
-#' intiate_project(mainPath, country)}
+#' initiate_project(mainPath, country)}
 #' 
 #' # Replace myCountry with the country name you are working on (workDir subfolder)
 #' \dontrun{
 #' country <- "myCountry"
 #' download_boundaries(mainPath, country, adminLevel = 1, type = "gbOpen", alwaysDownload = TRUE)
+#' set_projection(mainPath, country) #required for processing the landcover
 #' download_landcover(mainPath, country, alwaysDownload = TRUE, mostRecent = TRUE)
 #' download_population(mainPath, country, alwaysDownload = TRUE, mostRecent = TRUE) #required for processing the landcover
 #' process_inputs(mainPath, country, "rLandcover", defaultMethods = TRUE, changeRes = FALSE, popCorrection = FALSE)

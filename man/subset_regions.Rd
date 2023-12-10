@@ -21,7 +21,7 @@ Function that allows to clip specific country regions from the 'raw' boundary sh
 # Replace workDir with the actual path to your working directory
 \dontrun{
 mainPath <- "workDir"
-intiate_project(mainPath, country)}
+initiate_project(mainPath, country)}
 
 # Replace myCountry with the country name you are working on (workDir subfolder)
 \dontrun{

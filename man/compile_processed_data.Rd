@@ -21,7 +21,7 @@ Compiles the available processed layers and copy them to a new folder called zTo
 # Replace workDir with the actual path to your working directory
 \dontrun{
 mainPath <- "workDir"
-intiate_project(mainPath, country)}
+initiate_project(mainPath, country)}
 
 # Replace myCountry with the country name you are working on (workDir subfolder)
 \dontrun{

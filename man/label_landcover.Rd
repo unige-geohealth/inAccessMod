@@ -26,7 +26,7 @@ available inputs, the user is interactively asked to select the input based on f
 If FALSE, the user is interactively asked to enter the label names for each value.}
 }
 \description{
-Creates a CSV table with landcover codes and labels that can be imported into AccessMod.
+Creates a CSV table with landcover codes and labels that can be imported into AccessMod. Requires processed landcover.
 }
 \details{
 The function writes a CSV table with two columns (classes and labels) into the same folder as the processed landcover layer.
@@ -35,12 +35,15 @@ The function writes a CSV table with two columns (classes and labels) into the s
 # Replace workDir with the actual path to your working directory
 \dontrun{
 mainPath <- "workDir"
-intiate_project(mainPath, country)}
+initiate_project(mainPath, country)}
 
 # Replace myCountry with the country name you are working on (workDir subfolder)
 \dontrun{
 country <- "myCountry"
 download_boundaries(mainPath, country, adminLevel = 1, type = "gbOpen", alwaysDownload = TRUE)
+set_projection(mainPath, country) #required for processing the landcover
 download_landcover(mainPath, country, alwaysDownload = TRUE, mostRecent = TRUE)
+download_population(mainPath, country, alwaysDownload = TRUE, mostRecent = TRUE) #required for processing the landcover
+process_inputs(mainPath, country, "rLandcover", defaultMethods = TRUE, changeRes = FALSE, popCorrection = FALSE)
 label_landcover(mainPath, country, mostRecent = TRUE, overwrite = TRUE, defaultLabels = TRUE)}
 }
