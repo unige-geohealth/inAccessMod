@@ -44,8 +44,8 @@
 HeRAMS_filter_hf <- function (mainPath, country, pathTableCode = NULL, pathTableText = NULL, scenario = NULL, mostRecentObs = NULL, 
                        defaultParameters = TRUE,
                        region = FALSE,
-                       type = TRUE,
-                       ownership = FALSE,
+                       type = FALSE,
+                       ownership = TRUE,
                        status = TRUE,
                        building = FALSE,
                        equipment = FALSE,
@@ -264,7 +264,7 @@ HeRAMS_filter_hf <- function (mainPath, country, pathTableCode = NULL, pathTable
   tempDir <- tempfile()
   dir.create(tempDir)
   logscenarioTxt <-  file.path(tempDir, "time_frame.txt")
-  write(paste0("Modification time of the raw Excel table: ", mtime), file = logscenarioTxt, append = TRUE)
+  write(paste0("Modification time of the raw table: ", mtime), file = logscenarioTxt, append = TRUE)
   optionsID <- c("Most recent", "Date limit", "Case by case")
   if (mostRecentObs) {
     cat("For each facility, the most recent observation is kept.\n")
@@ -497,7 +497,7 @@ HeRAMS_filter_hf <- function (mainPath, country, pathTableCode = NULL, pathTable
       file.copy(file.path(tempDir, "selected_hf.txt"), file.path(pathFacilities, scenarioDir))
     }
   } else {
-    txt <- file.path(pathFacilities, "scenario", scenario, "selected_hf.txt")
+    txt <- file.path(pathFacilities, paste0("scenario", scenario), "selected_hf.txt")
     txt <- file(txt, open = "r")
     txtLines <- readLines(txt)
     close(txt)
