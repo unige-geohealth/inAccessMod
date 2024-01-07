@@ -1,3 +1,4 @@
+[![DOI](https://joss.theoj.org/papers/10.21105/joss.05879/status.svg)](https://doi.org/10.21105/joss.05879)
 # inAccessMod
 AccessMod is a World Health Organization-recognized, free and open source software tool that allows users to model the geographic accessibility of health services. To model the geographic accessibility of health services, several layers of input data reflecting barriers and facilitators to the mobility of the target population are required in conjunction with data on the location and availability of health services. More information on AccessMod installation and use can be found here: https://www.accessmod.org/ 
 
