@@ -4,7 +4,11 @@
 #' main structure for the project. This function also creates a log.txt file that will record and track the main operations 
 #' related to the project.
 #' @param mainPath character; a path where the country folder will be created
-#' @param testMode logical; FALSE by default. Can be ignored. used for testing the function in the testthat context.
+#' @param allowInteractivity logical; whether to enable interactivity. \code{TRUE} by default.
+#' @param city logical; whether to focus on cities instead of countries. \code{FALSE} by default.
+#' @param name character; country or city name when \code{allowInteractivity} is set to \code{FALSE}. Must match perfectly either one of the names included
+#' in inAccessMod::country_list (country) or inAccessMod::city_list (city).
+#' @param testMode logical; \code{FALSE} by default. Can be ignored. used for testing the function in the testthat context.
 #' @details The final structure arises when downloading and processing the data with the corresponding functions,
 #' and it allows multiple 'raw' inputs and multiple 'processed' outputs for each input. This can be useful when 
 #' performing different analyses for the same country (e.g. when we have updated data).
@@ -14,38 +18,79 @@
 #' mainPath <- "workDir"
 #' initiate_project(mainPath)}
 #' @export
-initiate_project <- function (mainPath, testMode = FALSE) {
+initiate_project <- function (mainPath, allowInteractivity = TRUE, city = FALSE, name = NULL, testMode = FALSE) {
   if (!is.character(mainPath)) {
     stop("mainPath must be 'character'")
   }
   if (!dir.exists(mainPath)) {
     stop(paste(mainPath, "folder does not exist."))
   }
-  countryLst <- countrycode::codelist$country.name.en[!is.na(countrycode::codelist$un.name.en)]
   if (testMode) {
-    countryInd <- which(countryLst == "Switzerland")
+    allowInteractivity <- FALSE
+    city <- FALSE
+    name <- "Switzerland"
+    # Get the ISO code
+    iso3 <- as.character(country_list[country_list$country.name.en == name, "iso3c"])
+    countryOriginalName <- name
   } else {
-    countryInd <- utils::menu(countryLst, title="Select the country", graphics=FALSE)
+    if (!is.logical(allowInteractivity)) {
+      stop("allowInteractivity must be 'logical'")
+    }
+    if (!allowInteractivity) {
+      if (is.null(name)) {
+        stop("When allowInteractive is FALSE, a name must be provided.")
+      }
+      if (!city) {
+        if (!name %in% inAccessMod::country_list$country.name.en) {
+          stop(paste(name, "is no a valid country name."))
+        }
+      } else {
+        if (!name %in% paste0(inAccessMod::city_list$Name, " - ", inAccessMod::city_list$ISO_CC)) {
+          stop(paste(name, "is no a valid city name."))
+        } else {
+          cityLst <- paste0(inAccessMod::city_list$Name, " - ", inAccessMod::city_list$ISO_CC)
+          cityInd <- which(cityLst == name)
+        }
+      }
+    } else {
+      if (!city) {
+        countryInd <- utils::menu(inAccessMod::country_list$country.name.en, title = "Select the country", graphics = FALSE)
+        if (countryInd == 0) {
+          stop_quietly("You exit the function.")
+        }
+        name <- inAccessMod::country_list$country.name.en[countryInd]
+        iso3 <- as.character(country_list[country_list$country.name.en == name, "iso3c"])
+        countryOriginalName <- name
+      } else {
+        # Some city names exist in multiple country (ex. Vancouver)
+        cityLst <- paste0(inAccessMod::city_list$Name, " - ", inAccessMod::city_list$ISO_CC)
+        cityInd <- utils::menu(cityLst, title = "Select the city", graphics = FALSE)
+        if (cityInd == 0) {
+          stop_quietly("You exit the function.")
+        }
+      }
+    }
   }
-  if (countryInd == 0) {
-    stop_quietly("You exit the function.")
+  if (city) {
+    name <- inAccessMod::city_list$Name[cityInd]
+    iso2 <- inAccessMod::city_list$ISO_CC[cityInd]
+    iso3 <- as.character(country_list[which(country_list$iso2c == iso2), "iso3c"])
+    countryOriginalName <- as.character(country_list[which(country_list$iso2c == iso2), "country.name.en"])
+    cityOriginalName <- name
   }
-  # Store the original name
-  countryOriginalName <- countryLst[countryInd]
-  # Store the ISO code
-  iso3 <- as.character(countrycode::codelist[countrycode::codelist$country.name.en == countryOriginalName, "iso3c"])
   # Modify the name if necessary for directory name
-  country <- gsub(" \\(.*\\)|\\(.*\\)", "", countryOriginalName)
-  country <- gsub("[^[[:alnum:]]", " ", country)
-  country <- stringr::str_squish(country)
-  country <- gsub("[[:space:]]", "_", country)
-  country <- stringi::stri_trans_general(str = country, id = "Latin-ASCII")
+  folderName <- gsub(" \\(.*\\)|\\(.*\\)", "", name)
+  folderName <- gsub("[^[[:alnum:]]", " ", folderName)
+  folderName <- stringr::str_squish(folderName)
+  folderName <- gsub("[[:space:]]", "_", folderName)
+  folderName <- stringi::stri_trans_general(str = folderName, id = "Latin-ASCII")
+  
   # Main standard inputs
   inputNames <- c("rDEM", "rPopulation", "rLandcover", "vRoads", "vWaterLines", 
-               "vNaturalPolygons", "vBorders","vFacilities")
+               "vWaterPolygons", "vBorders","vFacilities")
   message(paste("\nThe following input folders will be created:", paste(inputNames, collapse=", ")))
   # Add other data ?
-  if (testMode) {
+  if (testMode | !allowInteractivity) {
     yn <- 2
   } else {
     yn <- utils::menu(c("YES","NO"), title="\nDo you want to add another input folder (type 1 or 2)?")
@@ -73,7 +118,7 @@ initiate_project <- function (mainPath, testMode = FALSE) {
     }
   }
   # Create directories
-  pathData <- file.path(mainPath, country, "data")
+  pathData <- file.path(mainPath, folderName, "data")
   check_path_length(pathData)
   dir.create(pathData, recursive = TRUE, showWarnings = FALSE)
   for (inputName in inputNames) {
@@ -83,13 +128,36 @@ initiate_project <- function (mainPath, testMode = FALSE) {
   }
   # Create config.txt for ISO code, and then EPSG as well
   fileConn <- file(file.path(pathData, "config.txt"))
-  writeLines(c(paste0("COUNTRY:", countryOriginalName), paste0("ISO:", iso3)), fileConn)
+  if (city) {
+    writeLines(c(paste0("CITY:", cityOriginalName), paste0("COUNTRY:", countryOriginalName), paste0("ISO:", iso3)), fileConn)
+  } else {
+    writeLines(c(paste0("COUNTRY:", countryOriginalName), paste0("ISO:", iso3)), fileConn)
+  }
   close(fileConn)
   # Create log.txt for operation tracking
   fileConn <- file(file.path(pathData, "log.txt"))
-  writeLines(countryOriginalName, fileConn)
+  if (city) {
+    writeLines(cityOriginalName, fileConn)
+  } else {
+    writeLines(countryOriginalName, fileConn)
+  }
   writeLines(paste0(Sys.time(), ": Project initiated"), fileConn)
   close(fileConn)
+  
+  if (city) {
+    indShp <- which(paste0(inAccessMod::world_urban_areas$Name, " - ", inAccessMod::world_urban_areas$ISO_CC) == cityLst[cityInd])
+    shp <- inAccessMod::world_urban_areas[indShp, ]
+    pathBorder <- file.path(mainPath, folderName, "data", "vBorders")
+    timeFolder <- format(Sys.time(), "%Y%m%d%H%M%S")
+    check_path_length(paste0(pathBorder, "/", timeFolder, "/raw"))
+    dir.create(paste0(pathBorder, "/", timeFolder, "/raw"), recursive = TRUE)
+    pathBorder <- file.path(pathBorder, timeFolder, "raw")
+    sf::st_write(shp, file.path(pathBorder, paste0(folderName, ".shp")))
+    fileConn <- file(file.path(pathData, "log.txt"))
+    writeLines(paste0(Sys.time(), ": Urban area shapefile extracted"), fileConn)
+    close(fileConn)
+  }
+  
   # Print directory tree
   fs::dir_tree(pathData)
   return(TRUE)
