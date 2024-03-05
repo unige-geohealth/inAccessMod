@@ -7,7 +7,9 @@
 #' @param allowInteractivity logical; whether to enable interactivity. \code{TRUE} by default.
 #' @param city logical; whether to focus on cities instead of countries. \code{FALSE} by default.
 #' @param name character; country or city name when \code{allowInteractivity} is set to \code{FALSE}. Must match perfectly either one of the names included
-#' in inAccessMod::country_list (country) or inAccessMod::city_list (city).
+#' in inAccessMod::country_list (country) or inAccessMod::city_list (city). For cities, can also be the name of the city combined with the country ISO2 code
+#' when > 1 city have the same name (ex. 'Vancouver'). In this case the format is the following: city name, white space, hyphen, space, code (ex. 'Zurich - CH').
+#' This parameter is ignored when \code{allowInteractivity} is set to \code{TRUE}.
 #' @param testMode logical; \code{FALSE} by default. Can be ignored. used for testing the function in the testthat context.
 #' @details The final structure arises when downloading and processing the data with the corresponding functions,
 #' and it allows multiple 'raw' inputs and multiple 'processed' outputs for each input. This can be useful when 
@@ -43,13 +45,27 @@ initiate_project <- function (mainPath, allowInteractivity = TRUE, city = FALSE,
       if (!city) {
         if (!name %in% inAccessMod::country_list$country.name.en) {
           stop(paste(name, "is no a valid country name."))
+        } else {
+          iso3 <- as.character(country_list[country_list$country.name.en == name, "iso3c"])
+          countryOriginalName <- name
         }
       } else {
-        if (!name %in% paste0(inAccessMod::city_list$Name, " - ", inAccessMod::city_list$ISO_CC)) {
+        cityLst <- paste0(inAccessMod::city_list$Name, " - ", inAccessMod::city_list$ISO_CC)
+        cityLstN <- inAccessMod::city_list$Name
+        if (!name %in% c(cityLst, cityLstN)) {
           stop(paste(name, "is no a valid city name."))
         } else {
-          cityLst <- paste0(inAccessMod::city_list$Name, " - ", inAccessMod::city_list$ISO_CC)
-          cityInd <- which(cityLst == name)
+          if (grepl(" - [A-Z]{2}$", name)) {
+            cityInd <- which(cityLst == name)
+            if (length(cityInd) > 1) {
+              stop("> 1 city with this name/ISO2 code combination; unexpected")
+            }
+          } else {
+            cityInd <- which(cityLstN == name)
+            if (length(cityInd) > 1) {
+              stop("> 1 city with this name; please add the ISO2 country code as following: 'name - XX' (ex. 'Zurich - CH'")
+            }
+          }
         }
       }
     } else {
@@ -135,7 +151,7 @@ initiate_project <- function (mainPath, allowInteractivity = TRUE, city = FALSE,
   }
   close(fileConn)
   # Create log.txt for operation tracking
-  fileConn <- file(file.path(pathData, "log.txt"))
+  fileConn <- file(file.path(pathData, "log.txt"), open = "a")
   if (city) {
     writeLines(cityOriginalName, fileConn)
   } else {
@@ -153,11 +169,10 @@ initiate_project <- function (mainPath, allowInteractivity = TRUE, city = FALSE,
     dir.create(paste0(pathBorder, "/", timeFolder, "/raw"), recursive = TRUE)
     pathBorder <- file.path(pathBorder, timeFolder, "raw")
     sf::st_write(shp, file.path(pathBorder, paste0(folderName, ".shp")))
-    fileConn <- file(file.path(pathData, "log.txt"))
+    fileConn <- file(file.path(pathData, "log.txt"), open = "a")
     writeLines(paste0(Sys.time(), ": Urban area shapefile extracted"), fileConn)
     close(fileConn)
   }
-  
   # Print directory tree
   fs::dir_tree(pathData)
   return(TRUE)

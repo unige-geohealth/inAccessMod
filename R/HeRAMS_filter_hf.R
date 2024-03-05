@@ -2,8 +2,8 @@
 #'
 #' Filter the HeRAMS health facility raw table for different analysis scenario and export a table that contains only 
 #' the selected facilities.
-#' @param mainPath character; the parent directory of the country folder
-#' @param country character; the country folder name
+#' @param mainPath character; the parent directory of the location folder
+#' @param location character; the location folder name
 #' @param pathTableCode character; path to the HeRAMS CSV table with text for responses ("Available")
 #' @param pathTableText character; path to the HeRAMS CSV table with codes for responses ("A1")
 #' @param scenario character; a string of three characters that correspond to the scenario folder suffix like '001', '002'...'010'...'099'...'100'
@@ -32,16 +32,16 @@
 #' mainPath <- "workDir"
 #' initiate_project(mainPath)}
 #' 
-#' # Replace myCountry with the country name you are working on (workDir subfolder)
+#' # Replace myLocation with the location name you are working on (workDir subfolder)
 #' # Replace myHeRAMScodeTable with the path of the HeRAMS table that contains codes; set to NULL to use example data
 #' # Replace myHeRAMStextTable with the path of the HeRAMS table that contains text; set to NULL to use example data
 #' \dontrun{
-#' country <- "myCountry"
+#' location <- "myLocation"
 #' pathTableCode <- "myHeRAMScodeTable"
 #' pathTableText <- "myHeRAMStextTable"
-#' HeRAMS_filter_hf(mainPath, country, pathTableCode, pathTableText, barriers = FALSE, mostRecentObs = TRUE)} 
+#' HeRAMS_filter_hf(mainPath, location, pathTableCode, pathTableText, barriers = FALSE, mostRecentObs = TRUE)} 
 #' @export
-HeRAMS_filter_hf <- function (mainPath, country, pathTableCode = NULL, pathTableText = NULL, scenario = NULL, mostRecentObs = NULL, 
+HeRAMS_filter_hf <- function (mainPath, location, pathTableCode = NULL, pathTableText = NULL, scenario = NULL, mostRecentObs = NULL, 
                        defaultParameters = TRUE,
                        region = FALSE,
                        type = FALSE,
@@ -60,8 +60,8 @@ HeRAMS_filter_hf <- function (mainPath, country, pathTableCode = NULL, pathTable
   if (!is.character(mainPath)) {
     stop("mainPath must be 'character'")
   }
-  if (!is.character(country)) {
-    stop("country must be 'character'")
+  if (!is.character(location)) {
+    stop("location must be 'character'")
   }
   yn <- 2
   if(!is.null(pathTableCode)) {
@@ -161,7 +161,7 @@ HeRAMS_filter_hf <- function (mainPath, country, pathTableCode = NULL, pathTable
     tibCode <- tibCode[match(tibCode$external_id, tibTxt$external_id), ]
   }
   cat("\nHeRAMS tables: OK\n\n")
-  pathFacilities <- file.path(mainPath, country, "data", "vFacilities")
+  pathFacilities <- file.path(mainPath, location, "data", "vFacilities")
   if (!dir.exists(pathFacilities)) {
     stop(paste(pathFacilities, " does not exist. Run the initiate_project function."))
   }
@@ -237,7 +237,7 @@ HeRAMS_filter_hf <- function (mainPath, country, pathTableCode = NULL, pathTable
       tibTxt[tibCode[, colCode, drop = TRUE] %in% varStop, remainCols] <- "Does not apply (questionnaire was stopped before)"
     }
   }
-  logTxt <- paste0(mainPath, "/", country, "/data/log.txt")
+  logTxt <- paste0(mainPath, "/", location, "/data/log.txt")
   mtime <- tryCatch({file.info(pathTable)$mtime}, error = function(e){NULL})
   if(is.null(mtime)) {
     mtime <- "00-00-00 00:00:00 CEST (example data)"

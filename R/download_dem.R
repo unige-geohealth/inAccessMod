@@ -1,8 +1,8 @@
 #' Download Digital Elevation Model
 #'
 #' Download a SRTM 90m resolution (3 arc-seconds) DEM for the entire country and copy it to its corresponding folder.
-#' @param mainPath character; the parent directory of the country folder
-#' @param country character; the country folder name
+#' @param mainPath character; the parent directory of the location folder
+#' @param location character; the location folder name
 #' @param alwaysDownload logical; should the raster always be downloaded, even if it has already been 
 #' downloaded? If FALSE and if the raster has already been downloaded the user is 
 #' interactively asked whether they want to download it again or not.
@@ -18,18 +18,18 @@
 #' mainPath <- "workDir"
 #' initiate_project(mainPath)}
 #' 
-#' # Replace myCountry with the country name you are working on (workDir subfolder)
+#' # Replace myLocation with the location name you are working on (workDir subfolder)
 #' \dontrun{
-#' country <- "myCountry"
-#' download_boundaries(mainPath, country, adminLevel = 1, type = "gbOpen", alwaysDownload = TRUE)
-#' download_dem(mainPath, country, alwaysDownload = TRUE, mostRecent = TRUE)}
+#' location <- "myLocation"
+#' download_boundaries(mainPath, location, adminLevel = 1, type = "gbOpen", alwaysDownload = TRUE)
+#' download_dem(mainPath, location, alwaysDownload = TRUE, mostRecent = TRUE)}
 #' @export
-download_dem <- function (mainPath, country, alwaysDownload = FALSE, mostRecent = FALSE) {
+download_dem <- function (mainPath, location, alwaysDownload = FALSE, mostRecent = FALSE) {
   if (!is.character(mainPath)) {
     stop("mainPath must be 'character'")
   }
-  if (!is.character(country)) {
-    stop("country must be 'character'")
+  if (!is.character(location)) {
+    stop("location must be 'character'")
   }
   if (!is.logical(alwaysDownload)) {
     stop("alwaysDownload must be 'logical'")
@@ -38,15 +38,15 @@ download_dem <- function (mainPath, country, alwaysDownload = FALSE, mostRecent 
     stop("mostRecent must be 'logical'")
   }
   # Check directory
-  pathDEM <- paste0(mainPath, "/", country, "/data/rDEM")
+  pathDEM <- paste0(mainPath, "/", location, "/data/rDEM")
   folders <- check_exists(pathDEM, "raw", layer = TRUE)
   if (!is.null(folders)) {
     if (!alwaysDownload) {
       check_downloaded(folders)
     }
   }
-  border <- get_boundaries(mainPath, country, "raw", mostRecent)
-
+  
+  border <- get_boundaries(mainPath, location, "raw", mostRecent)
     # Download SRTM tiles shapefile in a temporary folder
   timeFolder <- format(Sys.time(), "%Y%m%d%H%M%S")
   pathDEM <- file.path(pathDEM, timeFolder, "raw")
@@ -64,7 +64,7 @@ download_dem <- function (mainPath, country, alwaysDownload = FALSE, mostRecent 
   border <- sf::st_transform(border, crs = sf::st_crs(shp))
   intersects <- suppressWarnings(sf::st_intersects(border, shp))
   tiles <- shp[unique(unlist(intersects)), ]
-  logTxt <- file.path(mainPath, country, "data", "log.txt")
+  logTxt <- file.path(mainPath, location, "data", "log.txt")
   revertDownloadOptions <- FALSE
   # Download tiles
   if (nrow(tiles) > 1) {

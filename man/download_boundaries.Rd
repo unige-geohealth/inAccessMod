@@ -6,16 +6,16 @@
 \usage{
 download_boundaries(
   mainPath,
-  country,
+  location,
   adminLevel,
   type = "gbAuthoritative",
   alwaysDownload = FALSE
 )
 }
 \arguments{
-\item{mainPath}{character; the parent directory of the country folder}
+\item{mainPath}{character; the parent directory of the location folder}
 
-\item{country}{character; the country folder name}
+\item{location}{character; the location folder name}
 
 \item{adminLevel}{integer; administrative level of the boundaries. From 0 to 3.}
 
@@ -39,10 +39,10 @@ will query the geoBoundaries database (geoboundaries_query) to check availabilit
 mainPath <- "workDir"
 initiate_project(mainPath)}
 
-# Replace myCountry with the country name you are working on (workDir subfolder)
+# Replace myLocation with the location name you are working on (workDir subfolder)
 \dontrun{
-country <- "myCountry"
-download_boundaries(mainPath, country, adminLevel = 1, type = "gbOpen", alwaysDownload = TRUE)}
+location <- "myLocation"
+download_boundaries(mainPath, location, adminLevel = 1, type = "gbOpen", alwaysDownload = TRUE)}
 }
 \references{
 Runfola, D. et al. (2020) geoBoundaries: A global database of political administrative boundaries. PLoS ONE 15(4): 

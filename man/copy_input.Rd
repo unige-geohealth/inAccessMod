@@ -4,12 +4,12 @@
 \alias{copy_input}
 \title{Copy Input}
 \usage{
-copy_input(mainPath, country, input)
+copy_input(mainPath, location, input)
 }
 \arguments{
-\item{mainPath}{character; the parent directory of the country folder}
+\item{mainPath}{character; the parent directory of the location folder}
 
-\item{country}{character; the country folder name}
+\item{location}{character; the location folder name}
 
 \item{input}{character; the absolute path of the raw input. Can be a single path (corresponding to e.g. a health facility table) 
 or a vector of different paths (corresponding to e.g. shapefile documents). Can also be the path of a folder. In this case, the function
@@ -28,11 +28,11 @@ The user is interactively asked to select the 'input' folder destination.
 mainPath <- "workDir"
 initiate_project(mainPath)}
 
-# Replace myCountry with the country name you are working on (workDir subfolder)
+# Replace myCountry with the location name you are working on (workDir subfolder)
 # Replace myInputPath with the actual path to the file to be copied or to the directory
 # that contains the files to be copied (e.g., shapfile documents)
 \dontrun{
-country <- "myCountry"
+location <- "myLocation"
 inputPath <- "myInputPath"
-copy_input(mainPath, country, inputPath)}
+copy_input(mainPath, location, inputPath)}
 }

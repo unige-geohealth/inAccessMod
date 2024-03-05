@@ -21,7 +21,7 @@ Imports:
     geodata,
     jsonlite,
     lubridate,
-    osmextract,
+    osmdata,
     purrr,
     raster,
     RCurl,

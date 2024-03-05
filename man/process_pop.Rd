@@ -6,7 +6,7 @@
 \usage{
 process_pop(
   mainPath,
-  country,
+  location,
   border,
   epsg,
   mostRecent,
@@ -20,9 +20,9 @@ process_pop(
 )
 }
 \arguments{
-\item{mainPath}{character; the parent directory of the country name folder}
+\item{mainPath}{character; the parent directory of the location name folder}
 
-\item{country}{character; the country name}
+\item{location}{character; the location name}
 
 \item{border}{\code{sf} object; a boundary shapefile}
 

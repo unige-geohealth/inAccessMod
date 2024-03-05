@@ -5,28 +5,24 @@
 \title{Download Open Street Map Layers}
 \usage{
 download_osm(
-  x,
   mainPath,
-  country,
+  location,
+  type,
   alwaysDownload = FALSE,
-  countryName = TRUE,
-  mostRecent = NULL,
+  mostRecent = TRUE,
   defaultClasses = TRUE
 )
 }
 \arguments{
-\item{x}{character; target layer. Can be 'roads', 'waterLines' or 'naturalPolygons'}
+\item{mainPath}{character; the parent directory of the location folder}
 
-\item{mainPath}{character; the parent directory of the country folder}
+\item{location}{character; the location folder name}
 
-\item{country}{character; the country folder name}
+\item{type}{character; target layer. Can be 'roads', 'waterLines' or 'waterPolygons'}
 
 \item{alwaysDownload}{logical; should the shapefile always be downloaded, even if it has already been 
 downloaded? If FALSE and if the shapefile has already been downloaded the user is 
 interactively asked whether they want to download it again or not.}
-
-\item{countryName}{logical; should the country name be used to match with the \code{osm.pbf} file? If FALSE, it is the extent
-of the boundary shapefile that is matched with the \code{osm.pbf} file.}
 
 \item{mostRecent}{logical; should the most recent boundary shapefile be selected? If FALSE and if there are multiple
 available inputs, the user is interactively asked to select the input based on file creation time. Ignored if countryName is TRUE.}
@@ -34,11 +30,11 @@ available inputs, the user is interactively asked to select the input based on f
 \item{defaultClasses}{logical; should only the default classes be kept? If not, the user is interactively asked to select the categories
 they want to keep. For 'roads', default classes are: trunk, trunk_link, primary, primary_link, 
 motorway, motorway_link, secondary, secondary_link, tertiary, tertiary_link, road, raceway, residential, 
-living_street, service, track, pedestrian, path, footway, piste, bridleway, cycleway, steps, unclassified and bridge. For waterLines and naturalPolygons, 
+living_street, service, track, pedestrian, path, footway, piste, bridleway, cycleway, steps, unclassified and bridge. For waterLines and waterPolygons, 
 default classes are river and water, respectively.}
 }
 \description{
-Download Open Street Map shapefiles from the Geofabrik's free download server that correspond to 'roads', 'rivers' or any other natural feature and copy them
+Download Open Street Map shapefiles that correspond to 'roads', 'rivers' or any other natural feature and copy them
 to their corresponding folders.
 }
 \examples{
@@ -47,10 +43,10 @@ to their corresponding folders.
 mainPath <- "workDir"
 initiate_project(mainPath)}
 
-# Replace myCountry with the country name you are working on (workDir subfolder)
+# Replace myLocation with the location name you are working on (workDir subfolder)
 \dontrun{
-country <- "myCountry"
-download_osm(x = "roads", mainPath, country, alwaysDownload = TRUE, countryName = TRUE, mostRecent = NULL, defaultClasses = TRUE)
-download_osm(x = "waterLines", mainPath, country, alwaysDownload = TRUE, countryName = TRUE, mostRecent = NULL, defaultClasses = TRUE)
-download_osm(x = "naturalPolygons", mainPath, country, alwaysDownload = TRUE, countryName = TRUE, mostRecent = NULL, defaultClasses = TRUE)}
+location <- "myLocation"
+download_osm(mainPath, location, type = "roads", alwaysDownload = TRUE, countryName = TRUE, mostRecent = NULL, defaultClasses = TRUE)
+download_osm(mainPath, location, type = "waterLines", alwaysDownload = TRUE, countryName = TRUE, mostRecent = NULL, defaultClasses = TRUE)
+download_osm(mainPath, location, type = "waterPolygons", alwaysDownload = TRUE, countryName = TRUE, mostRecent = NULL, defaultClasses = TRUE)}
 }

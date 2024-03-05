@@ -10,11 +10,41 @@
 #' @details The function keeps running while no folder whose name is the country ISO code is reached.
 #' @keywords internal
 #' @export
-navigate_ftp <- function (folderLst, iso, pathFTP, pathFTP0, testMode) {
+navigate_ftp <- function (folderLst, iso, pathFTP, pathFTP0, allowInteractivity, testMode) {
   navig <- TRUE
   if (testMode) {
     selInds <- c(4, 2, 2)
   }
+  
+  k1 <- function (lst, changeSat) {
+    ind <- grep("Constrained", lst)
+    return(ind)
+  }
+  
+  k2 <- function (lst, changeSat) {
+    lst <- as.numeric(folderLst)
+    ind <- order(lst, decreasing = TRUE)[1]
+    return(ind)
+  }
+  
+  k3 <- function (lst, changeSat) {
+    if (!changeSat) {
+      ind <- grep("maxar", lst)
+      if (length(ind) == 0) {
+        ind <- grep("BSGM", lst)
+        if (length(ind) == 0) {
+          stop("No maxar and no BSGM")
+        }
+      }
+    } else {
+      ind <- grep("BSGM", lst)
+      if (length(ind) == 0) {
+        stop("No maxar and no BSGM")
+      }
+    }
+    return(ind)
+  }
+  changeSat <- FALSE
   ki <- 0
   while (navig) {
     # If there is a folder with our country code, select it
@@ -25,14 +55,23 @@ navigate_ftp <- function (folderLst, iso, pathFTP, pathFTP0, testMode) {
     }else{
       if (isoProp == 1 & !any(grepl(paste0("^", iso, "$"), folderLst))) {
         pathFTP <- paste0(pathFTP,"../")
-        message(paste(iso, "is not available in this dataset."))
+        if (allowInteractivity) {
+          message(paste(iso, "is not available in this dataset."))
+        }
+        ki <- ki - 1
+        changeSat <- TRUE
       } else {
         folderLst <- c(folderLst, "PREVIOUS DIRECTORY", "EXIT FUNCTION")
         if (testMode) {
           ki <- ki + 1
           folderNb <- selInds[ki]
         } else {
-          folderNb <- utils::menu(folderLst, title="\nSelect folder (type the corresponding number or zero to get back to the root directory)?")
+          if (allowInteractivity) {
+            folderNb <- utils::menu(folderLst, title="\nSelect folder (type the corresponding number or zero to get back to the root directory)?")
+          } else {
+            ki <- ki + 1
+            folderNb <- suppressWarnings(eval(parse(text = paste0("k", ki)))(folderLst, changeSat))
+          }
         }
         if (folderNb == length(folderLst)) {
           return(NULL)

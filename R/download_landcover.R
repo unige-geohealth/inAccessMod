@@ -1,8 +1,8 @@
 #' Download Landcover
 #'
 #' Download the Land Cover 100 m from the Copernicus Global Land Service and copy it to its corresponding folder.
-#' @param mainPath character; the parent directory of the country folder
-#' @param country character; the country folder name
+#' @param mainPath character; the parent directory of the location folder
+#' @param location character; the location folder name
 #' @param alwaysDownload logical; should the raster always be downloaded, even if it has already been 
 #' downloaded? If FALSE and if the raster has already been downloaded the user is 
 #' interactively asked whether they want to download it again or not.
@@ -17,18 +17,18 @@
 #' mainPath <- "workDir"
 #' initiate_project(mainPath)}
 #' 
-#' # Replace myCountry with the country name you are working on (workDir subfolder)
+#' # Replace myLocation with the location name you are working on (workDir subfolder)
 #' \dontrun{
-#' country <- "myCountry"
-#' download_boundaries(mainPath, country, adminLevel = 1, type = "gbOpen", alwaysDownload = TRUE)
-#' download_landcover(mainPath, country, alwaysDownload = TRUE, mostRecent = TRUE)}
+#' location <- "myLocation"
+#' download_boundaries(mainPath, location, adminLevel = 1, type = "gbOpen", alwaysDownload = TRUE)
+#' download_landcover(mainPath, location, alwaysDownload = TRUE, mostRecent = TRUE)}
 #' @export
-download_landcover <- function (mainPath, country, alwaysDownload = FALSE, mostRecent = FALSE) {
+download_landcover <- function (mainPath, location, alwaysDownload = FALSE, mostRecent = FALSE) {
   if (!is.character(mainPath)) {
     stop("mainPath must be 'character'")
   }
-  if (!is.character(country)) {
-    stop("country must be 'character'")
+  if (!is.character(location)) {
+    stop("location must be 'character'")
   }
   if (!is.logical(alwaysDownload)) {
     stop("alwaysDownload must be 'logical'")
@@ -37,7 +37,7 @@ download_landcover <- function (mainPath, country, alwaysDownload = FALSE, mostR
     stop("mostRecent must be 'logical'")
   }
   # Check directory
-  pathLandcover <- file.path(mainPath, country, "data", "rLandcover")
+  pathLandcover <- file.path(mainPath, location, "data", "rLandcover")
   folders <- check_exists(pathLandcover, "raw", layer = TRUE)
   if (!is.null(folders)) {
     if (!alwaysDownload) {
@@ -46,7 +46,7 @@ download_landcover <- function (mainPath, country, alwaysDownload = FALSE, mostR
   }
   awsLCFolder <- "https://s3-eu-west-1.amazonaws.com/vito.landcover.global/v3.0.1/2019/"
   awsLCSuffix <- "_PROBAV_LC100_global_v3.0.1_2019-nrt_Discrete-Classification-map_EPSG-4326.tif"
-  border <- get_boundaries(mainPath, country, "raw", mostRecent)
+  border <- get_boundaries(mainPath, location, "raw", mostRecent)
   # Is the raw boundary in lon lat ?
   if (terra::linearUnits(as(border, "SpatVector")) != 0) {
     # Projection transformation
@@ -76,7 +76,7 @@ download_landcover <- function (mainPath, country, alwaysDownload = FALSE, mostR
         }
       }
       if (coord > max(seqDeg) | coord < min(seqDeg)) {
-        stop("Country outside the limits of the Land Cover availability.")
+        stop("Location outside the limits of the Land Cover availability.")
       }
       getPosition <- findInterval(seqDeg, vec=coord)
       partialTileDeg[[i]][j] <- seqDeg[min(which(getPosition == 1)) + adjustTile[i]]
@@ -118,14 +118,14 @@ download_landcover <- function (mainPath, country, alwaysDownload = FALSE, mostR
       urls <- c(urls, paste0(awsLCFolder, charX, charY, "/", charX, charY, awsLCSuffix))
     }
   }
-  logTxt <- file.path(mainPath, country, "data", "log.txt")
+  logTxt <- file.path(mainPath, location, "data", "log.txt")
   timeFolder <- format(Sys.time(), "%Y%m%d%H%M%S")
   pathLandcover <- file.path(pathLandcover, timeFolder, "raw")
   check_path_length(pathLandcover)
   dir.create(pathLandcover, recursive = TRUE)
   if (length(urls) == 1) {
-    check_path_length(file.path(pathLandcover, paste0(country, awsLCSuffix)))
-    dw <- tryCatch({utils::download.file(urls, destfile = file.path(pathLandcover, paste0(country, awsLCSuffix)), mode = "wb")}, error = function(e) NULL)
+    check_path_length(file.path(pathLandcover, paste0(location, awsLCSuffix)))
+    dw <- tryCatch({utils::download.file(urls, destfile = file.path(pathLandcover, paste0(location, awsLCSuffix)), mode = "wb")}, error = function(e) NULL)
     if (is.null(dw)) {
       stop(paste("Error: cannot open URL (single tile)", urls[i]))
     }
@@ -164,10 +164,10 @@ download_landcover <- function (mainPath, country, alwaysDownload = FALSE, mostR
         lcLst <- lcLst[-c(1, length(vlcLst))]
       }
     }
-    check_path_length(file.path(pathLandcover, paste0(country, awsLCSuffix)))
-    terra::writeRaster(newRas, file.path(pathLandcover, paste0(country, awsLCSuffix)))
+    check_path_length(file.path(pathLandcover, paste0(location, awsLCSuffix)))
+    terra::writeRaster(newRas, file.path(pathLandcover, paste0(location, awsLCSuffix)))
     write(paste0(Sys.time(), ": Multiple landcover tiles downloaded and mosaicked - Input folder ", timeFolder), file = logTxt, append = TRUE)
   }
-  cat(paste0("Done: ", pathLandcover, "/", country, awsLCSuffix, "\n"))
+  cat(paste0("Done: ", pathLandcover, "/", location, awsLCSuffix, "\n"))
   return(TRUE)
 }

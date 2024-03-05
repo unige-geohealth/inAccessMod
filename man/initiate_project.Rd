@@ -4,12 +4,27 @@
 \alias{initiate_project}
 \title{Initiate Project}
 \usage{
-initiate_project(mainPath, testMode = FALSE)
+initiate_project(
+  mainPath,
+  allowInteractivity = TRUE,
+  city = FALSE,
+  name = NULL,
+  testMode = FALSE
+)
 }
 \arguments{
 \item{mainPath}{character; a path where the country folder will be created}
 
-\item{testMode}{logical; FALSE by default. Can be ignored. used for testing the function in the testthat context.}
+\item{allowInteractivity}{logical; whether to enable interactivity. \code{TRUE} by default.}
+
+\item{city}{logical; whether to focus on cities instead of countries. \code{FALSE} by default.}
+
+\item{name}{character; country or city name when \code{allowInteractivity} is set to \code{FALSE}. Must match perfectly either one of the names included
+in inAccessMod::country_list (country) or inAccessMod::city_list (city). For cities, can also be the name of the city combined with the country ISO2 code
+when > 1 city have the same name (ex. 'Vancouver'). In this case the format is the following: city name, white space, hyphen, space, code (ex. 'Zurich - CH').
+This parameter is ignored when \code{allowInteractivity} is set to \code{TRUE}.}
+
+\item{testMode}{logical; \code{FALSE} by default. Can be ignored. used for testing the function in the testthat context.}
 }
 \description{
 Select the country, get the ISO 3166-1 alpha-3 country code, store it in a config.txt file and create the directory 

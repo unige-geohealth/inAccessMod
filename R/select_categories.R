@@ -12,7 +12,8 @@ select_categories <- function (sfObject, columnName, defaultClasses, classes) {
   categories <- unique(sfDataFrame[, columnName])
   if (defaultClasses) {
     categ <- classes
-    sfObject <- subset(sfObject,eval(parse(text=columnName)) %in% categ)
+    sfObject <- subset(sfObject, eval(parse(text=columnName)) %in% categ)
+    sfObject <- sfObject[, c(columnName, "geometry")]
   } else {
     nCat <- 1:length(categories)
     indCat <- paste(paste0("\n", nCat, ": ", categories))
