@@ -19,6 +19,7 @@
 #' @param gridRes numeric; the resolution of the grid shapefile used for correcting the raster. Ignored if popCorrection is FALSE.
 #' If NULL and popCorrection is TRUE, the user is interactively asked to provide the grid resolution.
 #' @param alwaysProcess logical; if TRUE, the user is not asked if they want to process an input already processed.
+#' @param allowInteractivity logical; if TRUE, the user can choose the label for the processed layer. If FALSE, default label is used ('pr')
 #' @param testMode logical; used for testing. If TRUE labels of processed population layer is not interactively asked.
 #' @return a list of length 2; The first element is the processed \code{SpatRaster} object and the second element is the selected
 #' projection method (for track record)
@@ -28,7 +29,7 @@
 #' the 'processed' raster is multiplied by the rasterized ratio. The lower is the grid resolution, the finer is the correction.
 #' @keywords internal
 #' @export
-process_pop <- function (mainPath, location, border, epsg, mostRecent, defaultMethods, changeRes, newRes, popCorrection, gridRes, alwaysProcess, testMode) {
+process_pop <- function (mainPath, location, border, epsg, mostRecent, defaultMethods, changeRes, newRes, popCorrection, gridRes, alwaysProcess, allowInteractivity, testMode) {
   message("Processing population raster...")
   logTxt <- file.path(mainPath, location, "data", "log.txt")
   # message("\nProcessing population raster...")
@@ -162,8 +163,8 @@ process_pop <- function (mainPath, location, border, epsg, mostRecent, defaultMe
       outTimeFolder <- format(Sys.time(), "%Y%m%d%H%M%S")
       popOutFolder <- paste0(gsub("raw", "processed", popFolder), "/", outTimeFolder)
       dir.create(popOutFolder, recursive = TRUE)
-      if (testMode) {
-        label <- "test"
+      if (testMode | !allowInteractivity) {
+        label <- "pr"
       } else {
         label <- readline(prompt = "Enter a label for rPopulation: ")
       }

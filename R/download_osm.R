@@ -101,7 +101,7 @@ download_osm <- function (mainPath, location, type, alwaysDownload = FALSE, most
     border <- sf::st_transform(border, crs = "+proj=longlat +datum=WGS84")
   }
   # Download 
-  message("Downloading OSM data...")
+  message(paste0("Downloading OSM data (", type, ")..."))
   osmData <- opq(bbox = bb)  %>%
     add_osm_feature(key = colName, value = classes) %>%
     osmdata_sf()

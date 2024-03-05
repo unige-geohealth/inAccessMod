@@ -23,6 +23,7 @@
 #' whether they want to run it or not.
 #' @param gridRes numeric; the resolution (meters) of the grid shapefile used for correcting the raster. Ignored if \code{popCorrection} is FALSE.
 #' If NULL and \code{popCorrection} is TRUE, the user is interactively asked to provide the grid resolution.
+#' @param allowInteractivity logical; if TRUE, the user can choose a label for each processed layer; if FALSE, label default is used ('pr')
 #' @param testMode logical; used for testing. If TRUE labels of processed inputs are not interactively asked.
 #' @details A 'processed' boundary shapefile is required for processing any other inputs. A 'processed' population raster is required
 #' for processing any other raster. These conditions are taken into account and the processing of these
@@ -53,6 +54,7 @@ process_inputs <- function (mainPath, location, selectedInputs = NULL, mostRecen
                             newRes = NULL, 
                             popCorrection = NULL, 
                             gridRes = NULL,
+                            allowInteractivity = TRUE,
                             testMode = FALSE) {
   if (!is.character(mainPath)) {
     stop("mainPath must be 'character'")
@@ -107,6 +109,9 @@ process_inputs <- function (mainPath, location, selectedInputs = NULL, mostRecen
       stop("gridRes must be NULL or a real positive number'")
     }
   }
+  if (!is.logical(allowInteractivity)) {
+    stop("allowInteractivity must be 'logical'")
+  }
   logTxt <- paste0(mainPath, "/", location, "/data/log.txt")
   epsg <- get_param(mainPath = mainPath, location = location, "EPSG")
   if (length(epsg) == 0) {
@@ -157,8 +162,8 @@ process_inputs <- function (mainPath, location, selectedInputs = NULL, mostRecen
         borderOutFolder <- file.path(gsub("raw", "processed", borderFolder), outTimeFolder)
         check_path_length(borderOutFolder)
         dir.create(borderOutFolder, recursive = TRUE)
-        if (testMode) {
-          label <- "test"
+        if (testMode | !allowInteractivity) {
+          label <- "pr"
         } else {
           label <- readline(prompt = "Enter a label for vBorders: ")
         }
@@ -174,7 +179,7 @@ process_inputs <- function (mainPath, location, selectedInputs = NULL, mostRecen
     }
     # If we want to process the population raster
     if ("rPopulation" %in% selectedFolders) {
-      process_pop(mainPath, location, border, epsg, mostRecent, defaultMethods, changeRes, newRes, popCorrection, gridRes, alwaysProcess, testMode)
+      process_pop(mainPath, location, border, epsg, mostRecent, defaultMethods, changeRes, newRes, popCorrection, gridRes, alwaysProcess, allowInteractivity, testMode)
       selectedFolders <- selectedFolders[!grepl("rPopulation", selectedFolders)]
       # Check if other inputs to be processed
       if (length(selectedFolders) < 1) {
@@ -194,7 +199,7 @@ process_inputs <- function (mainPath, location, selectedInputs = NULL, mostRecen
       popFolders <- check_exists(popFolder, "processed", layer = TRUE)
       if (is.null(popFolders)) {
         message("\nNo processed population raster is available.\nProcessing raw population raster...")
-        process_pop(mainPath, location, border, epsg, mostRecent, defaultMethods, changeRes, newRes, popCorrection, gridRes, alwaysProcess, testMode)
+        process_pop(mainPath, location, border, epsg, mostRecent, defaultMethods, changeRes, newRes, popCorrection, gridRes, alwaysProcess, allowInteractivity, testMode)
         popFolders <- check_exists(popFolder, "processed", layer = TRUE)
       }
       message("\nLoading processed population raster...")
@@ -255,8 +260,8 @@ process_inputs <- function (mainPath, location, selectedInputs = NULL, mostRecen
       outFolder <- file.path(gsub("raw", "processed", inputFolder), outTimeFolder)
       check_path_length(outFolder)
       dir.create(outFolder, recursive = TRUE)
-      if (testMode) {
-        label <- "test"
+      if (testMode | !allowInteractivity) {
+        label <- "pr"
       } else {
         label <- readline(prompt = paste0("Enter a label for ", selectedFolders[i], ": "))
       }
@@ -271,8 +276,8 @@ process_inputs <- function (mainPath, location, selectedInputs = NULL, mostRecen
       outFolder <- paste0(gsub("raw", "processed", inputFolder), "/", outTimeFolder)
       check_path_length(outFolder)
       dir.create(outFolder, recursive = TRUE)
-      if (testMode) {
-        label <- "test"
+      if (testMode | !allowInteractivity) {
+        label <- "pr"
       } else {
         label <- readline(prompt = paste0("Enter a label for ", selectedFolders[i], ": "))
       }

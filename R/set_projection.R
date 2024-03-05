@@ -11,6 +11,8 @@
 #' @param bestCRS logical; should the projected coordinate reference system be set automatically based on the "best-fit" 
 #' projected coordinate reference system? If FALSE, the user is interactively asked to select the projected coordinate reference 
 #' system from a list of suitable reference systems.
+#' @param allowInteractivity logical; if TRUE, the user can choose a label for the processed boundary shapefile that is created when
+#' setting up the projection of the project. If FALSE, the default label is used ('pr').
 #' @param testMode logical; used for testing. If TRUE labels of processed inputs are not interactively asked.
 #' @details The "best-fit" and the suitable projected coordinate reference systems are obtained with the 
 #' \code{suggest_top_crs} and the \code{suggest_crs}, respectively, from the \pkg{crsuggest} package.
@@ -28,7 +30,7 @@
 #' download_boundaries(mainPath, location, adminLevel = 1, type = "gbOpen", alwaysDownload = TRUE)
 #' set_projection(mainPath, location, mostRecent = TRUE, alwaysSet = TRUE, bestCRS = TRUE)}
 #' @export
-set_projection <- function (mainPath, location, mostRecent = FALSE, alwaysSet = FALSE, bestCRS = FALSE, testMode = FALSE) {
+set_projection <- function (mainPath, location, mostRecent = FALSE, alwaysSet = FALSE, bestCRS = FALSE, allowInteractivity = TRUE, testMode = FALSE) {
   if (!is.character(mainPath)) {
     stop("mainPath must be 'character'")
   }
@@ -148,8 +150,8 @@ set_projection <- function (mainPath, location, mostRecent = FALSE, alwaysSet = 
   borderOutFolder <- file.path(gsub("raw", "processed", boundFolder), outTimeFolder)
   check_path_length(borderOutFolder)
   dir.create(borderOutFolder, recursive = TRUE)
-  if (testMode) {
-    label <- "test"
+  if (testMode | !allowInteractivity) {
+    label <- "pr"
   } else {
     label <- readline(prompt = paste0("Enter a label for vBorders: "))
   }

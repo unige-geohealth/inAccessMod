@@ -1,9 +1,9 @@
 #' Initiate Project
 #'
-#' Select the country, get the ISO 3166-1 alpha-3 country code, store it in a config.txt file and create the directory 
+#' Select the country or city, get the ISO 3166-1 alpha-3 country code, store it in a config.txt file and create the directory 
 #' main structure for the project. This function also creates a log.txt file that will record and track the main operations 
 #' related to the project.
-#' @param mainPath character; a path where the country folder will be created
+#' @param mainPath character; a path where the country/city folder will be created
 #' @param allowInteractivity logical; whether to enable interactivity. \code{TRUE} by default.
 #' @param city logical; whether to focus on cities instead of countries. \code{FALSE} by default.
 #' @param name character; country or city name when \code{allowInteractivity} is set to \code{FALSE}. Must match perfectly either one of the names included
