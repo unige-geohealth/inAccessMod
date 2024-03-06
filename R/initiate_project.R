@@ -6,10 +6,15 @@
 #' @param mainPath character; a path where the country/city folder will be created
 #' @param allowInteractivity logical; whether to enable interactivity. \code{TRUE} by default.
 #' @param city logical; whether to focus on cities instead of countries. \code{FALSE} by default.
-#' @param name character; country or city name when \code{allowInteractivity} is set to \code{FALSE}. Must match perfectly either one of the names included
-#' in inAccessMod::country_list (country) or inAccessMod::city_list (city). For cities, can also be the name of the city combined with the country ISO2 code
-#' when > 1 city have the same name (ex. 'Vancouver'). In this case the format is the following: city name, white space, hyphen, space, code (ex. 'Zurich - CH').
-#' This parameter is ignored when \code{allowInteractivity} is set to \code{TRUE}.
+#' @param name character; country or city name when \code{allowInteractivity} is set to \code{FALSE}. Must match perfectly either one of 
+#' the names included in inAccessMod::country_list (country) or inAccessMod::city_list (city). For cities, can also be the name 
+#' of the city combined with the country ISO2 code when > 1 city have the same name (ex. 'Vancouver'). In this case the format 
+#' is the following: city name, white space, hyphen, space, code (ex. 'Zurich - CH'). This parameter is ignored when \code{allowInteractivity} 
+#' is set to \code{TRUE}.
+#' @param iso character; optional and only when city is TRUE, the ISO 3166-1 alpha-3 country code.
+#' The ESRI World Urban Areas dataset may have inaccurate country information for cities situated near borders, and this parameter allows the user
+#' to set up the country in which is located the city. Using an incorrect code for downloading the population raster 
+#' can result in either an issue or obtaining the wrong population dataset.
 #' @param testMode logical; \code{FALSE} by default. Can be ignored. used for testing the function in the testthat context.
 #' @details The final structure arises when downloading and processing the data with the corresponding functions,
 #' and it allows multiple 'raw' inputs and multiple 'processed' outputs for each input. This can be useful when 
@@ -20,7 +25,7 @@
 #' mainPath <- "workDir"
 #' initiate_project(mainPath)}
 #' @export
-initiate_project <- function (mainPath, allowInteractivity = TRUE, city = FALSE, name = NULL, testMode = FALSE) {
+initiate_project <- function (mainPath, allowInteractivity = TRUE, city = FALSE, name = NULL, iso = NULL, testMode = FALSE) {
   if (!is.character(mainPath)) {
     stop("mainPath must be 'character'")
   }
@@ -53,7 +58,8 @@ initiate_project <- function (mainPath, allowInteractivity = TRUE, city = FALSE,
         cityLst <- paste0(inAccessMod::city_list$Name, " - ", inAccessMod::city_list$ISO_CC)
         cityLstN <- inAccessMod::city_list$Name
         if (!name %in% c(cityLst, cityLstN)) {
-          stop(paste(name, "is no a valid city name."))
+          print(cityLst)
+          stop(paste(name, "is no a valid city name. Please use one of the names above. If the country code is incorrect, indicate the name of the city without the code, and set the 'iso' parameter correctly."))
         } else {
           if (grepl(" - [A-Z]{2}$", name)) {
             cityInd <- which(cityLst == name)
@@ -87,11 +93,23 @@ initiate_project <- function (mainPath, allowInteractivity = TRUE, city = FALSE,
       }
     }
   }
+
   if (city) {
+    if (!is.null(iso)) {
+      if (!grepl("^[A-Z]{3}$", iso)) {
+        stop("Invalid 'iso' parameter: must be an ISO 3166-1 alpha-3 country code.")
+      }
+      if (!iso %in% country_list$iso3c) {
+        stop("Invalid 'iso' parameter: must be a valid ISO 3166-1 alpha-3 country code.")
+      }
+      iso3 <- iso
+      countryOriginalName <- as.character(country_list[which(country_list$iso3c == iso), "country.name.en"])
+    } else {
+      iso2 <- inAccessMod::city_list$ISO_CC[cityInd]
+      iso3 <- as.character(country_list[which(country_list$iso2c == iso2), "iso3c"])
+      countryOriginalName <- as.character(country_list[which(country_list$iso2c == iso2), "country.name.en"])
+    }
     name <- inAccessMod::city_list$Name[cityInd]
-    iso2 <- inAccessMod::city_list$ISO_CC[cityInd]
-    iso3 <- as.character(country_list[which(country_list$iso2c == iso2), "iso3c"])
-    countryOriginalName <- as.character(country_list[which(country_list$iso2c == iso2), "country.name.en"])
     cityOriginalName <- name
   }
   # Modify the name if necessary for directory name
@@ -175,5 +193,17 @@ initiate_project <- function (mainPath, allowInteractivity = TRUE, city = FALSE,
   }
   # Print directory tree
   fs::dir_tree(pathData)
+  if (city) {
+    if (!is.null(iso)) {
+      if (!grepl("^[A-Z]{3}$", iso)) {
+        stop("Invalid 'iso' parameter: must be an ISO 3166-1 alpha-3 country code.")
+      }
+      if (!iso %in% country_list$iso3c) {
+        stop("Invalid 'iso' parameter: must be a valid ISO 3166-1 alpha-3 country code.")
+      }
+    }
+    message(paste0("The city of ", name, " is considered to be part of ", countryOriginalName, " (", iso3, ")."))
+    message("If this is incorrect, please run the initiate_project again, setting up the 'iso' parameter with the correct ISO 3166-1 alpha-3 country code.")
+  }
   return(TRUE)
 }
