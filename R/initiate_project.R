@@ -6,7 +6,7 @@
 #' @param mainPath character; a path where the country/city folder will be created
 #' @param allowInteractivity logical; whether to enable interactivity. \code{TRUE} by default.
 #' @param city logical; whether to focus on cities instead of countries. \code{FALSE} by default.
-#' @param name character; country or city name when \code{allowInteractivity} is set to \code{FALSE}. Must match perfectly either one of 
+#' @param name character; country or city name required when \code{allowInteractivity} is set to \code{FALSE}. Must match perfectly either one of 
 #' the names included in inAccessMod::country_list (country) or inAccessMod::city_list (city). For cities, can also be the name 
 #' of the city combined with the country ISO2 code when > 1 city have the same name (ex. 'Vancouver'). In this case the format 
 #' is the following: city name, white space, hyphen, space, code (ex. 'Zurich - CH'). This parameter is ignored when \code{allowInteractivity} 
@@ -171,7 +171,7 @@ initiate_project <- function (mainPath, allowInteractivity = TRUE, city = FALSE,
   # Create log.txt for operation tracking
   fileConn <- file(file.path(pathData, "log.txt"), open = "a")
   if (city) {
-    writeLines(cityOriginalName, fileConn)
+    writeLines(paste0(cityOriginalName, " - ", countryOriginalName), fileConn)
   } else {
     writeLines(countryOriginalName, fileConn)
   }
