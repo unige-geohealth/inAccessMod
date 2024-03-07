@@ -45,7 +45,7 @@ initiate_project <- function (mainPath, allowInteractivity = TRUE, city = FALSE,
     }
     if (!allowInteractivity) {
       if (is.null(name)) {
-        stop("When allowInteractive is FALSE, a name must be provided.")
+        stop("When allowInteractivity is FALSE, a name must be provided.")
       }
       if (!city) {
         if (!name %in% inAccessMod::country_list$country.name.en) {
