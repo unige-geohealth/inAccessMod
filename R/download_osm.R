@@ -102,9 +102,9 @@ download_osm <- function (mainPath, location, type, alwaysDownload = FALSE, most
   }
   # Download 
   message(paste0("Downloading OSM data (", type, ")..."))
-  osmData <- opq(bbox = bb)  %>%
-    add_osm_feature(key = colName, value = classes) %>%
-    osmdata_sf()
+  osmData <- osmdata::opq(bbox = sf::st_bbox(border)) %>%
+    osmdata::add_osm_feature(key = colName, value = classes) %>%
+    osmdata::osmdata_sf()
   
   if (type == "roads" | type == "waterLines") {
     shp <- osmData$osm_lines

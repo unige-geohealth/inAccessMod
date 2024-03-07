@@ -11,7 +11,7 @@
 #' @keywords internal
 #' @export
 process_raster <- function (ras, border, epsg, projMeth) {
-  `%>%` <- purrr::`%>%`
+  # `%>%` <- purrr::`%>%`
   border <- sf::st_transform(as(border, "sf"), terra::crs(ras))
   cat(paste("Cropping:\n", ras %>% terra::sources()))
   rasCrop <- terra::crop(ras, border)
