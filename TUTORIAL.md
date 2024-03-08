@@ -448,8 +448,8 @@ are the specific parameters:
     correcting the raster. Ignored if *popCorrection* is FALSE. If NULL
     and popCorrection is TRUE, the user is interactively asked to
     provide the grid resolution.
-
-        process_inputs(mainPath, country, selectedInputs = "All", mostRecent = TRUE, alwaysProcess = TRUE, defaultMethods = TRUE, changeRes = TRUE, newRes = 100, popCorrection = TRUE, gridRes = 3000)
+---
+    process_inputs(mainPath, country, selectedInputs = "All", mostRecent = TRUE, alwaysProcess = TRUE, defaultMethods = TRUE, changeRes = TRUE, newRes = 100, popCorrection = TRUE, gridRes = 3000)
 
 We are asked to add a label after each input is processed which will be
 append to the processed file name (useful when dealing with multiple
