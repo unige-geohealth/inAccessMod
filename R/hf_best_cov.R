@@ -147,6 +147,7 @@ hf_best_cov <- function (inputFolder,
         similarCatch <- similarCatch[-1, ] 
       }
       i <- nrow(similarCatch)
+      UniquecatchShp <- UniquecatchShp[UniquecatchShp$totalpop > 0,] 
       setTxtProgressBar(bar, nrow(simi) - i)
     }
     close(bar)
