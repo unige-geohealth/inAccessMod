@@ -288,6 +288,7 @@ hf_best_cov <- function (inputFolder,
           }
         }
       }
+      #Remove the catchments that have been set to 0 population.
       tempCatchUnique <- tempCatchUnique[tempCatchUnique$totalpop > 0,]
       setTxtProgressBar(bar, ceiling((((i - 1) * 100) / nTot) + (k * 100 / nTot) / nrow(tempCatchUnique)))
     }
