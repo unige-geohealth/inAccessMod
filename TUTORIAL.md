@@ -24,7 +24,7 @@ functions directly available. Remember that you must have a working internet con
 
 ### Initiate Project
 
-With the `initiate_project` function, we can select the country and
+With the `initiate_project` function, we can select a country (or a city) and
 automatically, the ISO 3166-1 alpha-3 country code is stored in a
 config.txt file and the directory main structure for the project is
 created. This function also creates a log.txt file that will record and
@@ -85,8 +85,8 @@ name of the country folder, the boundary administrative level, the data
 source, and a logical parameter (TRUE/FALSE) that indicates if the layer
 should always be downloaded, even if it has already been downloaded.
 Data source parameter (type) can be ‘gbOpen’ for geoBoundaries data,
-‘gbHumanitarian’ for UN OCHA CODs data, or ‘gbAuthoritative’ for UN SALB
-data (default). The ISO code used to download the shapefile is retrieved
+‘gbHumanitarian’ (default) for UN OCHA CODs data, or ‘gbAuthoritative’ for UN SALB
+data. The ISO code used to download the shapefile is retrieved
 by the internal function. Another internal function will query the
 geoBoundaries database (geoboundaries\_query) to check availability and
 retrieve a json file that contains the download link.

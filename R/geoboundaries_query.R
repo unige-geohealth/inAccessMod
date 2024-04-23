@@ -11,14 +11,14 @@
 geoboundaries_query <- function (iso, adminLevel, type, validTypes) {
   url <- paste0("https://www.geoboundaries.org/api/current/", type, "/", iso, "/ADM", adminLevel, "/")
   jsonData <- tryCatch({jsonlite::fromJSON(url)}, error = function (e) NULL)
-  if (is.null(jsonData)) {
+  if (is.null(jsonData$staticDownloadLink)) {
     message("Requested data not available. Searching for available data, please wait...")
     avData <- data.frame()
     for (typ in validTypes) {
       for (lev in 0:3) {
         url <- paste0("https://www.geoboundaries.org/api/current/", typ, "/", iso, "/ADM", lev, "/")
         jsonData <- tryCatch({jsonlite::fromJSON(url)}, error = function (e) NULL)
-        if (is.null(jsonData)) {
+        if (is.null(jsonData$staticDownloadLink)) {
           avData <- rbind(avData, data.frame(Type = typ, Level = lev, Availability = "NO"))
         } else {
           avData <- rbind(avData, data.frame(Type = typ, Level = lev, Availability = "YES"))
