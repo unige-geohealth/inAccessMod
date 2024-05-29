@@ -165,7 +165,7 @@ HeRAMS_create_hf_shapefile <- function (mainPath, location, mostRecentBoundaries
   pts <- cbind(sf::st_as_sf(xy[complete.cases(xy), ], coords = c(1,2), crs = epsg), df)
   border <- sf::st_union(sf::st_transform(border, crs = sf::st_crs(pts)))
   # Tolerance
-  border <- sf::st_buffer(border, dist = 0.2)
+  # border <- sf::st_buffer(border, dist = 0.2)
   # Intersection
   inter <- suppressWarnings(sf::st_intersects(border, pts, sparse = FALSE))[1, ]
   interOutside <- FALSE
