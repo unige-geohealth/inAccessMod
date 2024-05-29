@@ -245,7 +245,7 @@ HeRAMS_create_hf_shapefile <- function (mainPath, location, mostRecentBoundaries
   for (i in 1:length(filesToCopy)) {
     fi <- basename(filesToCopy[i])
     fi <- paste0(nameCSV, ".", gsub("^.*\\.", "", fi))
-    file.copy(filesToCopy[i], file.path(hfFolder, fi))
+    file.copy(filesToCopy[i], file.path(hfFolder, fi), overwrite = TRUE)
   }
   inputFolder <- stringr::str_extract(hfFolder, "scenario[0-9]{3}/[0-9]{14}")
   write(paste0(Sys.time(), ": Health facility shapefile created - Input folder: ", inputFolder), fi = logTxt, append = TRUE)
