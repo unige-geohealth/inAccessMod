@@ -9,25 +9,32 @@ initiate_project(
   allowInteractivity = TRUE,
   city = FALSE,
   name = NULL,
+  iso = NULL,
   testMode = FALSE
 )
 }
 \arguments{
-\item{mainPath}{character; a path where the country folder will be created}
+\item{mainPath}{character; a path where the country/city folder will be created}
 
 \item{allowInteractivity}{logical; whether to enable interactivity. \code{TRUE} by default.}
 
 \item{city}{logical; whether to focus on cities instead of countries. \code{FALSE} by default.}
 
-\item{name}{character; country or city name when \code{allowInteractivity} is set to \code{FALSE}. Must match perfectly either one of the names included
-in inAccessMod::country_list (country) or inAccessMod::city_list (city). For cities, can also be the name of the city combined with the country ISO2 code
-when > 1 city have the same name (ex. 'Vancouver'). In this case the format is the following: city name, white space, hyphen, space, code (ex. 'Zurich - CH').
-This parameter is ignored when \code{allowInteractivity} is set to \code{TRUE}.}
+\item{name}{character; country or city name required when \code{allowInteractivity} is set to \code{FALSE}. Must match perfectly either one of 
+the names included in inAccessMod::country_list (country) or inAccessMod::city_list (city). For cities, can also be the name 
+of the city combined with the country ISO2 code when > 1 city have the same name (ex. 'Vancouver'). In this case the format 
+is the following: city name, white space, hyphen, space, code (ex. 'Zurich - CH'). This parameter is ignored when \code{allowInteractivity} 
+is set to \code{TRUE}.}
+
+\item{iso}{character; optional and only when city is TRUE, the ISO 3166-1 alpha-3 country code.
+The ESRI World Urban Areas dataset may have inaccurate country information for cities situated near borders, and this parameter allows the user
+to set up the country in which is located the city. Using an incorrect code for downloading the population raster 
+can result in either an issue or obtaining the wrong population dataset.}
 
 \item{testMode}{logical; \code{FALSE} by default. Can be ignored. used for testing the function in the testthat context.}
 }
 \description{
-Select the country, get the ISO 3166-1 alpha-3 country code, store it in a config.txt file and create the directory 
+Select the country or city, get the ISO 3166-1 alpha-3 country code, store it in a config.txt file and create the directory 
 main structure for the project. This function also creates a log.txt file that will record and track the main operations 
 related to the project.
 }

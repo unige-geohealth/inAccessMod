@@ -15,6 +15,7 @@ process_inputs(
   newRes = NULL,
   popCorrection = NULL,
   gridRes = NULL,
+  allowInteractivity = TRUE,
   testMode = FALSE
 )
 }
@@ -50,6 +51,8 @@ whether they want to run it or not.}
 
 \item{gridRes}{numeric; the resolution (meters) of the grid shapefile used for correcting the raster. Ignored if \code{popCorrection} is FALSE.
 If NULL and \code{popCorrection} is TRUE, the user is interactively asked to provide the grid resolution.}
+
+\item{allowInteractivity}{logical; if TRUE, the user can choose a label for each processed layer; if FALSE, label default is used ('pr')}
 
 \item{testMode}{logical; used for testing. If TRUE labels of processed inputs are not interactively asked.}
 }

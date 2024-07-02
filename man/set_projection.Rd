@@ -10,6 +10,7 @@ set_projection(
   mostRecent = FALSE,
   alwaysSet = FALSE,
   bestCRS = FALSE,
+  allowInteractivity = TRUE,
   testMode = FALSE
 )
 }
@@ -28,6 +29,9 @@ interactively asked whether they want to set it again or not.}
 \item{bestCRS}{logical; should the projected coordinate reference system be set automatically based on the "best-fit" 
 projected coordinate reference system? If FALSE, the user is interactively asked to select the projected coordinate reference 
 system from a list of suitable reference systems.}
+
+\item{allowInteractivity}{logical; if TRUE, the user can choose a label for the processed boundary shapefile that is created when
+setting up the projection of the project. If FALSE, the default label is used ('pr').}
 
 \item{testMode}{logical; used for testing. If TRUE labels of processed inputs are not interactively asked.}
 }
