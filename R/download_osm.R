@@ -56,6 +56,7 @@ download_osm <- function (mainPath, location, type, alwaysDownload = FALSE, most
     }
   }
   if (type == "roads") {
+    querySQL <- "SELECT * FROM 'lines' WHERE highway IS NOT NULL"
     colName <- "highway"
     classes <- c("trunk", 
                     "trunk_link",
@@ -83,9 +84,11 @@ download_osm <- function (mainPath, location, type, alwaysDownload = FALSE, most
                     "unclassified",
                     "bridge")
   } else if (type == "waterLines") {
+    querySQL <- "SELECT * FROM 'lines' WHERE waterway IS NOT NULL"
     colName <- "waterway"
     classes <- "river"
   } else {
+    querySQL <- "SELECT * FROM 'multipolygons' WHERE natural IS NOT NULL"
     colName <- "natural"
     classes <- "water"
   }
@@ -102,14 +105,52 @@ download_osm <- function (mainPath, location, type, alwaysDownload = FALSE, most
   }
   # Download 
   message(paste0("Downloading OSM data (", type, ")..."))
-  osmData <- osmdata::opq(bbox = sf::st_bbox(border)) %>%
-    osmdata::add_osm_feature(key = colName, value = classes) %>%
-    osmdata::osmdata_sf()
-  
-  if (type == "roads" | type == "waterLines") {
-    shp <- osmData$osm_lines
+  # osmdata or osmextract (osmdata works well for small areas like cities)
+  city <- get_param(mainPath, location, "CITY")
+  osmData <- NULL
+  if (length(city) > 0) {
+    osmData <- tryCatch({
+      osmdata::opq(bbox = sf::st_bbox(border)) %>%
+        osmdata::add_osm_feature(key = colName, value = classes) %>%
+        osmdata::osmdata_sf()
+    }, error = function(e) {
+      message("An error occurred with osmdata: ", e$message, "\nTrying now with osmextract...")
+      return(NULL)  # Return NULL or some other default value if there's an error
+    })
+  }
+  if (!is.null(osmData)) {
+    if (type == "roads" | type == "waterLines") {
+      shp <- osmData$osm_lines
+    } else {
+      shp <- osmData$osm_multipolygons
+    }
   } else {
-    shp <- osmData$osm_multipolygons
+    # Either we don't have city, or osmdata didn't work
+    # Get right country name for osmextract
+    iso3 <- get_param(mainPath, location, "ISO")
+    iso2 <- inAccessMod::country_list$iso2c[inAccessMod::country_list$iso3c == iso3]
+    place <- osmextract::geofabrik_zones$name[which(osmextract::geofabrik_zones$iso3166_1_alpha2 == iso2)]
+    shp <- tryCatch({
+      osmextract::oe_get(place,
+                         quiet = FALSE,
+                         query = querySQL,
+                         download_directory = pathFolder,
+                         force_download = TRUE,
+                         max_file_size = 5e+10)
+    }, error = function(e) {
+      message("An error occurred with name (", place, "): ", e$message, "\nTrying now with bbox...")
+      return(NULL)  # Return NULL or some other default value if there's an error
+    })
+    if (is.null(shp)) {
+      # Takes theoretically more time
+      shp <- osmextract::oe_get(sf::st_bbox(border),
+                                quiet = FALSE,
+                                query = querySQL,
+                                download_directory = pathFolder,
+                                force_download = TRUE,
+                                max_file_size = 5e+10)
+    }
+
   }
   shpCat <- select_categories(shp, colName, defaultClasses, classes)
   shp <- shpCat[[1]]

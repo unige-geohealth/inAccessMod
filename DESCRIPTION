@@ -22,6 +22,7 @@ Imports:
     jsonlite,
     lubridate,
     osmdata,
+    osmextract,
     raster,
     RCurl,
     readxl,
