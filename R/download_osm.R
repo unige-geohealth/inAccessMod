@@ -9,7 +9,7 @@
 #' downloaded? If FALSE and if the shapefile has already been downloaded the user is 
 #' interactively asked whether they want to download it again or not.
 #' @param mostRecent logical; should the most recent boundary shapefile be selected? If FALSE and if there are multiple
-#' available inputs, the user is interactively asked to select the input based on file creation time. Ignored if countryName is TRUE.
+#' available inputs, the user is interactively asked to select the input based on file creation time.
 #' @param defaultClasses logical; should only the default classes be kept? If not, the user is interactively asked to select the categories
 #' they want to keep. For 'roads', default classes are: trunk, trunk_link, primary, primary_link, 
 #' motorway, motorway_link, secondary, secondary_link, tertiary, tertiary_link, road, raceway, residential, 
@@ -24,9 +24,9 @@
 #' # Replace myLocation with the location name you are working on (workDir subfolder)
 #' \dontrun{
 #' location <- "myLocation"
-#' download_osm(mainPath, location, type = "roads", alwaysDownload = TRUE, countryName = TRUE, mostRecent = NULL, defaultClasses = TRUE)
-#' download_osm(mainPath, location, type = "waterLines", alwaysDownload = TRUE, countryName = TRUE, mostRecent = NULL, defaultClasses = TRUE)
-#' download_osm(mainPath, location, type = "waterPolygons", alwaysDownload = TRUE, countryName = TRUE, mostRecent = NULL, defaultClasses = TRUE)}
+#' download_osm(mainPath, location, type = "roads", alwaysDownload = TRUE, mostRecent = NULL, defaultClasses = TRUE)
+#' download_osm(mainPath, location, type = "waterLines", alwaysDownload = TRUE, mostRecent = NULL, defaultClasses = TRUE)
+#' download_osm(mainPath, location, type = "waterPolygons", alwaysDownload = TRUE, mostRecent = NULL, defaultClasses = TRUE)}
 #' @export
 download_osm <- function (mainPath, location, type, alwaysDownload = FALSE, mostRecent = TRUE, defaultClasses = TRUE) {
   if (!is.character(mainPath)) {
@@ -42,7 +42,7 @@ download_osm <- function (mainPath, location, type, alwaysDownload = FALSE, most
     stop("alwaysDownload must be 'logical'")
   }
   if (!is.logical(mostRecent)){
-    stop("mostRecent must be NULL or 'logical'")
+    stop("mostRecent must be'logical'")
   }
   if (!is.logical(defaultClasses)){
     stop("defaultClasses must 'logical'")

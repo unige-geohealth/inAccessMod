@@ -370,27 +370,22 @@ shapefile should be selected to define the required landcover tiles ?
 #### Open Street Maps
 
 This function allows us to download the Open Street Map shapefiles
-corresponding to ‘roads’, ‘rivers’ or any other natural feature and copy
-them to their corresponding folders. The parameter *x* represents the
-target layer. Can be ‘roads’, ‘waterLines’ or ‘naturalPolygons’. The
-logical parameter countryName indicates if the country name should be
-used to match with the osm.pbf file in the OSM server ? If FALSE, it is
+corresponding to ‘roads’, ‘rivers’ or 'lakes' and copy
+them to their corresponding folders. The parameter *type* represents the
+target layer. Can be ‘roads’, ‘waterLines’ or ‘waterPolygons’. It is
 the extent of the boundary shapefile that is matched with the osm.pbf
-file in the Geofabrik’s free download server. Matching by name is
-usually much faster and *countryName* should be always set TRUE, unless
-the country name is complex and not recognized by the server. The
-*mostRecent* parameter is ignored if *countryName* is TRUE. If x =
+file in the Geofabrik’s free download server. If type =
 “roads” and defaultClasses is TRUE, only the official OSM road classes
-are kept. For waterLines and naturalPolygons, default classes are river
+are kept. For waterLines and waterPolygons, default classes are river
 and water, respectively. If defaultClasses is FALSE, we can select the
 available classes we would like to keep. Let’s download the OSM data
 setting the defaulClasses parameter to TRUE. The process can take time,
 as the data for the entire country is downloaded even though we are
 focusing on two single regions.
 
-    download_osm(x = "roads", mainPath, country, alwaysDownload = TRUE, countryName = TRUE, mostRecent = NULL, defaultClasses = TRUE)
+    download_osm(mainPath, country, "roads", alwaysDownload = TRUE, mostRecent = TRUE, defaultClasses = TRUE)
 
-    download_osm("waterLines", mainPath, country, alwaysDownload = TRUE, countryName = TRUE, mostRecent = NULL, defaultClasses = TRUE)
+    download_osm(mainPath, country, "waterLines", alwaysDownload = TRUE, mostRecent = TRUE, defaultClasses = TRUE)
 
 At any time, we can check which inputs (either ‘raw’ or ‘processed’) are
 available and which are not available.
@@ -401,7 +396,7 @@ available and which are not available.
 
 Let’s download the lakes from OSM before processing the inputs.
 
-    download_osm("naturalPolygons", mainPath, country, alwaysDownload = TRUE, countryName = TRUE, mostRecent = NULL, defaultClasses = TRUE)
+    download_osm(mainPath, country, "waterPolygons", alwaysDownload = TRUE, mostRecent = TRUE, defaultClasses = TRUE)
 
 ### Process layers
 
