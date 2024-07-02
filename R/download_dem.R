@@ -104,6 +104,17 @@ download_dem <- function (mainPath, location, alwaysDownload = FALSE, mostRecent
     lon <- raster::extent(tiles[1,])[1]  + (raster::extent(tiles[1,])[2] - raster::extent(tiles[1,])[1]) / 2
     lat <- raster::extent(tiles[1,])[3]  + (raster::extent(tiles[1,])[4] - raster::extent(tiles[1,])[3]) / 2
     tile <- geodata::elevation_3s(lon = lon, lat = lat, path = pathDEM)
+    subFolders <- list.dirs(pathDEM, full.names = TRUE, recursive = FALSE)
+    # Since geodata::elevation copy the files into a subfolder called elevation (not an issue with our mosaic as we specified the file destination)
+    if (length(subFolders) > 0) {
+      if (length(subFolders) == 1) {
+        files <- list.files(subFolders, full.names = TRUE)
+        file.copy(files, pathDEM, overwrite = TRUE)
+        unlink(subFolders, recursive = TRUE)
+      } else {
+        stop("Something weird happened with geodata::elevation")
+      }
+    }
     write(paste0(Sys.time(), ": Single DEM tile downloaded - Input folder ", timeFolder), file = logTxt, append = TRUE)
   }
   files <- list.files(pathDEM)
