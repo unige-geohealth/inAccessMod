@@ -184,6 +184,7 @@ initiate_project <- function (mainPath, allowInteractivity = TRUE, city = FALSE,
     indShp <- which(paste0(world_urban_areas$Name, " - ", world_urban_areas$ISO_CC) == cityLst[cityInd])
     shp <- world_urban_areas[indShp, ]
     message("Debug 2")
+    print(class(shp))
     pathBorder <- file.path(mainPath, folderName, "data", "vBorders")
     timeFolder <- format(Sys.time(), "%Y%m%d%H%M%S")
     check_path_length(paste0(pathBorder, "/", timeFolder, "/raw"))
@@ -191,6 +192,7 @@ initiate_project <- function (mainPath, allowInteractivity = TRUE, city = FALSE,
     pathBorder <- file.path(pathBorder, timeFolder, "raw")
     message("Debug 3")
     sf::st_write(shp, file.path(pathBorder, paste0(folderName, ".shp")))
+    message("Debug 4")
     fileConn <- file(file.path(pathData, "log.txt"), open = "a")
     writeLines(paste0(Sys.time(), ": Urban area shapefile extracted"), fileConn)
     close(fileConn)
