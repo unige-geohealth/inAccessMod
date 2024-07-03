@@ -179,6 +179,7 @@ initiate_project <- function (mainPath, allowInteractivity = TRUE, city = FALSE,
   close(fileConn)
   
   if (city) {
+    message("Debug 1")
     data("world_urban_areas", package = "inAccessMod")
     indShp <- which(paste0(world_urban_areas$Name, " - ", world_urban_areas$ISO_CC) == cityLst[cityInd])
     shp <- world_urban_areas[indShp, ]
