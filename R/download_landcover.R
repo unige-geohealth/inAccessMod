@@ -56,7 +56,7 @@ download_landcover <- function (mainPath, location, alwaysDownload = FALSE, most
   # Coordinate intervals
   seqCoord <- list(X = seq(from = -180, to = 180, by = 20), Y = seq(from = -40, to = 80, by = 20))
   # Get extent of the boundaries
-  minMax <- list(X = c(raster::extent(border)[1], raster::extent(border)[2]), Y = c(raster::extent(border)[3], raster::extent(border)[4]))
+  minMax <- list(X = c(terra::ext(border)[1], terra::ext(border)[2]), Y = c(terra::ext(border)[3], terra::ext(border)[4]))
   # The file name: lower X limit, upper Y limit (see tiles at https://lcviewer.vito.be/download)
   # findInterval function: upper limit
   adjustTile <- c(X = -1, y = 0)

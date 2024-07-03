@@ -71,8 +71,8 @@ download_dem <- function (mainPath, location, alwaysDownload = FALSE, mostRecent
     srtmList  <- list()
     for (i in 1:nrow(tiles)) {
       cat(paste0("Downloading tile ", i, "/", nrow(tiles), "...\n"))
-      lon <- raster::extent(tiles[i,])[1]  + (raster::extent(tiles[i,])[2] - raster::extent(tiles[i,])[1]) / 2
-      lat <- raster::extent(tiles[i,])[3]  + (raster::extent(tiles[i,])[4] - raster::extent(tiles[i,])[3]) / 2
+      lon <- terra::ext(tiles[i,])[1]  + (terra::ext(tiles[i,])[2] - terra::ext(tiles[i,])[1]) / 2
+      lat <- terra::ext(tiles[i,])[3]  + (terra::ext(tiles[i,])[4] - terra::ext(tiles[i,])[3]) / 2
       tile <- tryCatch({geodata::elevation_3s(lon = lon, lat = lat, path = tmpFolder)}, error = function (e) NULL)
       if (is.null(tile)) {
         message("Cannot open URL. Trying with 'curl' and ignoring potential SSL issues.")
@@ -101,8 +101,8 @@ download_dem <- function (mainPath, location, alwaysDownload = FALSE, mostRecent
     terra::writeRaster(newRas, file.path(pathDEM, "srtm.tif"))
     write(paste0(Sys.time(), ": Multiple DEM tiles downloaded and mosaicked"), file = logTxt, append = TRUE)
   } else {
-    lon <- raster::extent(tiles[1,])[1]  + (raster::extent(tiles[1,])[2] - raster::extent(tiles[1,])[1]) / 2
-    lat <- raster::extent(tiles[1,])[3]  + (raster::extent(tiles[1,])[4] - raster::extent(tiles[1,])[3]) / 2
+    lon <- terra::ext(tiles[1,])[1]  + (terra::ext(tiles[1,])[2] - terra::ext(tiles[1,])[1]) / 2
+    lat <- terra::ext(tiles[1,])[3]  + (terra::ext(tiles[1,])[4] - terra::ext(tiles[1,])[3]) / 2
     tile <- geodata::elevation_3s(lon = lon, lat = lat, path = pathDEM)
     subFolders <- list.dirs(pathDEM, full.names = TRUE, recursive = FALSE)
     # Since geodata::elevation copy the files into a subfolder called elevation (not an issue with our mosaic as we specified the file destination)
