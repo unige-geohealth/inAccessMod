@@ -193,7 +193,7 @@ initiate_project <- function (mainPath, allowInteractivity = TRUE, city = FALSE,
     message("Debug 3")
     print(file.path(pathBorder, paste0(folderName, ".shp")))
     print(colnames(shp))
-    sf::st_write(shp, file.path(pathBorder, paste0(folderName, ".shp")))
+    sf::st_write(obj = shp, dsn = file.path(pathBorder, paste0(folderName, ".shp")))
     message("Debug 4")
     fileConn <- file(file.path(pathData, "log.txt"), open = "a")
     writeLines(paste0(Sys.time(), ": Urban area shapefile extracted"), fileConn)
