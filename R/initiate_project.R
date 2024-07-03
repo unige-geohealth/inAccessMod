@@ -179,22 +179,15 @@ initiate_project <- function (mainPath, allowInteractivity = TRUE, city = FALSE,
   close(fileConn)
   
   if (city) {
-    message("Debug 1")
-    data("world_urban_areas", package = "inAccessMod")
-    indShp <- which(paste0(world_urban_areas$Name, " - ", world_urban_areas$ISO_CC) == cityLst[cityInd])
-    shp <- world_urban_areas[indShp, ]
-    message("Debug 2")
-    print(class(shp))
+    indShp <- which(paste0(inAccessMod::world_urban_areas$Name, " - ", inAccessMod::world_urban_areas$ISO_CC) == cityLst[cityInd])
+    shp <- inAccessMod::world_urban_areas[indShp, ]
     pathBorder <- file.path(mainPath, folderName, "data", "vBorders")
     timeFolder <- format(Sys.time(), "%Y%m%d%H%M%S")
     check_path_length(paste0(pathBorder, "/", timeFolder, "/raw"))
     dir.create(paste0(pathBorder, "/", timeFolder, "/raw"), recursive = TRUE)
     pathBorder <- file.path(pathBorder, timeFolder, "raw")
-    message("Debug 3")
     print(file.path(pathBorder, paste0(folderName, ".shp")))
-    print(colnames(shp))
     sf::st_write(obj = shp, dsn = file.path(pathBorder, paste0(folderName, ".shp")))
-    message("Debug 4")
     fileConn <- file(file.path(pathData, "log.txt"), open = "a")
     writeLines(paste0(Sys.time(), ": Urban area shapefile extracted"), fileConn)
     close(fileConn)
