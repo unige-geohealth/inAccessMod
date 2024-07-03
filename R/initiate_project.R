@@ -191,6 +191,8 @@ initiate_project <- function (mainPath, allowInteractivity = TRUE, city = FALSE,
     dir.create(paste0(pathBorder, "/", timeFolder, "/raw"), recursive = TRUE)
     pathBorder <- file.path(pathBorder, timeFolder, "raw")
     message("Debug 3")
+    print(file.path(pathBorder, paste0(folderName, ".shp")))
+    print(colnames(shp))
     sf::st_write(shp, file.path(pathBorder, paste0(folderName, ".shp")))
     message("Debug 4")
     fileConn <- file(file.path(pathData, "log.txt"), open = "a")
