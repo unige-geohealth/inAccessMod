@@ -109,14 +109,13 @@ download_osm <- function (mainPath, location, type, alwaysDownload = FALSE, most
   city <- get_param(mainPath, location, "CITY")
   osmData <- NULL
   if (length(city) > 0) {
-    `%>%` <- purrr::`%>%`
     osmData <- tryCatch({
-      osmdata::opq(bbox = sf::st_bbox(border)) %>%
-        osmdata::add_osm_feature(key = colName, value = classes) %>%
-        osmdata::osmdata_sf()
+      query <- osmdata::opq(bbox = sf::st_bbox(border))
+      query <- osmdata::add_osm_feature(query, key = colName, value = classes)
+      osmdata::osmdata_sf(query)
     }, error = function(e) {
       message("An error occurred with osmdata: ", e$message, "\nTrying now with osmextract...")
-      return(NULL)  # Return NULL or some other default value if there's an error
+      return(NULL)
     })
   }
   if (!is.null(osmData)) {
