@@ -58,7 +58,7 @@ initiate_project <- function (mainPath, allowInteractivity = TRUE, city = FALSE,
         cityLst <- paste0(inAccessMod::city_list$Name, " - ", inAccessMod::city_list$ISO_CC)
         cityLstN <- inAccessMod::city_list$Name
         if (!name %in% c(cityLst, cityLstN)) {
-          print(cityLst)
+          print(cityLst, max = length(cityLst))
           stop(paste(name, "is no a valid city name. Please use one of the names above. If the country code is incorrect, indicate the name of the city without the code, and set the 'iso' parameter correctly."))
         } else {
           if (grepl(" - [A-Z]{2}$", name)) {
@@ -122,6 +122,9 @@ initiate_project <- function (mainPath, allowInteractivity = TRUE, city = FALSE,
   # Main standard inputs
   inputNames <- c("rDEM", "rPopulation", "rLandcover", "vRoads", "vWaterLines", 
                "vWaterPolygons", "vBorders","vFacilities")
+  if (city) {
+    inputNames <- c(inputNames, "vExtent")
+  }
   message(paste("\nThe following input folders will be created:", paste(inputNames, collapse=", ")))
   # Add other data ?
   if (testMode | !allowInteractivity) {
@@ -190,6 +193,39 @@ initiate_project <- function (mainPath, allowInteractivity = TRUE, city = FALSE,
     sf::st_write(obj = shp, dsn = file.path(pathBorder, paste0(folderName, ".shp")))
     fileConn <- file(file.path(pathData, "log.txt"), open = "a")
     writeLines(paste0(Sys.time(), ": Urban area shapefile extracted"), fileConn)
+    close(fileConn)
+    
+    # Extent + 5 km
+    bbox <- sf::st_bbox(shp)
+    xmin <- bbox[1]
+    ymin <- bbox[2]
+    xmax <- bbox[3]
+    ymax <- bbox[4]
+    # Latitude for calculating longitude expansion
+    lat <- (ymin + ymax) / 2
+    # Calculate the degree increment
+    latIncrement <- 5 / 111  # Latitude increment in degrees
+    # Longitude increment in degrees, adjusted for latitude
+    lonIncrement <- 5 / (111 * cos(lat * pi / 180))
+    # Expand the bounding box
+    xminNew <- xmin - lonIncrement
+    xmaxNew <- xmax + lonIncrement
+    yminNew <- ymin - latIncrement
+    ymaxNew <- ymax + latIncrement
+    # Create the expanded bbox as a named vector
+    bboxNew <- c(xmin = xminNew, ymin = yminNew, 
+                       xmax = xmaxNew, ymax = ymaxNew)
+    names(bboxNew) <- c("xmin", "ymin", "xmax", "ymax")
+    bboxShp <- sf::st_as_sfc(sf::st_bbox(bboxNew, crs = sf::st_crs(4326)))
+    pathExtent <- file.path(mainPath, folderName, "data", "vExtent")
+    timeFolder <- format(Sys.time(), "%Y%m%d%H%M%S")
+    check_path_length(paste0(pathExtent, "/", timeFolder, "/raw"))
+    dir.create(paste0(pathExtent, "/", timeFolder, "/raw"), recursive = TRUE)
+    pathExtent <- file.path(pathExtent, timeFolder, "raw")
+    print(file.path(pathExtent, paste0(folderName, "_extent.shp")))
+    sf::st_write(obj = bboxShp, dsn = file.path(pathExtent, paste0(folderName, "_extent.shp")))
+    fileConn <- file(file.path(pathData, "log.txt"), open = "a")
+    writeLines(paste0(Sys.time(), ": Urban area extent shapefile calculated and saved"), fileConn)
     close(fileConn)
   }
   # Print directory tree
