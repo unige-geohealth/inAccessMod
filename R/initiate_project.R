@@ -5,7 +5,8 @@
 #' related to the project.
 #' @param mainPath character; a path where the country/city folder will be created
 #' @param allowInteractivity logical; whether to enable interactivity. \code{TRUE} by default.
-#' @param city logical; whether to focus on cities instead of countries. \code{FALSE} by default.
+#' @param city logical; whether to focus on cities instead of countries. \code{FALSE} by default. When city is TRUE, a city extent shapefile is also created 
+#' applying a 5 km (aprox) buffer to the actual extent of the city shapefile. 
 #' @param name character; country or city name required when \code{allowInteractivity} is set to \code{FALSE}. Must match perfectly either one of 
 #' the names included in inAccessMod::country_list (country) or inAccessMod::city_list (city). For cities, can also be the name 
 #' of the city combined with the country ISO2 code when > 1 city have the same name (ex. 'Vancouver'). In this case the format 
@@ -25,7 +26,12 @@
 #' mainPath <- "workDir"
 #' initiate_project(mainPath)}
 #' @export
-initiate_project <- function (mainPath, allowInteractivity = TRUE, city = FALSE, name = NULL, iso = NULL, testMode = FALSE) {
+initiate_project <- function (mainPath, 
+                              allowInteractivity = TRUE,
+                              city = FALSE,
+                              name = NULL,
+                              iso = NULL,
+                              testMode = FALSE) {
   if (!is.character(mainPath)) {
     stop("mainPath must be 'character'")
   }
