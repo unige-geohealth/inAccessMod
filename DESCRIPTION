@@ -1,7 +1,7 @@
 Package: inAccessMod
 Type: Package
 Title: Get and prepare the required inputs for AccessMod
-Version: 1.0
+Version: 1.1
 Authors@R: c(
     person("Pablo", "Timoner", email = "pablo.timoner@unige.ch", role = c("aut", "cre")),
     person("Fleur", "Hierink", email = "fleur.hierink@unige.ch", role = "aut"),
