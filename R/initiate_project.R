@@ -5,8 +5,10 @@
 #' related to the project.
 #' @param mainPath character; a path where the country/city folder will be created
 #' @param allowInteractivity logical; whether to enable interactivity. \code{TRUE} by default.
-#' @param city logical; whether to focus on cities instead of countries. \code{FALSE} by default. When city is TRUE, a city extent shapefile is also created 
-#' applying a 5 km (aprox) buffer to the actual extent of the city shapefile. 
+#' @param city logical; whether to focus on cities instead of countries. \code{FALSE} by default. When city is TRUE, a city extent shapefile is created 
+#' applying a 5 km (aprox) buffer to the city extent and used as reference for the project extent. This way, we consider that people can move outside the 
+#' actual city boundaries, which can be the case when we have irregular boundaries, with protusions or extensions. The city shapefile can be still used 
+#' for population statistics.
 #' @param name character; country or city name required when \code{allowInteractivity} is set to \code{FALSE}. Must match perfectly either one of 
 #' the names included in inAccessMod::country_list (country) or inAccessMod::city_list (city). For cities, can also be the name 
 #' of the city combined with the country ISO2 code when > 1 city have the same name (ex. 'Vancouver'). In this case the format 
@@ -190,7 +192,7 @@ initiate_project <- function (mainPath,
   if (city) {
     indShp <- which(paste0(inAccessMod::world_urban_areas$Name, " - ", inAccessMod::world_urban_areas$ISO_CC) == cityLst[cityInd])
     shp <- inAccessMod::world_urban_areas[indShp, ]
-    pathBorder <- file.path(mainPath, folderName, "data", "vBorders")
+    pathBorder <- file.path(mainPath, folderName, "data", "vCity")
     timeFolder <- format(Sys.time(), "%Y%m%d%H%M%S")
     check_path_length(paste0(pathBorder, "/", timeFolder, "/raw"))
     dir.create(paste0(pathBorder, "/", timeFolder, "/raw"), recursive = TRUE)
@@ -223,7 +225,7 @@ initiate_project <- function (mainPath,
                        xmax = xmaxNew, ymax = ymaxNew)
     names(bboxNew) <- c("xmin", "ymin", "xmax", "ymax")
     bboxShp <- sf::st_as_sfc(sf::st_bbox(bboxNew, crs = sf::st_crs(4326)))
-    pathExtent <- file.path(mainPath, folderName, "data", "vExtent")
+    pathExtent <- file.path(mainPath, folderName, "data", "vBorders")
     timeFolder <- format(Sys.time(), "%Y%m%d%H%M%S")
     check_path_length(paste0(pathExtent, "/", timeFolder, "/raw"))
     dir.create(paste0(pathExtent, "/", timeFolder, "/raw"), recursive = TRUE)
