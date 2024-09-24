@@ -6,7 +6,7 @@
 \usage{
 HeRAMS_create_hf_shapefile(
   mainPath,
-  country,
+  location,
   mostRecentBoundaries = TRUE,
   lonlat = TRUE,
   epsg = NULL,
@@ -17,9 +17,9 @@ HeRAMS_create_hf_shapefile(
 )
 }
 \arguments{
-\item{mainPath}{character; the parent directory of the country folder}
+\item{mainPath}{character; the parent directory of the location folder}
 
-\item{country}{character; the country folder name}
+\item{location}{character; the location folder name}
 
 \item{mostRecentBoundaries}{logical; should the most recent processed boundary shapefile be used? If FALSE and if there are multiple
 available inputs, the user is interactively asked to select the input based on file creation time.}
@@ -31,7 +31,7 @@ available inputs, the user is interactively asked to select the input based on f
 \item{rmNA}{logical; should the health facilities with non-available coordinates be removed? If NULL or FALSE the user is interactively
 asked whether they want to remove them or not.}
 
-\item{rmOut}{logical; should the health facilities falling outside of the country be removed? If NULL or FALSE the user is 
+\item{rmOut}{logical; should the health facilities falling outside of the location area be removed? If NULL or FALSE the user is 
 interactively asked whether they want to remove them or not.}
 
 \item{scenario}{character; a string of three characters that correspond to the scenario folder suffix like '001', '002'...'010'...'099'...'100'
@@ -46,8 +46,8 @@ Create a point shapefile of health facilities based on a pre-processed HeRAMS he
 }
 \details{
 Once the missing coordinate issue is addressed, the function checks whether the health facilities fall within the
-country boundary. There is a track record of both the facilities with missing coordinates and the ones that fall
-outside the country boundary.
+location boundary. There is a track record of both the facilities with missing coordinates and the ones that fall
+outside the location boundary.
 }
 \examples{
 # Replace workDir with the actual path to your working directory
@@ -55,16 +55,16 @@ outside the country boundary.
 mainPath <- "workDir"
 initiate_project(mainPath)}
 
-# Replace myCountry with the country name you are working on (workDir subfolder)
+# Replace myLocation with the location name you are working on (workDir subfolder)
 \dontrun{
-country <- "myCountry"
-download_boundaries(mainPath, country, adminLevel = 1, type = "gbOpen", alwaysDownload = TRUE)}
+location <- "myLocation"
+download_boundaries(mainPath, location, adminLevel = 1, type = "gbOpen", alwaysDownload = TRUE)}
 
 # Replace myHeRAMScodeTable with the path of the HeRAMS table that contains codes; set to NULL to use example data
 # Replace myHeRAMStextTable with the path of the HeRAMS table that contains text; set to NULL to use example data
 \dontrun{
 pathTableCode <- "myHeRAMScodeTable"
 pathTableText <- "myHeRAMStextTable"
-HeRAMS_filter_hf(mainPath, country, pathTableCode, pathTableText, barriers = FALSE, mostRecentObs = TRUE)
-HeRAMS_create_hf_shapefile(mainPath, country, mostRecentBoundaries = TRUE, lonlat = TRUE, rmNA = TRUE, rmOut = TRUE, scenario = NULL)} 
+HeRAMS_filter_hf(mainPath, location, pathTableCode, pathTableText, barriers = FALSE, mostRecentObs = TRUE)
+HeRAMS_create_hf_shapefile(mainPath, location, mostRecentBoundaries = TRUE, lonlat = TRUE, rmNA = TRUE, rmOut = TRUE, scenario = NULL)} 
 }

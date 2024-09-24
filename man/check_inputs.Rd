@@ -4,12 +4,12 @@
 \alias{check_inputs}
 \title{Check Inputs}
 \usage{
-check_inputs(mainPath, country, type, onlyPrint = TRUE)
+check_inputs(mainPath, location, type, onlyPrint = TRUE)
 }
 \arguments{
-\item{mainPath}{character; the parent directory of the country folder}
+\item{mainPath}{character; the parent directory of the location folder}
 
-\item{country}{character; the country folder name}
+\item{location}{character; the location folder name}
 
 \item{type}{character; 'raw' or 'processed' depending on whether the required input is
 the raw input or the already processed one.}
@@ -29,9 +29,9 @@ Check whether a raw or processed input exists
 mainPath <- "workDir"
 initiate_project(mainPath)}
 
-# Replace myCountry with the country name you are working on (workDir subfolder)
+# Replace myLocation with the location name you are working on (workDir subfolder)
 \dontrun{
-country <- "myCountry"
-check_inputs(mainPath, country, type = "raw")}
+location <- "myLocation"
+check_inputs(mainPath, location, type = "raw")}
 }
 \keyword{internal}

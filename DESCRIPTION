@@ -1,7 +1,7 @@
 Package: inAccessMod
 Type: Package
 Title: Get and prepare the required inputs for AccessMod
-Version: 1.1
+Version: 2.0
 Authors@R: c(
     person("Pablo", "Timoner", email = "pablo.timoner@unige.ch", role = c("aut", "cre")),
     person("Fleur", "Hierink", email = "fleur.hierink@unige.ch", role = "aut"),
@@ -21,8 +21,8 @@ Imports:
     geodata,
     jsonlite,
     lubridate,
+    osmdata,
     osmextract,
-    purrr,
     raster,
     RCurl,
     readxl,
@@ -35,7 +35,7 @@ Imports:
     tibble,
     utils,
     writexl
-RoxygenNote: 7.2.1
+RoxygenNote: 7.3.2
 Depends: 
     R (>= 4.1.3)
 LazyData: true

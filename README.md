@@ -23,7 +23,7 @@ devtools::install_github("wmgeolab/rgeoboundaries")
 ```
 
 ## Main functions
-* `initiate_project`: Allows starting a new project by choosing the country and retrieving the official ISO alpha-3 code.
+* `initiate_project`: Allows starting a new project by choosing the country (or city) and retrieving the official ISO alpha-3 code.
 * `download_boundaries`: Downloads the required administrative boundaries from the geoBoundaries database.
 * `set_projection`: Sets the projected coordinate reference system (CRS) for the project to ensure that all input layers have a consistent projection.
 * `HeRAMS_filter_hf`: Filters the health facility data based on user criteria (only compatible with WHO/HeRAMS data).

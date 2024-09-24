@@ -6,7 +6,7 @@
 \usage{
 process_inputs(
   mainPath,
-  country,
+  location,
   selectedInputs = NULL,
   mostRecent = FALSE,
   alwaysProcess = FALSE,
@@ -15,13 +15,14 @@ process_inputs(
   newRes = NULL,
   popCorrection = NULL,
   gridRes = NULL,
+  allowInteractivity = TRUE,
   testMode = FALSE
 )
 }
 \arguments{
-\item{mainPath}{character; the parent directory of the country folder}
+\item{mainPath}{character; the parent directory of the location folder}
 
-\item{country}{character; the country folder name}
+\item{location}{character; the location folder name}
 
 \item{selectedInputs}{character; vector indicating the inputs to be processed. Raw inputs must be available. Argument
 can be set to "All" to consider all the available 'raw' inputs. If NULL, the user is interactively asked to select the available
@@ -51,6 +52,8 @@ whether they want to run it or not.}
 \item{gridRes}{numeric; the resolution (meters) of the grid shapefile used for correcting the raster. Ignored if \code{popCorrection} is FALSE.
 If NULL and \code{popCorrection} is TRUE, the user is interactively asked to provide the grid resolution.}
 
+\item{allowInteractivity}{logical; if TRUE, the user can choose a label for each processed layer; if FALSE, label default is used ('pr')}
+
 \item{testMode}{logical; used for testing. If TRUE labels of processed inputs are not interactively asked.}
 }
 \description{
@@ -67,16 +70,16 @@ layers is performed even if they are not selected and if 'processed' layers are 
 mainPath <- "workDir"
 initiate_project(mainPath)}
 
-# Replace myCountry with the country name you are working on (workDir subfolder)
+# Replace myLocation with the location name you are working on (workDir subfolder)
 \dontrun{
-country <- "myCountry"
-download_boundaries(mainPath, country, adminLevel = 1, type = "gbOpen", alwaysDownload = TRUE)
-set_projection(mainPath, country, mostRecent = TRUE, alwaysSet = TRUE, bestCRS = TRUE)
-download_landcover(mainPath, country, alwaysDownload = TRUE, mostRecent = TRUE)
-download_population(mainPath, country, alwaysDownload = TRUE)
-download_dem(mainPath, country, alwaysDownload = TRUE, mostRecent = TRUE)
-download_osm(x = "roads", mainPath, country, alwaysDownload = TRUE, countryName = TRUE, mostRecent = NULL, defaultClasses = TRUE)
-download_osm(x = "waterLines", mainPath, country, alwaysDownload = TRUE, countryName = TRUE, mostRecent = NULL, defaultClasses = TRUE)
-download_osm(x = "naturalPolygons", mainPath, country, alwaysDownload = TRUE, countryName = TRUE, mostRecent = NULL, defaultClasses = TRUE)
-process_inputs(mainPath, country, selectedInputs = "All", mostRecent = TRUE, alwaysProcess = TRUE, defaultMethods = TRUE, changeRes = TRUE, newRes = 100, popCorrection = TRUE, gridRes = 3000)}
+location <- "myLocation"
+download_boundaries(mainPath, location, adminLevel = 1, type = "gbOpen", alwaysDownload = TRUE)
+set_projection(mainPath, location, mostRecent = TRUE, alwaysSet = TRUE, bestCRS = TRUE)
+download_landcover(mainPath, location, alwaysDownload = TRUE, mostRecent = TRUE)
+download_population(mainPath, location, alwaysDownload = TRUE)
+download_dem(mainPath, location, alwaysDownload = TRUE, mostRecent = TRUE)
+download_osm(mainPath, location, type = "roads", alwaysDownload = TRUE, mostRecent = NULL, defaultClasses = TRUE)
+download_osm(mainPath, location, type = "waterLines", alwaysDownload = TRUE, mostRecent = NULL, defaultClasses = TRUE)
+download_osm(mainPath, location, type = "waterPolygons", alwaysDownload = TRUE, mostRecent = NULL, defaultClasses = TRUE)
+process_inputs(mainPath, location, selectedInputs = "All", mostRecent = TRUE, alwaysProcess = TRUE, defaultMethods = TRUE, changeRes = FALSE, popCorrection = TRUE, gridRes = 3000)}
 }

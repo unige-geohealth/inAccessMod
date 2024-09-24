@@ -6,19 +6,23 @@
 \usage{
 download_population(
   mainPath,
-  country,
+  location,
   alwaysDownload = FALSE,
+  allowInteractivity = TRUE,
   testMode = FALSE
 )
 }
 \arguments{
-\item{mainPath}{character; the parent directory of the country folder}
+\item{mainPath}{character; the parent directory of the location folder}
 
-\item{country}{character; the country folder name}
+\item{location}{character; the location folder name}
 
 \item{alwaysDownload}{logical; should the raster always be downloaded, even if it has already been 
 downloaded? If FALSE and if the raster has already been downloaded the user is 
 interactively asked whether they want to download it again or not.}
+
+\item{allowInteractivity}{logical; whether to enable interactivity. \code{TRUE} by default. When is FALSE, alwaysDownload is automatically set to TRUE.
+When FALSE, UNAdj constrained population raster is downloaded, and when available, maxar_v1 images are prioritized over BSGM images.}
 
 \item{testMode}{logical; to be ignored. Only used when testing the function with testthat.}
 }
@@ -28,7 +32,7 @@ Download a population raster from the World Pop FTP and copy it to its correspon
 \details{
 The function accesses the World Pop FTP and uses an internal function (\code{navigate_ftp}) in order to interactively navigate 
 through the folders and select the population raster to be downloaded. The ISO code retrieved internally by the \code{get_param} function 
-is used to match the country FTP folder when available.
+is used to match the country FTP folder when available. When allowInteractivity = FALSE, predefined parameters are set (see parameter details.)
 }
 \examples{
 # Replace workDir with the actual path to your working directory
@@ -36,8 +40,8 @@ is used to match the country FTP folder when available.
 mainPath <- "workDir"
 initiate_project(mainPath)}
 
-# Replace myCountry with the country name you are working on (workDir subfolder)
+# Replace myLocation with the location name you are working on (workDir subfolder)
 \dontrun{
-country <- "myCountry"
-download_population(mainPath, country, alwaysDownload = TRUE)}
+location <- "myLocation"
+download_population(mainPath, location, alwaysDownload = TRUE)}
 }

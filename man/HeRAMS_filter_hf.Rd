@@ -6,15 +6,15 @@
 \usage{
 HeRAMS_filter_hf(
   mainPath,
-  country,
+  location,
   pathTableCode = NULL,
   pathTableText = NULL,
   scenario = NULL,
   mostRecentObs = NULL,
   defaultParameters = TRUE,
   region = FALSE,
-  type = TRUE,
-  ownership = FALSE,
+  type = FALSE,
+  ownership = TRUE,
   status = TRUE,
   building = FALSE,
   equipment = FALSE,
@@ -28,9 +28,9 @@ HeRAMS_filter_hf(
 )
 }
 \arguments{
-\item{mainPath}{character; the parent directory of the country folder}
+\item{mainPath}{character; the parent directory of the location folder}
 
-\item{country}{character; the country folder name}
+\item{location}{character; the location folder name}
 
 \item{pathTableCode}{character; path to the HeRAMS CSV table with text for responses ("Available")}
 
@@ -83,12 +83,12 @@ depending on the original Excel document modification time, and the selection of
 mainPath <- "workDir"
 initiate_project(mainPath)}
 
-# Replace myCountry with the country name you are working on (workDir subfolder)
+# Replace myLocation with the location name you are working on (workDir subfolder)
 # Replace myHeRAMScodeTable with the path of the HeRAMS table that contains codes; set to NULL to use example data
 # Replace myHeRAMStextTable with the path of the HeRAMS table that contains text; set to NULL to use example data
 \dontrun{
-country <- "myCountry"
+location <- "myLocation"
 pathTableCode <- "myHeRAMScodeTable"
 pathTableText <- "myHeRAMStextTable"
-HeRAMS_filter_hf(mainPath, country, pathTableCode, pathTableText, barriers = FALSE, mostRecentObs = TRUE)} 
+HeRAMS_filter_hf(mainPath, location, pathTableCode, pathTableText, barriers = FALSE, mostRecentObs = TRUE)} 
 }

@@ -2,48 +2,48 @@
 #'
 #' Create a point shapefile of health facilities based on a pre-processed HeRAMS health facility table obtained with the
 #' \code{HeRAMS_filter_hf} function.
-#' @param mainPath character; the parent directory of the country folder
-#' @param country character; the country folder name
+#' @param mainPath character; the parent directory of the location folder
+#' @param location character; the location folder name
 #' @param mostRecentBoundaries logical; should the most recent processed boundary shapefile be used? If FALSE and if there are multiple
 #' available inputs, the user is interactively asked to select the input based on file creation time.
 #' @param lonlat logical; are the coordinates indicated in the health facility table given in lon/lat?
 #' @param epsg numeric or character (coerced to character); ESPG code - Coordinate systems worldwide (EPSG/ESRI)
 #' @param rmNA logical; should the health facilities with non-available coordinates be removed? If NULL or FALSE the user is interactively
 #' asked whether they want to remove them or not.
-#' @param rmOut logical; should the health facilities falling outside of the country be removed? If NULL or FALSE the user is 
+#' @param rmOut logical; should the health facilities falling outside of the location area be removed? If NULL or FALSE the user is 
 #' interactively asked whether they want to remove them or not.
 #' @param scenario character; a string of three characters that correspond to the scenario folder suffix like '001', '002'...'010'...'099'...'100'
 #' If NULL, the user is interactively asked to choose the scenario from the available ones.
 #' @param nameCSV character; name of csv file WITHOUT extension corresponding to filtered facilities. If null, it will take the default name used in 
 #' the HeRAMS_filter_hf function (health_facilities.csv). 
 #' @details Once the missing coordinate issue is addressed, the function checks whether the health facilities fall within the
-#' country boundary. There is a track record of both the facilities with missing coordinates and the ones that fall
-#' outside the country boundary.
+#' location boundary. There is a track record of both the facilities with missing coordinates and the ones that fall
+#' outside the location boundary.
 #' @examples
 #' # Replace workDir with the actual path to your working directory
 #' \dontrun{
 #' mainPath <- "workDir"
 #' initiate_project(mainPath)}
 #' 
-#' # Replace myCountry with the country name you are working on (workDir subfolder)
+#' # Replace myLocation with the location name you are working on (workDir subfolder)
 #' \dontrun{
-#' country <- "myCountry"
-#' download_boundaries(mainPath, country, adminLevel = 1, type = "gbOpen", alwaysDownload = TRUE)}
+#' location <- "myLocation"
+#' download_boundaries(mainPath, location, adminLevel = 1, type = "gbOpen", alwaysDownload = TRUE)}
 #' 
 #' # Replace myHeRAMScodeTable with the path of the HeRAMS table that contains codes; set to NULL to use example data
 #' # Replace myHeRAMStextTable with the path of the HeRAMS table that contains text; set to NULL to use example data
 #' \dontrun{
 #' pathTableCode <- "myHeRAMScodeTable"
 #' pathTableText <- "myHeRAMStextTable"
-#' HeRAMS_filter_hf(mainPath, country, pathTableCode, pathTableText, barriers = FALSE, mostRecentObs = TRUE)
-#' HeRAMS_create_hf_shapefile(mainPath, country, mostRecentBoundaries = TRUE, lonlat = TRUE, rmNA = TRUE, rmOut = TRUE, scenario = NULL)} 
+#' HeRAMS_filter_hf(mainPath, location, pathTableCode, pathTableText, barriers = FALSE, mostRecentObs = TRUE)
+#' HeRAMS_create_hf_shapefile(mainPath, location, mostRecentBoundaries = TRUE, lonlat = TRUE, rmNA = TRUE, rmOut = TRUE, scenario = NULL)} 
 #' @export
-HeRAMS_create_hf_shapefile <- function (mainPath, country, mostRecentBoundaries = TRUE, lonlat = TRUE, epsg = NULL, rmNA = NULL, rmOut = NULL, scenario = NULL, nameCSV = NULL) {
+HeRAMS_create_hf_shapefile <- function (mainPath, location, mostRecentBoundaries = TRUE, lonlat = TRUE, epsg = NULL, rmNA = NULL, rmOut = NULL, scenario = NULL, nameCSV = NULL) {
   if (!is.character(mainPath)) {
     stop("mainPath must be 'character'")
   }
-  if (!is.character(country)) {
-    stop("country must be 'character'")
+  if (!is.character(location)) {
+    stop("location must be 'character'")
   }
   if (!is.logical(lonlat)) {
     stop("lonlat must be 'logical'")
@@ -78,7 +78,7 @@ HeRAMS_create_hf_shapefile <- function (mainPath, country, mostRecentBoundaries 
   } else {
     rmOut <- FALSE
   }
-  pathFacilities <- file.path(mainPath, country, "data", "vFacilities")
+  pathFacilities <- file.path(mainPath, location, "data", "vFacilities")
   if (!dir.exists(pathFacilities)) {
     stop(paste(pathFacilities, " does not exist. Run the initiate_project function."))
   }
@@ -97,8 +97,8 @@ HeRAMS_create_hf_shapefile <- function (mainPath, country, mostRecentBoundaries 
     nameCSV <- "health_facilities"
   }
   
-  logTxt <- file.path(mainPath, country, "data", "log.txt")
-  border <- get_boundaries(mainPath = mainPath, country = country, type = "raw", mostRecentBoundaries)
+  logTxt <- file.path(mainPath, location, "data", "log.txt")
+  border <- get_boundaries(mainPath = mainPath, location = location, type = "raw", mostRecentBoundaries)
   scenarioDirs <- list.dirs(pathFacilities, recursive = FALSE)
   scenarioDirs <- scenarioDirs[grepl("scenario", scenarioDirs)]
   if (is.null(scenario)) {
@@ -165,7 +165,7 @@ HeRAMS_create_hf_shapefile <- function (mainPath, country, mostRecentBoundaries 
   pts <- cbind(sf::st_as_sf(xy[complete.cases(xy), ], coords = c(1,2), crs = epsg), df)
   border <- sf::st_union(sf::st_transform(border, crs = sf::st_crs(pts)))
   # Tolerance
-  border <- sf::st_buffer(border, dist = 0.2)
+  # border <- sf::st_buffer(border, dist = 0.2)
   # Intersection
   inter <- suppressWarnings(sf::st_intersects(border, pts, sparse = FALSE))[1, ]
   interOutside <- FALSE
@@ -245,7 +245,7 @@ HeRAMS_create_hf_shapefile <- function (mainPath, country, mostRecentBoundaries 
   for (i in 1:length(filesToCopy)) {
     fi <- basename(filesToCopy[i])
     fi <- paste0(nameCSV, ".", gsub("^.*\\.", "", fi))
-    file.copy(filesToCopy[i], file.path(hfFolder, fi))
+    file.copy(filesToCopy[i], file.path(hfFolder, fi), overwrite = TRUE)
   }
   inputFolder <- stringr::str_extract(hfFolder, "scenario[0-9]{3}/[0-9]{14}")
   write(paste0(Sys.time(), ": Health facility shapefile created - Input folder: ", inputFolder), fi = logTxt, append = TRUE)

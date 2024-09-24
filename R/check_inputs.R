@@ -1,8 +1,8 @@
 #' Check Inputs
 #'
 #' Check whether a raw or processed input exists
-#' @param mainPath character; the parent directory of the country folder
-#' @param country character; the country folder name
+#' @param mainPath character; the parent directory of the location folder
+#' @param location character; the location folder name
 #' @param type character; 'raw' or 'processed' depending on whether the required input is
 #' the raw input or the already processed one.
 #' @param onlyPrint logical; should the function just print which inputs are available and which are not available. Internally
@@ -14,21 +14,21 @@
 #' mainPath <- "workDir"
 #' initiate_project(mainPath)}
 #' 
-#' # Replace myCountry with the country name you are working on (workDir subfolder)
+#' # Replace myLocation with the location name you are working on (workDir subfolder)
 #' \dontrun{
-#' country <- "myCountry"
-#' check_inputs(mainPath, country, type = "raw")}
+#' location <- "myLocation"
+#' check_inputs(mainPath, location, type = "raw")}
 #' @keywords internal
 #' @export
-check_inputs <- function (mainPath, country, type, onlyPrint = TRUE) {
+check_inputs <- function (mainPath, location, type, onlyPrint = TRUE) {
   if (!is.character(mainPath)) {
     stop("mainPath must be 'character'")
   }
-  if (!is.character(country)) {
-    stop("country must be 'character'")
+  if (!is.character(location)) {
+    stop("location must be 'character'")
   }
-  if (!dir.exists(paste(mainPath, country, sep = "/"))) {
-    stop(paste(paste(mainPath, country, sep = "/"), "does not exsit. Run the initiate_project first or check the path."))
+  if (!dir.exists(paste(mainPath, location, sep = "/"))) {
+    stop(paste(paste(mainPath, location, sep = "/"), "does not exsit. Run the initiate_project first or check the path."))
   }
   if (!type %in% c("raw","processed")) {
     stop("type must be 'raw' or 'processed'")
@@ -36,11 +36,11 @@ check_inputs <- function (mainPath, country, type, onlyPrint = TRUE) {
   if (!is.logical(onlyPrint)) {
     stop("print must be 'logical'")
   }
-  fileLst <- list.files(paste0(mainPath, "/", country, "/data"), recursive = TRUE)
+  fileLst <- list.files(paste0(mainPath, "/", location, "/data"), recursive = TRUE)
   fileLst <- fileLst[!grepl("zToAccessMod", fileLst)]
   fileAv <- fileLst[grepl(paste0(type, "/.*(\\.tif|\\.shp|\\.img)"), fileLst)]
   folderAv <- unique(gsub("/[0-9].*$", "", fileAv))
-  folderLst <- list.dirs(paste0(mainPath, "/", country, "/data"), recursive = TRUE)[-1]
+  folderLst <- list.dirs(paste0(mainPath, "/", location, "/data"), recursive = TRUE)[-1]
   folderLst <- folderLst[!grepl("zToAccessMod", folderLst)]
   folderLst <- unique(gsub("/[0-9].*$", "", folderLst))
   folderLst <- gsub("^.*/data/", "", folderLst)

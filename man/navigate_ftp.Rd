@@ -4,7 +4,7 @@
 \alias{navigate_ftp}
 \title{Navigate Wolrd Pop FTP}
 \usage{
-navigate_ftp(folderLst, iso, pathFTP, pathFTP0, testMode)
+navigate_ftp(folderLst, iso, pathFTP, pathFTP0, allowInteractivity, testMode)
 }
 \arguments{
 \item{folderLst}{character vector; folder names within the main World Pop FTP directory}

@@ -8,7 +8,7 @@ inAccessMod is a R package that allows the user to easily download and prepare a
 
 ## Installation
 
-This package requires R version 4.1.3 or later. It also requires the following packages: `crsuggest`, `data.table`, `dplyr`, `exactextractr`, `fasterize`, `fs`, `geodata`, `jsonlite`, `lubridate`, `osmextract`, `purrr`, `raster`, `RCurl`, `readxl`, `rgeoboundaries` (version 0.0.0.9000 or later), `rmarkdown`, `sf`, `stringi`, `stringr`, `testthat`, `tibble`, `utils`, and `writexl`. These dependencies should be installed automatically when `dependencies = TRUE` is set in the command used to install the package.
+This package requires R version 4.1.3 or later. It also requires the following packages: `crsuggest`, `data.table`, `dplyr`, `exactextractr`, `fasterize`, `fs`, `geodata`, `jsonlite`, `lubridate`, `osmdata`, `osmextract`, `purrr`, `raster`, `RCurl`, `readxl`, `rgeoboundaries` (version 0.0.0.9000 or later), `rmarkdown`, `sf`, `stringi`, `stringr`, `testthat`, `tibble`, `utils`, and `writexl`. These dependencies should be installed automatically when `dependencies = TRUE` is set in the command used to install the package.
 
     if (!require("devtools")) install.packages("devtools")
     devtools::install_github("unige-geohealth/inAccessMod", build_vignettes = TRUE, dependencies = TRUE)
@@ -24,7 +24,7 @@ functions directly available. Remember that you must have a working internet con
 
 ### Initiate Project
 
-With the `initiate_project` function, we can select the country and
+With the `initiate_project` function, we can select a country (or a city) and
 automatically, the ISO 3166-1 alpha-3 country code is stored in a
 config.txt file and the directory main structure for the project is
 created. This function also creates a log.txt file that will record and
@@ -85,8 +85,8 @@ name of the country folder, the boundary administrative level, the data
 source, and a logical parameter (TRUE/FALSE) that indicates if the layer
 should always be downloaded, even if it has already been downloaded.
 Data source parameter (type) can be ‘gbOpen’ for geoBoundaries data,
-‘gbHumanitarian’ for UN OCHA CODs data, or ‘gbAuthoritative’ for UN SALB
-data (default). The ISO code used to download the shapefile is retrieved
+‘gbHumanitarian’ (default) for UN OCHA CODs data, or ‘gbAuthoritative’ for UN SALB
+data. The ISO code used to download the shapefile is retrieved
 by the internal function. Another internal function will query the
 geoBoundaries database (geoboundaries\_query) to check availability and
 retrieve a json file that contains the download link.
@@ -370,27 +370,22 @@ shapefile should be selected to define the required landcover tiles ?
 #### Open Street Maps
 
 This function allows us to download the Open Street Map shapefiles
-corresponding to ‘roads’, ‘rivers’ or any other natural feature and copy
-them to their corresponding folders. The parameter *x* represents the
-target layer. Can be ‘roads’, ‘waterLines’ or ‘naturalPolygons’. The
-logical parameter countryName indicates if the country name should be
-used to match with the osm.pbf file in the OSM server ? If FALSE, it is
+corresponding to ‘roads’, ‘rivers’ or 'lakes' and copy
+them to their corresponding folders. The parameter *type* represents the
+target layer. Can be ‘roads’, ‘waterLines’ or ‘waterPolygons’. It is
 the extent of the boundary shapefile that is matched with the osm.pbf
-file in the Geofabrik’s free download server. Matching by name is
-usually much faster and *countryName* should be always set TRUE, unless
-the country name is complex and not recognized by the server. The
-*mostRecent* parameter is ignored if *countryName* is TRUE. If x =
+file in the Geofabrik’s free download server. If type =
 “roads” and defaultClasses is TRUE, only the official OSM road classes
-are kept. For waterLines and naturalPolygons, default classes are river
+are kept. For waterLines and waterPolygons, default classes are river
 and water, respectively. If defaultClasses is FALSE, we can select the
 available classes we would like to keep. Let’s download the OSM data
 setting the defaulClasses parameter to TRUE. The process can take time,
 as the data for the entire country is downloaded even though we are
 focusing on two single regions.
 
-    download_osm(x = "roads", mainPath, country, alwaysDownload = TRUE, countryName = TRUE, mostRecent = NULL, defaultClasses = TRUE)
+    download_osm(mainPath, country, "roads", alwaysDownload = TRUE, mostRecent = TRUE, defaultClasses = TRUE)
 
-    download_osm("waterLines", mainPath, country, alwaysDownload = TRUE, countryName = TRUE, mostRecent = NULL, defaultClasses = TRUE)
+    download_osm(mainPath, country, "waterLines", alwaysDownload = TRUE, mostRecent = TRUE, defaultClasses = TRUE)
 
 At any time, we can check which inputs (either ‘raw’ or ‘processed’) are
 available and which are not available.
@@ -401,7 +396,7 @@ available and which are not available.
 
 Let’s download the lakes from OSM before processing the inputs.
 
-    download_osm("naturalPolygons", mainPath, country, alwaysDownload = TRUE, countryName = TRUE, mostRecent = NULL, defaultClasses = TRUE)
+    download_osm(mainPath, country, "waterPolygons", alwaysDownload = TRUE, mostRecent = TRUE, defaultClasses = TRUE)
 
 ### Process layers
 
@@ -449,9 +444,7 @@ are the specific parameters:
     and popCorrection is TRUE, the user is interactively asked to
     provide the grid resolution.
 
-```{r}
     process_inputs(mainPath, country, selectedInputs = "All", mostRecent = TRUE, alwaysProcess = TRUE, defaultMethods = TRUE, changeRes = TRUE, newRes = 100, popCorrection = TRUE, gridRes = 3000)
-```
 
 We are asked to add a label after each input is processed which will be
 append to the processed file name (useful when dealing with multiple

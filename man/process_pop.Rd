@@ -6,7 +6,7 @@
 \usage{
 process_pop(
   mainPath,
-  country,
+  location,
   border,
   epsg,
   mostRecent,
@@ -16,13 +16,14 @@ process_pop(
   popCorrection,
   gridRes,
   alwaysProcess,
+  allowInteractivity,
   testMode
 )
 }
 \arguments{
-\item{mainPath}{character; the parent directory of the country name folder}
+\item{mainPath}{character; the parent directory of the location name folder}
 
-\item{country}{character; the country name}
+\item{location}{character; the location name}
 
 \item{border}{\code{sf} object; a boundary shapefile}
 
@@ -48,6 +49,8 @@ whether they want to run it or not.}
 If NULL and popCorrection is TRUE, the user is interactively asked to provide the grid resolution.}
 
 \item{alwaysProcess}{logical; if TRUE, the user is not asked if they want to process an input already processed.}
+
+\item{allowInteractivity}{logical; if TRUE, the user can choose the label for the processed layer. If FALSE, default label is used ('pr')}
 
 \item{testMode}{logical; used for testing. If TRUE labels of processed population layer is not interactively asked.}
 }

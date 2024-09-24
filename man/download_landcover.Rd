@@ -6,15 +6,15 @@
 \usage{
 download_landcover(
   mainPath,
-  country,
+  location,
   alwaysDownload = FALSE,
   mostRecent = FALSE
 )
 }
 \arguments{
-\item{mainPath}{character; the parent directory of the country folder}
+\item{mainPath}{character; the parent directory of the location folder}
 
-\item{country}{character; the country folder name}
+\item{location}{character; the location folder name}
 
 \item{alwaysDownload}{logical; should the raster always be downloaded, even if it has already been 
 downloaded? If FALSE and if the raster has already been downloaded the user is 
@@ -37,9 +37,9 @@ of the boundary shapefile. If there are multiple tiles, it produces a mosaic.
 mainPath <- "workDir"
 initiate_project(mainPath)}
 
-# Replace myCountry with the country name you are working on (workDir subfolder)
+# Replace myLocation with the location name you are working on (workDir subfolder)
 \dontrun{
-country <- "myCountry"
-download_boundaries(mainPath, country, adminLevel = 1, type = "gbOpen", alwaysDownload = TRUE)
-download_landcover(mainPath, country, alwaysDownload = TRUE, mostRecent = TRUE)}
+location <- "myLocation"
+download_boundaries(mainPath, location, adminLevel = 1, type = "gbOpen", alwaysDownload = TRUE)
+download_landcover(mainPath, location, alwaysDownload = TRUE, mostRecent = TRUE)}
 }

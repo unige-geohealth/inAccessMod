@@ -2,8 +2,8 @@
 #'
 #' Copy a manually downloaded input to the project corresponding directory before being processed. To avoid possible further conflicts, 
 #' the input has to be a "raw" input (i.e. not projected).
-#' @param mainPath character; the parent directory of the country folder
-#' @param country character; the country folder name
+#' @param mainPath character; the parent directory of the location folder
+#' @param location character; the location folder name
 #' @param input character; the absolute path of the raw input. Can be a single path (corresponding to e.g. a health facility table) 
 #' or a vector of different paths (corresponding to e.g. shapefile documents). Can also be the path of a folder. In this case, the function
 #' will copy all the files that are inside this folder.
@@ -13,16 +13,16 @@
 #' mainPath <- "workDir"
 #' initiate_project(mainPath)}
 #' 
-#' # Replace myCountry with the country name you are working on (workDir subfolder)
+#' # Replace myCountry with the location name you are working on (workDir subfolder)
 #' # Replace myInputPath with the actual path to the file to be copied or to the directory
 #' # that contains the files to be copied (e.g., shapfile documents)
 #' \dontrun{
-#' country <- "myCountry"
+#' location <- "myLocation"
 #' inputPath <- "myInputPath"
-#' copy_input(mainPath, country, inputPath)}
+#' copy_input(mainPath, location, inputPath)}
 #' @details The user is interactively asked to select the 'input' folder destination.
 #' @export
-copy_input <- function (mainPath, country, input) {
+copy_input <- function (mainPath, location, input) {
   if (length(input) == 1) {
     if (!is.character(input)) {
       stop("input must be 'character'")
@@ -53,11 +53,11 @@ copy_input <- function (mainPath, country, input) {
   if (!is.character(mainPath)) {
     stop("mainPath must be 'character'")
   }
-  if (!is.character(country)) {
-    stop("country must be 'character'")
+  if (!is.character(location)) {
+    stop("location must be 'character'")
   }
-  path <- paste0(mainPath, "/", country, "/data")
-  if (!dir.exists(paste0(mainPath, "/", country, "/data"))) {
+  path <- paste0(mainPath, "/", location, "/data")
+  if (!dir.exists(paste0(mainPath, "/", location, "/data"))) {
     stop(paste(path, "does not exist. Run the initiate_project function first or check the input parameters."))
   }
   folders <- gsub("^.*/data/", "", list.dirs(path, recursive = FALSE))

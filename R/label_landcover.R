@@ -1,8 +1,8 @@
 #' Label landcover layer
 #' 
 #' Creates a CSV table with landcover codes and labels that can be imported into AccessMod. Requires processed landcover.
-#' @param mainPath character; the parent directory of the country folder
-#' @param country character; the country folder name
+#' @param mainPath character; the parent directory of the location folder
+#' @param location character; the location folder name
 #' @param mostRecent logical; should the most recent processed landcover raster be selected? If FALSE and if there are multiple
 #' available inputs, the user is interactively asked to select the input based on file creation time.
 #' @param overwrite logical; in case it exists, should the output be overwritten?
@@ -15,28 +15,28 @@
 #' mainPath <- "workDir"
 #' initiate_project(mainPath)}
 #' 
-#' # Replace myCountry with the country name you are working on (workDir subfolder)
+#' # Replace myLocation with the location name you are working on (workDir subfolder)
 #' \dontrun{
-#' country <- "myCountry"
-#' download_boundaries(mainPath, country, adminLevel = 1, type = "gbOpen", alwaysDownload = TRUE)
-#' set_projection(mainPath, country, mostRecent = TRUE, alwaysSet = TRUE, bestCRS = TRUE) #required for processing the landcover
-#' download_landcover(mainPath, country, alwaysDownload = TRUE, mostRecent = TRUE)
-#' download_population(mainPath, country, alwaysDownload = TRUE) #required for processing the landcover
-#' process_inputs(mainPath, country, "rLandcover", defaultMethods = TRUE, changeRes = FALSE, popCorrection = FALSE)
-#' label_landcover(mainPath, country, mostRecent = TRUE, overwrite = TRUE, defaultLabels = TRUE)}
+#' location <- "myLocation"
+#' download_boundaries(mainPath, location, adminLevel = 1, type = "gbOpen", alwaysDownload = TRUE)
+#' set_projection(mainPath, location, mostRecent = TRUE, alwaysSet = TRUE, bestCRS = TRUE) #required for processing the landcover
+#' download_landcover(mainPath, location, alwaysDownload = TRUE, mostRecent = TRUE)
+#' download_population(mainPath, location, alwaysDownload = TRUE) # required for processing the landcover
+#' process_inputs(mainPath, location, "rLandcover", defaultMethods = TRUE, changeRes = FALSE, popCorrection = FALSE)
+#' label_landcover(mainPath, location, mostRecent = TRUE, overwrite = TRUE, defaultLabels = TRUE)}
 #' @export
-label_landcover <- function(mainPath, country, mostRecent, overwrite = FALSE, defaultLabels = TRUE) {
+label_landcover <- function(mainPath, location, mostRecent, overwrite = FALSE, defaultLabels = TRUE) {
   if (!is.character(mainPath)) {
     stop("mainPath must be 'character'")
   }
-  if (!is.character(country)) {
-    stop("country must be 'character'")
+  if (!is.character(location)) {
+    stop("location must be 'character'")
   }
   if (!is.logical(mostRecent)){
     stop("mostRecent must be 'logical'")
   }
   # Check directory
-  pathLandcover <- file.path(mainPath, country, "data", "rLandcover")
+  pathLandcover <- file.path(mainPath, location, "data", "rLandcover")
   folders <- check_exists(pathLandcover, "processed", layer = TRUE)
   if (is.null(folders)) {
     stop("\nProcessed land cover raster is missing!")

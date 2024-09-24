@@ -6,17 +6,18 @@
 \usage{
 set_projection(
   mainPath,
-  country,
+  location,
   mostRecent = FALSE,
   alwaysSet = FALSE,
   bestCRS = FALSE,
+  allowInteractivity = TRUE,
   testMode = FALSE
 )
 }
 \arguments{
-\item{mainPath}{character; the parent directory of the country folder}
+\item{mainPath}{character; the parent directory of the location folder}
 
-\item{country}{character; the country folder name}
+\item{location}{character; the location folder name}
 
 \item{mostRecent}{logical; should the most recent downloaded boundary shapefile be selected? If FALSE and if there 
 are multiple available inputs, the user is interactively asked to select the input based on download time.}
@@ -28,6 +29,9 @@ interactively asked whether they want to set it again or not.}
 \item{bestCRS}{logical; should the projected coordinate reference system be set automatically based on the "best-fit" 
 projected coordinate reference system? If FALSE, the user is interactively asked to select the projected coordinate reference 
 system from a list of suitable reference systems.}
+
+\item{allowInteractivity}{logical; if TRUE, the user can choose a label for the processed boundary shapefile that is created when
+setting up the projection of the project. If FALSE, the default label is used ('pr').}
 
 \item{testMode}{logical; used for testing. If TRUE labels of processed inputs are not interactively asked.}
 }
@@ -46,9 +50,9 @@ in the EPSG's coordinate reference system database.
 mainPath <- "workDir"
 initiate_project(mainPath)}
 
-# Replace myCountry with the country name you are working on (workDir subfolder)
+# Replace myLocation with the location name you are working on (workDir subfolder)
 \dontrun{
-country <- "myCountry"
-download_boundaries(mainPath, country, adminLevel = 1, type = "gbOpen", alwaysDownload = TRUE)
-set_projection(mainPath, country, mostRecent = TRUE, alwaysSet = TRUE, bestCRS = TRUE)}
+location <- "myLocation"
+download_boundaries(mainPath, location, adminLevel = 1, type = "gbOpen", alwaysDownload = TRUE)
+set_projection(mainPath, location, mostRecent = TRUE, alwaysSet = TRUE, bestCRS = TRUE)}
 }

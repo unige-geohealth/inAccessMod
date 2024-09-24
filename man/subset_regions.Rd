@@ -4,12 +4,12 @@
 \alias{subset_regions}
 \title{Subset Regions}
 \usage{
-subset_regions(mainPath, country, mostRecent = FALSE)
+subset_regions(mainPath, location, mostRecent = FALSE)
 }
 \arguments{
-\item{mainPath}{character; the parent directory of the country folder}
+\item{mainPath}{character; the parent directory of the location folder}
 
-\item{country}{character; the country folder name}
+\item{location}{character; the location folder name}
 
 \item{mostRecent}{logical; should the most recent boundary shapefile be selected? If FALSE and if there are multiple
 available inputs, the user is interactively asked to select the input based on file creation time.}
@@ -23,9 +23,9 @@ Function that allows to clip specific country regions from the 'raw' boundary sh
 mainPath <- "workDir"
 initiate_project(mainPath)}
 
-# Replace myCountry with the country name you are working on (workDir subfolder)
+# Replace myLocation with the location name you are working on (workDir subfolder)
 \dontrun{
-country <- "myCountry"
-download_boundaries(mainPath, country, adminLevel = 1, type = "gbOpen", alwaysDownload = TRUE)
-subset_regions(mainPath, country, mostRecent = TRUE)}
+location <- "myLocation"
+download_boundaries(mainPath, location, adminLevel = 1, type = "gbOpen", alwaysDownload = TRUE)
+subset_regions(mainPath, location, mostRecent = TRUE)}
 }

@@ -1,8 +1,8 @@
 #' Download Administrative Boundaries
 #'
 #' Download the administraive boundary shapefile from \emph{geoboundaries} and copy it to its corresponding folder.
-#' @param mainPath character; the parent directory of the country folder
-#' @param country character; the country folder name
+#' @param mainPath character; the parent directory of the location folder
+#' @param location character; the location folder name
 #' @param adminLevel integer; administrative level of the boundaries. From 0 to 3.
 #' @param type character; data type. Can be 'gbOpen' for geoBoundaries data, 'gbHumanitarian' for UN OCHA CODs data, or
 #' 'gbAuthoritative' for UN SALB data (default).
@@ -19,17 +19,17 @@
 #' mainPath <- "workDir"
 #' initiate_project(mainPath)}
 #' 
-#' # Replace myCountry with the country name you are working on (workDir subfolder)
+#' # Replace myLocation with the location name you are working on (workDir subfolder)
 #' \dontrun{
-#' country <- "myCountry"
-#' download_boundaries(mainPath, country, adminLevel = 1, type = "gbOpen", alwaysDownload = TRUE)}
+#' location <- "myLocation"
+#' download_boundaries(mainPath, location, adminLevel = 1, type = "gbOpen", alwaysDownload = TRUE)}
 #' @export
-download_boundaries <- function (mainPath, country, adminLevel, type = "gbAuthoritative", alwaysDownload = FALSE) {
+download_boundaries <- function (mainPath, location, adminLevel, type = "gbAuthoritative", alwaysDownload = FALSE) {
   if (!is.character(mainPath)) {
     stop("mainPath must be 'character'")
   }
-  if (!is.character(country)) {
-    stop("country must be 'character'")
+  if (!is.character(location)) {
+    stop("location must be 'character'")
   }
   if (!adminLevel %in% c(0,1,2,3)) {
     stop("Administrative level must be an integer from 0 to 3")
@@ -45,15 +45,19 @@ download_boundaries <- function (mainPath, country, adminLevel, type = "gbAuthor
     stop("alwaysDownload must be 'logical'")
   }
   # Check directory
-  pathBorder <- file.path(mainPath, country, "data", "vBorders")
+  pathBorder <- file.path(mainPath, location, "data", "vBorders")
   folders <- check_exists(pathBorder, "raw")
   if (!is.null(folders)) {
     if (!alwaysDownload) {
       check_downloaded(folders)
     }
   }
+  city <- get_param(mainPath, location, "CITY")
+  if (length(city) > 0) {
+    message("A shapefile of the city has already been uploaded in the project; now you are downloading the full country shapefile.")
+  }
   # Get country code
-  iso <- get_param(mainPath, country, "ISO")
+  iso <- get_param(mainPath, location, "ISO")
   # # Download the data
   jsonData <- geoboundaries_query(iso, adminLevel, type, validTypes)
   tmpFolder <- tempfile()
@@ -74,7 +78,7 @@ download_boundaries <- function (mainPath, country, adminLevel, type = "gbAuthor
     file.copy(from = file.path(tmpFolder, fi), to = file.path(pathBorder, fi))
   }
   shpFile <- list.files(pathBorder, full.names = TRUE, pattern = "\\.shp")
-  logTxt <- file.path(mainPath, country, "data", "log.txt")
+  logTxt <- file.path(mainPath, location, "data", "log.txt")
   write(paste0(Sys.time(), ": Boundaries downloaded from geoboundaries (ADMIN-", adminLevel, "; ", type, ") - Input folder ", timeFolder), file = logTxt, append = TRUE)
   cat(paste0("Done: ", shpFile, "\n"))
   return(TRUE)

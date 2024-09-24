@@ -6,16 +6,16 @@
 \usage{
 label_landcover(
   mainPath,
-  country,
+  location,
   mostRecent,
   overwrite = FALSE,
   defaultLabels = TRUE
 )
 }
 \arguments{
-\item{mainPath}{character; the parent directory of the country folder}
+\item{mainPath}{character; the parent directory of the location folder}
 
-\item{country}{character; the country folder name}
+\item{location}{character; the location folder name}
 
 \item{mostRecent}{logical; should the most recent processed landcover raster be selected? If FALSE and if there are multiple
 available inputs, the user is interactively asked to select the input based on file creation time.}
@@ -37,13 +37,13 @@ The function writes a CSV table with two columns (classes and labels) into the s
 mainPath <- "workDir"
 initiate_project(mainPath)}
 
-# Replace myCountry with the country name you are working on (workDir subfolder)
+# Replace myLocation with the location name you are working on (workDir subfolder)
 \dontrun{
-country <- "myCountry"
-download_boundaries(mainPath, country, adminLevel = 1, type = "gbOpen", alwaysDownload = TRUE)
-set_projection(mainPath, country) #required for processing the landcover
-download_landcover(mainPath, country, alwaysDownload = TRUE, mostRecent = TRUE)
-download_population(mainPath, country, alwaysDownload = TRUE, mostRecent = TRUE) #required for processing the landcover
-process_inputs(mainPath, country, "rLandcover", defaultMethods = TRUE, changeRes = FALSE, popCorrection = FALSE)
-label_landcover(mainPath, country, mostRecent = TRUE, overwrite = TRUE, defaultLabels = TRUE)}
+location <- "myLocation"
+download_boundaries(mainPath, location, adminLevel = 1, type = "gbOpen", alwaysDownload = TRUE)
+set_projection(mainPath, location, mostRecent = TRUE, alwaysSet = TRUE, bestCRS = TRUE) #required for processing the landcover
+download_landcover(mainPath, location, alwaysDownload = TRUE, mostRecent = TRUE)
+download_population(mainPath, location, alwaysDownload = TRUE) # required for processing the landcover
+process_inputs(mainPath, location, "rLandcover", defaultMethods = TRUE, changeRes = FALSE, popCorrection = FALSE)
+label_landcover(mainPath, location, mostRecent = TRUE, overwrite = TRUE, defaultLabels = TRUE)}
 }

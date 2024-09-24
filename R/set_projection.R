@@ -1,8 +1,8 @@
 #' Set Projection
 #'
 #' Set the projected coordinate reference system of the project based on the extent of the boundary shapefile.
-#' @param mainPath character; the parent directory of the country folder
-#' @param country character; the country folder name
+#' @param mainPath character; the parent directory of the location folder
+#' @param location character; the location folder name
 #' @param mostRecent logical; should the most recent downloaded boundary shapefile be selected? If FALSE and if there 
 #' are multiple available inputs, the user is interactively asked to select the input based on download time.
 #' @param alwaysSet logical; should the projected coordinate reference system always be set, even if it has already been 
@@ -11,6 +11,8 @@
 #' @param bestCRS logical; should the projected coordinate reference system be set automatically based on the "best-fit" 
 #' projected coordinate reference system? If FALSE, the user is interactively asked to select the projected coordinate reference 
 #' system from a list of suitable reference systems.
+#' @param allowInteractivity logical; if TRUE, the user can choose a label for the processed boundary shapefile that is created when
+#' setting up the projection of the project. If FALSE, the default label is used ('pr').
 #' @param testMode logical; used for testing. If TRUE labels of processed inputs are not interactively asked.
 #' @details The "best-fit" and the suitable projected coordinate reference systems are obtained with the 
 #' \code{suggest_top_crs} and the \code{suggest_crs}, respectively, from the \pkg{crsuggest} package.
@@ -22,25 +24,25 @@
 #' mainPath <- "workDir"
 #' initiate_project(mainPath)}
 #' 
-#' # Replace myCountry with the country name you are working on (workDir subfolder)
+#' # Replace myLocation with the location name you are working on (workDir subfolder)
 #' \dontrun{
-#' country <- "myCountry"
-#' download_boundaries(mainPath, country, adminLevel = 1, type = "gbOpen", alwaysDownload = TRUE)
-#' set_projection(mainPath, country, mostRecent = TRUE, alwaysSet = TRUE, bestCRS = TRUE)}
+#' location <- "myLocation"
+#' download_boundaries(mainPath, location, adminLevel = 1, type = "gbOpen", alwaysDownload = TRUE)
+#' set_projection(mainPath, location, mostRecent = TRUE, alwaysSet = TRUE, bestCRS = TRUE)}
 #' @export
-set_projection <- function (mainPath, country, mostRecent = FALSE, alwaysSet = FALSE, bestCRS = FALSE, testMode = FALSE) {
+set_projection <- function (mainPath, location, mostRecent = FALSE, alwaysSet = FALSE, bestCRS = FALSE, allowInteractivity = TRUE, testMode = FALSE) {
   if (!is.character(mainPath)) {
     stop("mainPath must be 'character'")
   }
-  if (!is.character(country)) {
-    stop("country must be 'character'")
+  if (!is.character(location)) {
+    stop("location must be 'character'")
   }
   if (!is.logical(mostRecent)){
     stop("mostRecent must be 'logical'")
   }
   message("\nSuitable coordinate reference systems based on boundaries")
   # Write the EPSG in the config.txt file
-  fileConn=file(file.path(mainPath, country, "data", "config.txt"), open = "r")
+  fileConn <- file(file.path(mainPath, location, "data", "config.txt"), open = "r")
   configTxt <- readLines(fileConn)
   close(fileConn)
   if (any(grepl(paste0("EPSG:"), configTxt))) {
@@ -50,16 +52,16 @@ set_projection <- function (mainPath, country, mostRecent = FALSE, alwaysSet = F
         stop_quietly("You exit the function.")
       }
       if (yn == 2) {
-        epsg <- get_param(mainPath, country, "EPSG")
+        epsg <- get_param(mainPath, location, "EPSG")
         stop_quietly(paste("EPSG previously set:", epsg))
       }
     } else {
-      epsg <- get_param(mainPath, country, "EPSG")
+      epsg <- get_param(mainPath, location, "EPSG")
       message(paste("EPSG previously set:", epsg))
     }
   }
   # Get the admin boundaries
-  pathBorder <- file.path(mainPath, country, "data", "vBorders")
+  pathBorder <- file.path(mainPath, location, "data", "vBorders")
   if (!dir.exists(pathBorder)) {
     stop(paste(pathBorder, "does not exist. Run the initiate_project function first or check the input parameters."))
   }
@@ -95,7 +97,7 @@ set_projection <- function (mainPath, country, mostRecent = FALSE, alwaysSet = F
     } else {
       suggestedCRS <- paste(paste("EPSG:", suggestedCRS$crs_code), gsub(" .*$", "", suggestedCRS$crs_proj4))
       suggestedCRS <- c(suggestedCRS, "Other")
-      cat(paste("\nEPSG:", best, "seems to be one of the best projected coordinate references for this country.\n"))
+      cat(paste("\nEPSG:", best, "seems to be one of the best projected coordinate references for this location.\n"))
       valid <- FALSE
       while (!valid) {
         selectedProj <- utils::menu(suggestedCRS, title = "Select projection for this project", graphics=TRUE)
@@ -121,23 +123,23 @@ set_projection <- function (mainPath, country, mostRecent = FALSE, alwaysSet = F
     }
   }
   # Write the EPSG in the config.txt file
-  fileConn = file(file.path(mainPath, country, "data", "config.txt"), open = "r")
+  fileConn = file(file.path(mainPath, location, "data", "config.txt"), open = "r")
   configTxt <- readLines(fileConn)
   close(fileConn)
-  logTxt <- file.path(mainPath, country, "data", "log.txt")
+  logTxt <- file.path(mainPath, location, "data", "log.txt")
   if(any(grepl(paste0("EPSG:"), configTxt))){
-    epsgOld <- get_param(mainPath, country, "EPSG")
+    epsgOld <- get_param(mainPath, location, "EPSG")
     if (epsgOld == epsg) {
       stop_quietly("\nNew projection equal to the one previously set. No change has been made.")
     }
     newValues <- gsub("EPSG:.*", paste0("EPSG:", epsg), configTxt)
-    fileConn <- file(file.path(mainPath, country, "data", "config.txt"), open = "w")
+    fileConn <- file(file.path(mainPath, location, "data", "config.txt"), open = "w")
     writeLines(newValues, fileConn)
     close(fileConn)
     write(paste0(Sys.time(), ": Projection parameter changed (", epsg, ")"), file = logTxt, append = TRUE)
     warning("\nProjection parameter had already been set and has been changed. Inputs might have to be processed again.")
   }else{
-    write(paste0("EPSG:", epsg), file = file.path(mainPath, country, "data", "config.txt"), append = TRUE)
+    write(paste0("EPSG:", epsg), file = file.path(mainPath, location, "data", "config.txt"), append = TRUE)
     write(paste0(Sys.time(), ": Projection parameter set (", epsg, ")"), file = logTxt, append = TRUE)
   }
   # Project the boundary shapefile
@@ -148,8 +150,8 @@ set_projection <- function (mainPath, country, mostRecent = FALSE, alwaysSet = F
   borderOutFolder <- file.path(gsub("raw", "processed", boundFolder), outTimeFolder)
   check_path_length(borderOutFolder)
   dir.create(borderOutFolder, recursive = TRUE)
-  if (testMode) {
-    label <- "test"
+  if (testMode | !allowInteractivity) {
+    label <- "pr"
   } else {
     label <- readline(prompt = paste0("Enter a label for vBorders: "))
   }

@@ -1,10 +1,24 @@
 #' Initiate Project
 #'
-#' Select the country, get the ISO 3166-1 alpha-3 country code, store it in a config.txt file and create the directory 
+#' Select the country or city, get the ISO 3166-1 alpha-3 country code, store it in a config.txt file and create the directory 
 #' main structure for the project. This function also creates a log.txt file that will record and track the main operations 
 #' related to the project.
-#' @param mainPath character; a path where the country folder will be created
-#' @param testMode logical; FALSE by default. Can be ignored. used for testing the function in the testthat context.
+#' @param mainPath character; a path where the country/city folder will be created
+#' @param allowInteractivity logical; whether to enable interactivity. \code{TRUE} by default.
+#' @param city logical; whether to focus on cities instead of countries. \code{FALSE} by default. When city is TRUE, a city extent shapefile is created 
+#' applying a 5 km (aprox) buffer to the city extent and used as reference for the project extent. This way, we consider that people can move outside the 
+#' actual city boundaries, which can be the case when we have irregular boundaries, with protusions or extensions. The city shapefile can be still used 
+#' for population statistics.
+#' @param name character; country or city name required when \code{allowInteractivity} is set to \code{FALSE}. Must match perfectly either one of 
+#' the names included in inAccessMod::country_list (country) or inAccessMod::city_list (city). For cities, can also be the name 
+#' of the city combined with the country ISO2 code when > 1 city have the same name (ex. 'Vancouver'). In this case the format 
+#' is the following: city name, white space, hyphen, space, code (ex. 'Zurich - CH'). This parameter is ignored when \code{allowInteractivity} 
+#' is set to \code{TRUE}.
+#' @param iso character; optional and only when city is TRUE, the ISO 3166-1 alpha-3 country code.
+#' The ESRI World Urban Areas dataset may have inaccurate country information for cities situated near borders, and this parameter allows the user
+#' to set up the country in which is located the city. Using an incorrect code for downloading the population raster 
+#' can result in either an issue or obtaining the wrong population dataset.
+#' @param testMode logical; \code{FALSE} by default. Can be ignored. used for testing the function in the testthat context.
 #' @details The final structure arises when downloading and processing the data with the corresponding functions,
 #' and it allows multiple 'raw' inputs and multiple 'processed' outputs for each input. This can be useful when 
 #' performing different analyses for the same country (e.g. when we have updated data).
@@ -14,38 +28,114 @@
 #' mainPath <- "workDir"
 #' initiate_project(mainPath)}
 #' @export
-initiate_project <- function (mainPath, testMode = FALSE) {
+initiate_project <- function (mainPath, 
+                              allowInteractivity = TRUE,
+                              city = FALSE,
+                              name = NULL,
+                              iso = NULL,
+                              testMode = FALSE) {
   if (!is.character(mainPath)) {
     stop("mainPath must be 'character'")
   }
   if (!dir.exists(mainPath)) {
     stop(paste(mainPath, "folder does not exist."))
   }
-  countryLst <- countrycode::codelist$country.name.en[!is.na(countrycode::codelist$un.name.en)]
   if (testMode) {
-    countryInd <- which(countryLst == "Switzerland")
+    allowInteractivity <- FALSE
+    city <- FALSE
+    name <- "Switzerland"
+    # Get the ISO code
+    iso3 <- as.character(country_list[country_list$country.name.en == name, "iso3c"])
+    countryOriginalName <- name
   } else {
-    countryInd <- utils::menu(countryLst, title="Select the country", graphics=FALSE)
+    if (!is.logical(allowInteractivity)) {
+      stop("allowInteractivity must be 'logical'")
+    }
+    if (!allowInteractivity) {
+      if (is.null(name)) {
+        stop("When allowInteractivity is FALSE, a name must be provided.")
+      }
+      if (!city) {
+        if (!name %in% inAccessMod::country_list$country.name.en) {
+          stop(paste(name, "is no a valid country name."))
+        } else {
+          iso3 <- as.character(country_list[country_list$country.name.en == name, "iso3c"])
+          countryOriginalName <- name
+        }
+      } else {
+        cityLst <- paste0(inAccessMod::city_list$Name, " - ", inAccessMod::city_list$ISO_CC)
+        cityLstN <- inAccessMod::city_list$Name
+        if (!name %in% c(cityLst, cityLstN)) {
+          print(cityLst, max = length(cityLst))
+          stop(paste(name, "is no a valid city name. Please use one of the names above. If the country code is incorrect, indicate the name of the city without the code, and set the 'iso' parameter correctly."))
+        } else {
+          if (grepl(" - [A-Z]{2}$", name)) {
+            cityInd <- which(cityLst == name)
+            if (length(cityInd) > 1) {
+              stop("> 1 city with this name/ISO2 code combination; unexpected")
+            }
+          } else {
+            cityInd <- which(cityLstN == name)
+            if (length(cityInd) > 1) {
+              stop("> 1 city with this name; please add the ISO2 country code as following: 'name - XX' (ex. 'Zurich - CH'")
+            }
+          }
+        }
+      }
+    } else {
+      if (!city) {
+        countryInd <- utils::menu(inAccessMod::country_list$country.name.en, title = "Select the country", graphics = FALSE)
+        if (countryInd == 0) {
+          stop_quietly("You exit the function.")
+        }
+        name <- inAccessMod::country_list$country.name.en[countryInd]
+        iso3 <- as.character(country_list[country_list$country.name.en == name, "iso3c"])
+        countryOriginalName <- name
+      } else {
+        # Some city names exist in multiple country (ex. Vancouver)
+        cityLst <- paste0(inAccessMod::city_list$Name, " - ", inAccessMod::city_list$ISO_CC)
+        cityInd <- utils::menu(cityLst, title = "Select the city", graphics = FALSE)
+        if (cityInd == 0) {
+          stop_quietly("You exit the function.")
+        }
+      }
+    }
   }
-  if (countryInd == 0) {
-    stop_quietly("You exit the function.")
+
+  if (city) {
+    if (!is.null(iso)) {
+      if (!grepl("^[A-Z]{3}$", iso)) {
+        stop("Invalid 'iso' parameter: must be an ISO 3166-1 alpha-3 country code.")
+      }
+      if (!iso %in% country_list$iso3c) {
+        stop("Invalid 'iso' parameter: must be a valid ISO 3166-1 alpha-3 country code.")
+      }
+      iso3 <- iso
+      countryOriginalName <- as.character(country_list[which(country_list$iso3c == iso), "country.name.en"])
+    } else {
+      iso2 <- inAccessMod::city_list$ISO_CC[cityInd]
+      iso3 <- as.character(country_list[which(country_list$iso2c == iso2), "iso3c"])
+      countryOriginalName <- as.character(country_list[which(country_list$iso2c == iso2), "country.name.en"])
+    }
+    name <- inAccessMod::city_list$Name[cityInd]
+    cityOriginalName <- name
   }
-  # Store the original name
-  countryOriginalName <- countryLst[countryInd]
-  # Store the ISO code
-  iso3 <- as.character(countrycode::codelist[countrycode::codelist$country.name.en == countryOriginalName, "iso3c"])
   # Modify the name if necessary for directory name
-  country <- gsub(" \\(.*\\)|\\(.*\\)", "", countryOriginalName)
-  country <- gsub("[^[[:alnum:]]", " ", country)
-  country <- stringr::str_squish(country)
-  country <- gsub("[[:space:]]", "_", country)
-  country <- stringi::stri_trans_general(str = country, id = "Latin-ASCII")
+  folderName <- gsub(" \\(.*\\)|\\(.*\\)", "", name)
+  folderName <- gsub("[^[[:alnum:]]", " ", folderName)
+  folderName <- stringr::str_squish(folderName)
+  folderName <- gsub("[[:space:]]", "_", folderName)
+  folderName <- stringi::stri_trans_general(str = folderName, id = "Latin-ASCII")
+  
   # Main standard inputs
   inputNames <- c("rDEM", "rPopulation", "rLandcover", "vRoads", "vWaterLines", 
-               "vNaturalPolygons", "vBorders","vFacilities")
+               "vWaterPolygons", "vBorders","vFacilities")
+  if (city) {
+    inputNames <- c(inputNames, "vExtent")
+  }
   message(paste("\nThe following input folders will be created:", paste(inputNames, collapse=", ")))
   # Add other data ?
-  if (testMode) {
+  if (testMode | !allowInteractivity) {
     yn <- 2
   } else {
     yn <- utils::menu(c("YES","NO"), title="\nDo you want to add another input folder (type 1 or 2)?")
@@ -73,7 +163,7 @@ initiate_project <- function (mainPath, testMode = FALSE) {
     }
   }
   # Create directories
-  pathData <- file.path(mainPath, country, "data")
+  pathData <- file.path(mainPath, folderName, "data")
   check_path_length(pathData)
   dir.create(pathData, recursive = TRUE, showWarnings = FALSE)
   for (inputName in inputNames) {
@@ -83,14 +173,82 @@ initiate_project <- function (mainPath, testMode = FALSE) {
   }
   # Create config.txt for ISO code, and then EPSG as well
   fileConn <- file(file.path(pathData, "config.txt"))
-  writeLines(c(paste0("COUNTRY:", countryOriginalName), paste0("ISO:", iso3)), fileConn)
+  if (city) {
+    writeLines(c(paste0("CITY:", cityOriginalName), paste0("COUNTRY:", countryOriginalName), paste0("ISO:", iso3)), fileConn)
+  } else {
+    writeLines(c(paste0("COUNTRY:", countryOriginalName), paste0("ISO:", iso3)), fileConn)
+  }
   close(fileConn)
   # Create log.txt for operation tracking
-  fileConn <- file(file.path(pathData, "log.txt"))
-  writeLines(countryOriginalName, fileConn)
+  fileConn <- file(file.path(pathData, "log.txt"), open = "a")
+  if (city) {
+    writeLines(paste0(cityOriginalName, " - ", countryOriginalName), fileConn)
+  } else {
+    writeLines(countryOriginalName, fileConn)
+  }
   writeLines(paste0(Sys.time(), ": Project initiated"), fileConn)
   close(fileConn)
+  
+  if (city) {
+    indShp <- which(paste0(inAccessMod::world_urban_areas$Name, " - ", inAccessMod::world_urban_areas$ISO_CC) == cityLst[cityInd])
+    shp <- inAccessMod::world_urban_areas[indShp, ]
+    pathBorder <- file.path(mainPath, folderName, "data", "vCity")
+    timeFolder <- format(Sys.time(), "%Y%m%d%H%M%S")
+    check_path_length(paste0(pathBorder, "/", timeFolder, "/raw"))
+    dir.create(paste0(pathBorder, "/", timeFolder, "/raw"), recursive = TRUE)
+    pathBorder <- file.path(pathBorder, timeFolder, "raw")
+    print(file.path(pathBorder, paste0(folderName, ".shp")))
+    sf::st_write(obj = shp, dsn = file.path(pathBorder, paste0(folderName, ".shp")))
+    fileConn <- file(file.path(pathData, "log.txt"), open = "a")
+    writeLines(paste0(Sys.time(), ": Urban area shapefile extracted"), fileConn)
+    close(fileConn)
+    
+    # Extent + 5 km
+    bbox <- sf::st_bbox(shp)
+    xmin <- bbox[1]
+    ymin <- bbox[2]
+    xmax <- bbox[3]
+    ymax <- bbox[4]
+    # Latitude for calculating longitude expansion
+    lat <- (ymin + ymax) / 2
+    # Calculate the degree increment
+    latIncrement <- 5 / 111  # Latitude increment in degrees
+    # Longitude increment in degrees, adjusted for latitude
+    lonIncrement <- 5 / (111 * cos(lat * pi / 180))
+    # Expand the bounding box
+    xminNew <- xmin - lonIncrement
+    xmaxNew <- xmax + lonIncrement
+    yminNew <- ymin - latIncrement
+    ymaxNew <- ymax + latIncrement
+    # Create the expanded bbox as a named vector
+    bboxNew <- c(xmin = xminNew, ymin = yminNew, 
+                       xmax = xmaxNew, ymax = ymaxNew)
+    names(bboxNew) <- c("xmin", "ymin", "xmax", "ymax")
+    bboxShp <- sf::st_as_sfc(sf::st_bbox(bboxNew, crs = sf::st_crs(4326)))
+    pathExtent <- file.path(mainPath, folderName, "data", "vBorders")
+    timeFolder <- format(Sys.time(), "%Y%m%d%H%M%S")
+    check_path_length(paste0(pathExtent, "/", timeFolder, "/raw"))
+    dir.create(paste0(pathExtent, "/", timeFolder, "/raw"), recursive = TRUE)
+    pathExtent <- file.path(pathExtent, timeFolder, "raw")
+    print(file.path(pathExtent, paste0(folderName, "_extent.shp")))
+    sf::st_write(obj = bboxShp, dsn = file.path(pathExtent, paste0(folderName, "_extent.shp")))
+    fileConn <- file(file.path(pathData, "log.txt"), open = "a")
+    writeLines(paste0(Sys.time(), ": Urban area extent shapefile calculated and saved"), fileConn)
+    close(fileConn)
+  }
   # Print directory tree
   fs::dir_tree(pathData)
+  if (city) {
+    if (!is.null(iso)) {
+      if (!grepl("^[A-Z]{3}$", iso)) {
+        stop("Invalid 'iso' parameter: must be an ISO 3166-1 alpha-3 country code.")
+      }
+      if (!iso %in% country_list$iso3c) {
+        stop("Invalid 'iso' parameter: must be a valid ISO 3166-1 alpha-3 country code.")
+      }
+    }
+    message(paste0("The city of ", name, " is considered to be part of ", countryOriginalName, " (", iso3, ")."))
+    message("If this is incorrect, please run the initiate_project again, setting up the 'iso' parameter with the correct ISO 3166-1 alpha-3 country code.")
+  }
   return(TRUE)
 }

@@ -1,8 +1,8 @@
 #' Process Input Layers
 #' 
 #' Process any input layer and copy it to its corresponding folder
-#' @param mainPath character; the parent directory of the country folder
-#' @param country character; the country folder name
+#' @param mainPath character; the parent directory of the location folder
+#' @param location character; the location folder name
 #' @param selectedInputs character; vector indicating the inputs to be processed. Raw inputs must be available. Argument
 #' can be set to "All" to consider all the available 'raw' inputs. If NULL, the user is interactively asked to select the available
 #' inputs to be processed.
@@ -23,6 +23,7 @@
 #' whether they want to run it or not.
 #' @param gridRes numeric; the resolution (meters) of the grid shapefile used for correcting the raster. Ignored if \code{popCorrection} is FALSE.
 #' If NULL and \code{popCorrection} is TRUE, the user is interactively asked to provide the grid resolution.
+#' @param allowInteractivity logical; if TRUE, the user can choose a label for each processed layer; if FALSE, label default is used ('pr')
 #' @param testMode logical; used for testing. If TRUE labels of processed inputs are not interactively asked.
 #' @details A 'processed' boundary shapefile is required for processing any other inputs. A 'processed' population raster is required
 #' for processing any other raster. These conditions are taken into account and the processing of these
@@ -33,35 +34,36 @@
 #' mainPath <- "workDir"
 #' initiate_project(mainPath)}
 #' 
-#' # Replace myCountry with the country name you are working on (workDir subfolder)
+#' # Replace myLocation with the location name you are working on (workDir subfolder)
 #' \dontrun{
-#' country <- "myCountry"
-#' download_boundaries(mainPath, country, adminLevel = 1, type = "gbOpen", alwaysDownload = TRUE)
-#' set_projection(mainPath, country, mostRecent = TRUE, alwaysSet = TRUE, bestCRS = TRUE)
-#' download_landcover(mainPath, country, alwaysDownload = TRUE, mostRecent = TRUE)
-#' download_population(mainPath, country, alwaysDownload = TRUE)
-#' download_dem(mainPath, country, alwaysDownload = TRUE, mostRecent = TRUE)
-#' download_osm(x = "roads", mainPath, country, alwaysDownload = TRUE, countryName = TRUE, mostRecent = NULL, defaultClasses = TRUE)
-#' download_osm(x = "waterLines", mainPath, country, alwaysDownload = TRUE, countryName = TRUE, mostRecent = NULL, defaultClasses = TRUE)
-#' download_osm(x = "naturalPolygons", mainPath, country, alwaysDownload = TRUE, countryName = TRUE, mostRecent = NULL, defaultClasses = TRUE)
-#' process_inputs(mainPath, country, selectedInputs = "All", mostRecent = TRUE, alwaysProcess = TRUE, defaultMethods = TRUE, changeRes = TRUE, newRes = 100, popCorrection = TRUE, gridRes = 3000)}
+#' location <- "myLocation"
+#' download_boundaries(mainPath, location, adminLevel = 1, type = "gbOpen", alwaysDownload = TRUE)
+#' set_projection(mainPath, location, mostRecent = TRUE, alwaysSet = TRUE, bestCRS = TRUE)
+#' download_landcover(mainPath, location, alwaysDownload = TRUE, mostRecent = TRUE)
+#' download_population(mainPath, location, alwaysDownload = TRUE)
+#' download_dem(mainPath, location, alwaysDownload = TRUE, mostRecent = TRUE)
+#' download_osm(mainPath, location, type = "roads", alwaysDownload = TRUE, mostRecent = NULL, defaultClasses = TRUE)
+#' download_osm(mainPath, location, type = "waterLines", alwaysDownload = TRUE, mostRecent = NULL, defaultClasses = TRUE)
+#' download_osm(mainPath, location, type = "waterPolygons", alwaysDownload = TRUE, mostRecent = NULL, defaultClasses = TRUE)
+#' process_inputs(mainPath, location, selectedInputs = "All", mostRecent = TRUE, alwaysProcess = TRUE, defaultMethods = TRUE, changeRes = FALSE, popCorrection = TRUE, gridRes = 3000)}
 #' @export
-process_inputs <- function (mainPath, country, selectedInputs = NULL, mostRecent = FALSE, 
+process_inputs <- function (mainPath, location, selectedInputs = NULL, mostRecent = FALSE, 
                             alwaysProcess = FALSE, 
                             defaultMethods = NULL, 
                             changeRes = NULL, 
                             newRes = NULL, 
                             popCorrection = NULL, 
                             gridRes = NULL,
+                            allowInteractivity = TRUE,
                             testMode = FALSE) {
   if (!is.character(mainPath)) {
     stop("mainPath must be 'character'")
   }
-  if (!is.character(country)) {
-    stop("country must be 'character'")
+  if (!is.character(location)) {
+    stop("location must be 'character'")
   }
   # Load the available raw input paths
-  rawFolders <- check_inputs(mainPath, country, "raw", onlyPrint = FALSE)
+  rawFolders <- check_inputs(mainPath, location, "raw", onlyPrint = FALSE)
   if (length(rawFolders) == 0) {
     stop("No input data available.")
   }
@@ -107,8 +109,11 @@ process_inputs <- function (mainPath, country, selectedInputs = NULL, mostRecent
       stop("gridRes must be NULL or a real positive number'")
     }
   }
-  logTxt <- paste0(mainPath, "/", country, "/data/log.txt")
-  epsg <- get_param(mainPath = mainPath, country = country, "EPSG")
+  if (!is.logical(allowInteractivity)) {
+    stop("allowInteractivity must be 'logical'")
+  }
+  logTxt <- paste0(mainPath, "/", location, "/data/log.txt")
+  epsg <- get_param(mainPath = mainPath, location = location, "EPSG")
   if (length(epsg) == 0) {
     stop("CRS is missing. Run the set_projection.")
   }
@@ -127,13 +132,13 @@ process_inputs <- function (mainPath, country, selectedInputs = NULL, mostRecent
   # Check whether we have rasters to be processed
   filesRasTrue <- NULL
   for (i in 1:length(selectedFolders)) {
-    files <- list.files(file.path(mainPath, country, "data", selectedFolders[i]), recursive = TRUE)
+    files <- list.files(file.path(mainPath, location, "data", selectedFolders[i]), recursive = TRUE)
     filesRasTrue <- c(filesRasTrue, any(grepl("raw/.*\\.tif",files)))
   }
   # If so, we require the processed boundaries
   if (any(filesRasTrue)) {
     # Border is required for raster processing; if wanted, first process this layer
-    borderPath <- file.path(mainPath, country, "data", "vBorders")
+    borderPath <- file.path(mainPath, location, "data", "vBorders")
     borderPr <- check_exists(borderPath, "processed", layer = TRUE)
     # If we want to process border or if no processed shapefile exists (required for any other processing)
     if (("vBorders" %in% selectedFolders) | is.null(borderPr)) {
@@ -157,8 +162,8 @@ process_inputs <- function (mainPath, country, selectedInputs = NULL, mostRecent
         borderOutFolder <- file.path(gsub("raw", "processed", borderFolder), outTimeFolder)
         check_path_length(borderOutFolder)
         dir.create(borderOutFolder, recursive = TRUE)
-        if (testMode) {
-          label <- "test"
+        if (testMode | !allowInteractivity) {
+          label <- "pr"
         } else {
           label <- readline(prompt = "Enter a label for vBorders: ")
         }
@@ -167,14 +172,14 @@ process_inputs <- function (mainPath, country, selectedInputs = NULL, mostRecent
         write(paste0(Sys.time(), ": Processed vBorders shapefile saved - Output folder: ", outTimeFolder), file = logTxt, append = TRUE)
       }
       selectedFolders <- selectedFolders[!grepl("vBorders", selectedFolders)]
-      border <- get_boundaries(mainPath, country, "processed", mostRecent)
+      border <- get_boundaries(mainPath, location, "processed", mostRecent)
       # If we don't need/want to process the boundary shapefile, load it
     } else {
-      border <- get_boundaries(mainPath, country, "processed", mostRecent)
+      border <- get_boundaries(mainPath, location, "processed", mostRecent)
     }
     # If we want to process the population raster
     if ("rPopulation" %in% selectedFolders) {
-      process_pop(mainPath, country, border, epsg, mostRecent, defaultMethods, changeRes, newRes, popCorrection, gridRes, alwaysProcess, testMode)
+      process_pop(mainPath, location, border, epsg, mostRecent, defaultMethods, changeRes, newRes, popCorrection, gridRes, alwaysProcess, allowInteractivity, testMode)
       selectedFolders <- selectedFolders[!grepl("rPopulation", selectedFolders)]
       # Check if other inputs to be processed
       if (length(selectedFolders) < 1) {
@@ -183,18 +188,18 @@ process_inputs <- function (mainPath, country, selectedInputs = NULL, mostRecent
       # Check whether we still have rasters to be processed
       filesRasTrue <- NULL
       for (i in 1:length(selectedFolders)) {
-        files <- list.files(file.path(mainPath, country, "data", selectedFolders[i]), recursive = TRUE)
+        files <- list.files(file.path(mainPath, location, "data", selectedFolders[i]), recursive = TRUE)
         filesRasTrue <- c(filesRasTrue, any(grepl("raw/.*\\.tif",files)))
       }
     }
     # filesRasTrue might have changed; if still TRUE, load a processed population raster
     if (any(filesRasTrue)) {
       # Population is required for raster processing
-      popFolder <- file.path(mainPath, country, "data", "rPopulation")
+      popFolder <- file.path(mainPath, location, "data", "rPopulation")
       popFolders <- check_exists(popFolder, "processed", layer = TRUE)
       if (is.null(popFolders)) {
         message("\nNo processed population raster is available.\nProcessing raw population raster...")
-        process_pop(mainPath, country, border, epsg, mostRecent, defaultMethods, changeRes, newRes, popCorrection, gridRes, alwaysProcess, testMode)
+        process_pop(mainPath, location, border, epsg, mostRecent, defaultMethods, changeRes, newRes, popCorrection, gridRes, alwaysProcess, allowInteractivity, testMode)
         popFolders <- check_exists(popFolder, "processed", layer = TRUE)
       }
       message("\nLoading processed population raster...")
@@ -213,7 +218,7 @@ process_inputs <- function (mainPath, country, selectedInputs = NULL, mostRecent
   for (i in 1:length(selectedFolders)) {
     cat("\n")
     message(selectedFolders[i])
-    inputFolder <- file.path(mainPath, country, "data", selectedFolders[i])
+    inputFolder <- file.path(mainPath, location, "data", selectedFolders[i])
     inputFolders <- check_exists(inputFolder, "raw", layer = TRUE)
     timeFolder <- select_input(inputFolders, paste(selectedFolders[i], "timestamped at:"), mostRecent)
     if (is.null(timeFolder)) {
@@ -255,8 +260,8 @@ process_inputs <- function (mainPath, country, selectedInputs = NULL, mostRecent
       outFolder <- file.path(gsub("raw", "processed", inputFolder), outTimeFolder)
       check_path_length(outFolder)
       dir.create(outFolder, recursive = TRUE)
-      if (testMode) {
-        label <- "test"
+      if (testMode | !allowInteractivity) {
+        label <- "pr"
       } else {
         label <- readline(prompt = paste0("Enter a label for ", selectedFolders[i], ": "))
       }
@@ -271,8 +276,8 @@ process_inputs <- function (mainPath, country, selectedInputs = NULL, mostRecent
       outFolder <- paste0(gsub("raw", "processed", inputFolder), "/", outTimeFolder)
       check_path_length(outFolder)
       dir.create(outFolder, recursive = TRUE)
-      if (testMode) {
-        label <- "test"
+      if (testMode | !allowInteractivity) {
+        label <- "pr"
       } else {
         label <- readline(prompt = paste0("Enter a label for ", selectedFolders[i], ": "))
       }

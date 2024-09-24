@@ -11,22 +11,21 @@
 #' @keywords internal
 #' @export
 process_raster <- function (ras, border, epsg, projMeth) {
-  `%>%` <- purrr::`%>%`
   border <- sf::st_transform(as(border, "sf"), terra::crs(ras))
-  cat(paste("Cropping:\n", ras %>% terra::sources()))
+  cat(paste("Cropping:\n", terra::sources(ras)))
   rasCrop <- terra::crop(ras, border)
-  cat(paste("\nMasking:\n", ras %>% terra::sources()))
+  cat(paste("\nMasking:\n", terra::sources(ras)))
   rasMask <- terra::mask(rasCrop, as(border, "SpatVector"))
   if (is.null(projMeth)) {
     projectionMethod <- c("near", "bilinear","cubic", "cubicspline")
-    pm <- utils::menu(projectionMethod, title = cat(paste0("\n\nSelect projection method for:\n", ras %>% terra::sources(),"\nSee terra::project function help for more details.")))
+    pm <- utils::menu(projectionMethod, title = cat(paste0("\n\nSelect projection method for:\n", terra::sources(ras), "\nSee terra::project function help for more details.")))
     if (pm == 0) {
       return(NULL)
     } else {
       projMeth <- projectionMethod[pm]
     }
   } 
-  cat(paste("\nProjecting:\n", ras %>% terra::sources(), "\n"))
+  cat(paste("\nProjecting:\n", terra::sources(ras), "\n"))
   rasProject <- terra::project(rasMask, epsg, method = projMeth)
   return(list(rasProject, projMeth))
 }

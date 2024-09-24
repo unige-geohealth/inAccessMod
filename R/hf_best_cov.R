@@ -198,6 +198,8 @@ hf_best_cov <- function (inputFolder,
   message("Main algorithm...")
   bar <- txtProgressBar(min = 0, max = 100, initial = 0, char = "=", width = NA, style = 3, file = "")
   i <- 0
+  # Keep track of the catchments that are removed because they are contained in another catchment
+  catchRm <- data.frame()
   # The algorithm runs until the expected number of facility is reached or until we don't have any facility left.
   while (i < nTot & nrow(tempCatchUnique) > 0) {
     # Only required when i > 0
@@ -281,16 +283,35 @@ hf_best_cov <- function (inputFolder,
           # If the selected catchment contains another catchment, delete the contained catchment.
           if (nrow(stock) == 0){
             tempCatchUnique$totalpop[k] <- 0
+            catchRm <- rbind(catchRm, tempCatchUnique[k, ])
           } else {
             # If not, replace the catchment k by the remaining parts of the catchment
             tempCatchUnique[k, ] <- stock
           }
         }
       }
+      # Remove the ones with 0 population (contained in another catchment)
+      tempCatchUnique <- tempCatchUnique[tempCatchUnique$totalpop > 0, ]
       setTxtProgressBar(bar, ceiling((((i - 1) * 100) / nTot) + (k * 100 / nTot) / nrow(tempCatchUnique)))
     }
   }
   close(bar)
+  
+  # If nTot not reached and if we have removed catchment because they were contained in other catchments
+  # We add them to the final list
+  toAdd <- nTot - i
+  if (toAdd > 0 & nrow(catchRm) > 0) {
+    indToAdd <- min(toAdd, nrow(catchRm))
+    catchAdd <- catchRm[1:indToAdd, ]
+    for (k in 1:indToAdd) {
+      i <- i + 1
+      finalTable[i, "Facility name"] <- sf::st_drop_geometry(catchAdd[k, catchHfColName])[1, 1]
+      finalTable[i, "Population covered"] <- catchAdd$totalpop[k]
+      if (adminCheck) {
+        finalTable[i, "Region"] <- sf::st_drop_geometry(catchAdd[k, adminColName])[1, 1]
+      }
+    }
+  }
   colNamesFT <- colnames(finalTable)
   finalTable <- finalTable[complete.cases(finalTable), ]
   for (i in 1:nrow(finalTable)) {

@@ -24,7 +24,7 @@ AccessMod is a World Health Organization-recognized, free and open source softwa
 inAccessMod is a R package that allows the user to easily download and prepare all the required layers for AccessMod. A proper folder structure is created in order to manage multi-temporal data and/or multiple analysis scenarios. While the functions to process health facility tables are specifically designed to handle data from The Health Resources and Services Availability Monitoring System (HeRAMS), the other ones can be used for any other project. The layer downloading, cropping, masking, resampling, exporting processes are automated to a large degree, making the preparation of the inputs quick and straightforward. 
 
 ### Installation
-This package requires R version 4.1.3 or later. It also requires the following packages: `crsuggest`, `data.table`, `dplyr`, `exactextractr`, `fasterize`, `fs`, `geodata`, `jsonlite`, `lubridate`, `osmextract`, `purrr`, `raster`, `RCurl`, `readxl`, `rgeoboundaries` (version 0.0.0.9000 or later), `rmarkdown`, `sf`, `stringi`, `stringr`, `testthat`, `tibble`, `utils`, and `writexl`. These dependencies should be installed automatically when `dependencies = TRUE` is set in the command used to install the package.
+This package requires R version 4.1.3 or later. It also requires the following packages: `crsuggest`, `data.table`, `dplyr`, `exactextractr`, `fasterize`, `fs`, `geodata`, `jsonlite`, `lubridate`, `osmdata`, `osmextract`, `purrr`, `raster`, `RCurl`, `readxl`, `rgeoboundaries` (version 0.0.0.9000 or later), `rmarkdown`, `sf`, `stringi`, `stringr`, `testthat`, `tibble`, `utils`, and `writexl`. These dependencies should be installed automatically when `dependencies = TRUE` is set in the command used to install the package.
 
 ```{r install, eval=FALSE}
 if (!require("devtools")) install.packages("devtools")
@@ -44,7 +44,7 @@ library(inAccessMod)
 ```
 
 ### Initiate Project
-With the `initiate_project` function, we can select the country and automatically, the ISO 3166-1 alpha-3 country code is stored in a config.txt file and the directory main structure for the project is created. This function also creates a log.txt file that will record and track the main operations related to the project. We will see that the final structure arises when downloading and processing the data with the corresponding functions, and it allows multiple ’raw’ inputs and multiple ’processed’ outputs for each input. This can be useful when performing different analyses for the same country (e.g. when we have updated data) or using different processing parameters. To initiate the project, the only parameter we need to provide is the path where the project, namely the country folder will be created. Let's run the function and select "Switzerland" for this tutorial.
+With the `initiate_project` function, we can select a country (or a city) and automatically, the ISO 3166-1 alpha-3 country code is stored in a config.txt file and the directory main structure for the project is created. This function also creates a log.txt file that will record and track the main operations related to the project. We will see that the final structure arises when downloading and processing the data with the corresponding functions, and it allows multiple ’raw’ inputs and multiple ’processed’ outputs for each input. This can be useful when performing different analyses for the same country (e.g. when we have updated data) or using different processing parameters. To initiate the project, the only parameter we need to provide is the path where the project, namely the country folder will be created. Let's run the function and select "Switzerland" for this tutorial.
 
 ```{r initiate, eval=FALSE}
 # Replace workDir with the actual path to your working directory
@@ -74,7 +74,7 @@ We are then asked to select the data we want to copy. In this case, as the folde
 
 ### Download the country boundaries
 
-Let's say that we do not have any boundary shapefile. We can download it with the `download_boundaries` function. This layer will help to set the projected coordinate reference system and will be used for cropping, masking and clipping the other input layers. The function requires the name of the country folder, the boundary administrative level, the data source, and a logical parameter (TRUE/FALSE) that indicates if the layer should always be downloaded, even if it has already been downloaded. Data source parameter (type) can be 'gbOpen' for geoBoundaries data, 'gbHumanitarian' for UN OCHA CODs data, or 'gbAuthoritative' for UN SALB data (default). The ISO code used to download the shapefile is retrieved by the internal \code{get_param} function. Another internal function will query the geoBoundaries database (geoboundaries_query) to check availability and retrieve a json file that contains the download link.
+Let's say that we do not have any boundary shapefile. We can download it with the `download_boundaries` function. This layer will help to set the projected coordinate reference system and will be used for cropping, masking and clipping the other input layers. The function requires the name of the country folder, the boundary administrative level, the data source, and a logical parameter (TRUE/FALSE) that indicates if the layer should always be downloaded, even if it has already been downloaded. Data source parameter (type) can be 'gbOpen' for geoBoundaries data, 'gbHumanitarian' (default) for UN OCHA CODs data, or 'gbAuthoritative' for UN SALB data. The ISO code used to download the shapefile is retrieved by the internal \code{get_param} function. Another internal function will query the geoBoundaries database (geoboundaries_query) to check availability and retrieve a json file that contains the download link.
 
 ```{r boundaries, eval=FALSE}
 download_boundaries(mainPath, country, adminLevel = 1, type = "gbOpen", alwaysDownload = TRUE)
@@ -200,14 +200,14 @@ download_landcover(mainPath, country, alwaysDownload = TRUE, mostRecent = TRUE)
 
 #### Open Street Maps
 
-This function allows us to download the Open Street Map shapefiles corresponding to 'roads', 'rivers' or any other natural feature and copy them to their corresponding folders. The parameter *x* represents the target layer. Can be 'roads', 'waterLines' or 'naturalPolygons'. The logical parameter countryName indicates if the country name should be used to match with the osm.pbf file in the OSM server ? If FALSE, it is the extent of the boundary shapefile that is matched with the osm.pbf file in the Geofabrik's free download server. Matching by name is usually much faster and *countryName* should be always set TRUE, unless the country name is complex and not recognized by the server. The *mostRecent* parameter is ignored if *countryName* is TRUE. If x = "roads" and defaultClasses is TRUE, only the official OSM road classes are kept. For waterLines and naturalPolygons, default classes are river and water, respectively. If defaultClasses is FALSE, we can select the available classes we would like to keep. Let's download the OSM data setting the defaulClasses parameter to TRUE. The process can take time, as the data for the entire country is downloaded even though we are focusing on two single regions.
+This function allows us to download the Open Street Map shapefiles corresponding to 'roads', 'rivers' or 'lakes' and copy them to their corresponding folders. The parameter *type* represents the target layer. Can be 'roads', 'waterLines' or 'waterPolygons'. It is the extent of the boundary shapefile that is matched with the osm.pbf file in the Geofabrik's free download server. If type = "roads" and defaultClasses is TRUE, only the official OSM road classes are kept. For waterLines and waterPolygons, default classes are river and water, respectively. If defaultClasses is FALSE, we can select the available classes we would like to keep. Let's download the OSM data setting the defaulClasses parameter to TRUE. The process can take time, as the data for the entire country is downloaded even though we are focusing on two single regions.
 
 ```{r roads, eval=FALSE}
-download_osm(x = "roads", mainPath, country, alwaysDownload = TRUE, countryName = TRUE, mostRecent = NULL, defaultClasses = TRUE)
+download_osm(mainPath, country, "roads", alwaysDownload = TRUE, mostRecent = TRUE, defaultClasses = TRUE)
 ```
 
 ```{r waterLines, eval=FALSE}
-download_osm("waterLines", mainPath, country, alwaysDownload = TRUE, countryName = TRUE, mostRecent = NULL, defaultClasses = TRUE)
+download_osm(mainPath, country, "waterLines", alwaysDownload = TRUE, mostRecent = TRUE, defaultClasses = TRUE)
 ```
 
 At any time, we can check which inputs (either 'raw' or 'processed') are available and which are not available.
@@ -221,7 +221,7 @@ check_inputs(mainPath, country, type = "raw")
 Let's download the lakes from OSM before processing the inputs.
 
 ```{r naturalPolyg, eval=FALSE}
-download_osm("naturalPolygons", mainPath, country, alwaysDownload = TRUE, countryName = TRUE, mostRecent = NULL, defaultClasses = TRUE)
+download_osm(mainPath, country, "waterPolygons", alwaysDownload = TRUE, mostRecent = TRUE, defaultClasses = TRUE)
 ```
 
 ### Process layers
