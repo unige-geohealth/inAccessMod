@@ -191,7 +191,7 @@ initiate_project <- function (mainPath,
   
   if (city) {
     indShp <- which(paste0(inAccessMod::world_urban_areas$Name, " - ", inAccessMod::world_urban_areas$ISO_CC) == cityLst[cityInd])
-    shp <- inAccessMod::world_urban_areas[indShp, ]
+    shp <- sf::st_as_sf(inAccessMod::world_urban_areas[indShp, ])
     pathBorder <- file.path(mainPath, folderName, "data", "vCity")
     timeFolder <- format(Sys.time(), "%Y%m%d%H%M%S")
     check_path_length(paste0(pathBorder, "/", timeFolder, "/raw"))
