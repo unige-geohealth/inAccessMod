@@ -191,7 +191,10 @@ HeRAMS_create_hf_shapefile <- function (mainPath, location, mostRecentBoundaries
     write.table(df[!inter, ], file.path(hfFolder, paste0(nameCSV, "_coordinates_outside.txt")))
     message(paste("\nYou can access the removed HFs at:\n", file.path(hfFolder, paste0(nameCSV, "_coordinates_outside.txt")), "\n"))
   }
-  shp <- sf::st_as_sf(pts[inter, -1])
+  # To make the shapefile lighter
+  toRm <- grep("S[0-9]\\_0|BASA|BAWA|BAINP|BAWM|BACO|INFO|CONDE|CONDB|BAHE|BACC|BAHA", colnames(pts))
+  shp <- sf::st_as_sf(pts[inter, -c(1, toRm)])
+  # shp <- sf::st_as_sf(pts[inter, -1])
   cat("Saving the HFs' shapefile...\n")
   tempShp <- tempfile()
   tryWrite <- tryCatch({sf::st_write(shp, dsn = paste0(tempShp, ".shp"), append = FALSE)}, error = function (e) 0)
