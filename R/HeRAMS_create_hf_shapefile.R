@@ -244,6 +244,9 @@ HeRAMS_create_hf_shapefile <- function (mainPath, location, mostRecentBoundaries
   if (k == 10) {
     stop_quietly("Too many attempts.")
   }
+  # Column names may have been truncated; write them in a text file (used for parameter setting in further analysis)
+  shpWritten <- sf::st_read(paste0(tempShp, ".shp"))
+  write.csv(data.frame(colNames = colnames(shpWritten), file.path(hfFolder, "final_col_names.csv"), row.names = FALSE) 
   filesToCopy <- list.files(dirname(paste0(tempShp, ".shp")), pattern = basename(tempShp), full.names = TRUE)
   for (i in 1:length(filesToCopy)) {
     fi <- basename(filesToCopy[i])
