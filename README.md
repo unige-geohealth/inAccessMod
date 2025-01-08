@@ -5,7 +5,9 @@ AccessMod is a World Health Organization-recognized, free and open source softwa
 inAccessMod is a R package that allows the user to easily download and prepare all the required layers for AccessMod. A proper folder structure is created in order 
 to manage multi-temporal data and/or multiple analysis scenarios. While the functions to process health facility tables are specifically designed to handle data
 from The Health Resources and Services Availability Monitoring System (HeRAMS), the other ones can be used for any other project. The layer downloading, cropping, 
-masking, resampling, exporting processes are automated to a large degree, making the preparation of the inputs quick and straightforward. 
+masking, resampling, exporting processes are automated to a large degree, making the preparation of the inputs quick and straightforward.
+
+**How to cite**: Timoner, P., Hierink, F., Baecher, L., Fuhrer, C. and Ray, N. (2024). inAccessMod: An R package to automate data downloading and processing for AccessMod. *Journal of Open Source Software*, 9(93), 5879, https://doi.org/10.21105/joss.05879
 
 ## Installation
 
