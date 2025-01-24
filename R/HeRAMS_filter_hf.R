@@ -538,7 +538,7 @@ HeRAMS_filter_hf <- function (mainPath, location, pathTableCode = NULL, pathTabl
   check_path_length(outFolder)
   dir.create(outFolder, recursive = TRUE)
   file.copy(file.path(tempDir, "time_frame.txt"), file.path(pathFacilities, scenarioDir, outTimeFolder))
-  codeCol <- tibCode[, colnames(tibCode)[grepl("^QHeRAMS[0-9]{3}$", colnames(tibCode))]]
+  codeCol <- tibCode[, colnames(tibCode)[grepl("^QHeRAMS[0-9]{3}$|^HFFUNCT$|^HFACC$|^CONDB$|^CONDE$", colnames(tibCode))]]
   colnames(codeCol) <- paste0(colnames(codeCol), "_c")
   codeCol <- abbr_col_names(codeCol)
   

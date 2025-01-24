@@ -192,7 +192,7 @@ HeRAMS_create_hf_shapefile <- function (mainPath, location, mostRecentBoundaries
     message(paste("\nYou can access the removed HFs at:\n", file.path(hfFolder, paste0(nameCSV, "_coordinates_outside.txt")), "\n"))
   }
   # To make the shapefile lighter
-  toRm <- grep("S[0-9]\\_0|BASA|BAWA|BAINP|BAWM|BACO|INFO|CONDE|CONDB|BAHE|BACC|BAHA", colnames(pts))
+  toRm <- grep("S[0-9]\\_0|BASA|BAWA|BAFC|BAEN|BAINP|BAWM|BACO|INFO|S[0-9]|BAHE|BACC|last_sync|worksp_id|MoSD1|other|CONT|MANAGEMENT|OPRDAYS|COM|BAHA|^QH[0-9]{3}$", colnames(pts))
   shp <- sf::st_as_sf(pts[inter, -c(1, toRm)])
   # shp <- sf::st_as_sf(pts[inter, -1])
   cat("Saving the HFs' shapefile...\n")
