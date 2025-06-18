@@ -24,6 +24,15 @@
 #' download_landcover(mainPath, location, alwaysDownload = TRUE, mostRecent = TRUE)}
 #' @export
 download_landcover <- function (mainPath, location, alwaysDownload = FALSE, mostRecent = FALSE) {
+  message(
+    "The VITO Global Land Cover dataset is no longer available at its previous location:\n",
+    "https://s3-eu-west-1.amazonaws.com/vito.landcover.global/v3.0.1/2019/\n",
+    "Alternative solutions are being explored.\n",
+    "In the meantime, you can manually download land cover data — for example, from ESA WorldCover:\n",
+    "https://esa-worldcover.org/en/download\n",
+    "Then use the `copy_input()` function to integrate the data into your project."
+  )
+  return(NULL)
   if (!is.character(mainPath)) {
     stop("mainPath must be 'character'")
   }
