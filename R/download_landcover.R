@@ -33,11 +33,17 @@ download_landcover <- function (mainPath, location, globalLandCover = NULL, path
     stop("globalLandCover must be 'character'")
   }
 
-if (is.null(globalLandCover) && !is.character(pathStoreLandCover)) {
-    stop("pathStoreLandCover must be 'character'")
+  if (!is.null(pathStoreLandCover)) {
+    if (!is.character(pathStoreLandCover)) {
+      stop("pathStoreLandCover must be 'character'")
+    } 
     if (!dir.exists(pathStoreLandCover)) {
       stop("pathStoreLandCover is not a valid directory")
     }
+    pathStoreLandCover_usr <- TRUE
+  } else {
+    pathStoreLandCover_usr <- FALSE
+    pathStoreLandCover <- tempdir()
   }
 
   if (!is.logical(mostRecent)){
@@ -82,7 +88,7 @@ if (is.null(globalLandCover) && !is.character(pathStoreLandCover)) {
   terra::writeRaster(cropedLC, file.path(pathLandcover, paste0(location, "_LC100.tif")), overwrite = TRUE)
   write(paste0(Sys.time(), ": Land cover data prepared - Input folder ", timeFolder), file = logTxt, append = TRUE)
   cat(paste0("Done: ", pathLandcover, "/", location, "_LC100.tif", "\n"))
-  if (download) {
+  if (download & pathStoreLandCover_usr) {
     cat(paste0("For other projects, you will find the downloaded global land cover data at: ", globalLandCover, "\n"))
   }
   return(TRUE)
