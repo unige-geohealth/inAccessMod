@@ -7,7 +7,8 @@
 download_landcover(
   mainPath,
   location,
-  alwaysDownload = FALSE,
+  globalLandCover = NULL,
+  pathStoreLandCover = NULL,
   mostRecent = FALSE
 )
 }
@@ -16,11 +17,12 @@ download_landcover(
 
 \item{location}{character; the location folder name}
 
-\item{alwaysDownload}{logical; should the raster always be downloaded, even if it has already been 
-downloaded? If FALSE and if the raster has already been downloaded the user is 
-interactively asked whether they want to download it again or not.}
+\item{globalLandCover}{character; the path to the global land cover data (Cpernicus 100m discrete classification);
+if NULL, the function will download the data from Zenodo and copy it to pathStoreLandCover}
 
-\item{mostRecent}{logical; should the most recent boundary shapefile be selected to define the required landcover tiles? 
+\item{pathStoreLandCover}{character; the path to the folder where the global land cover data should be stored}
+
+\item{mostRecent}{logical; should the most recent boundary shapefile be selected to define the required landcover area?
 If FALSE and if there are multiple available inputs, the user is interactively asked to select the input based on file creation
 time.}
 }
@@ -28,8 +30,7 @@ time.}
 Download the Land Cover 100 m from the Copernicus Global Land Service and copy it to its corresponding folder.
 }
 \details{
-The function downloads the landcover tiles from the AWS cloud and determines the file names based on the extent
-of the boundary shapefile. If there are multiple tiles, it produces a mosaic.
+The function will take the global land cover data and crop it to the extent of the boundaries of the location.
 }
 \examples{
 # Replace workDir with the actual path to your working directory
@@ -41,5 +42,5 @@ initiate_project(mainPath)}
 \dontrun{
 location <- "myLocation"
 download_boundaries(mainPath, location, adminLevel = 1, type = "gbOpen", alwaysDownload = TRUE)
-download_landcover(mainPath, location, alwaysDownload = TRUE, mostRecent = TRUE)}
+download_landcover(mainPath, location, globalLandCover = NULL, mostRecent = TRUE)}
 }

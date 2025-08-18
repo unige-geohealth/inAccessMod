@@ -18,7 +18,10 @@ initiate_project(
 
 \item{allowInteractivity}{logical; whether to enable interactivity. \code{TRUE} by default.}
 
-\item{city}{logical; whether to focus on cities instead of countries. \code{FALSE} by default.}
+\item{city}{logical; whether to focus on cities instead of countries. \code{FALSE} by default. When city is TRUE, a city extent shapefile is created 
+applying a 5 km (aprox) buffer to the city extent and used as reference for the project extent. This way, we consider that people can move outside the 
+actual city boundaries, which can be the case when we have irregular boundaries, with protusions or extensions. The city shapefile can be still used 
+for population statistics.}
 
 \item{name}{character; country or city name required when \code{allowInteractivity} is set to \code{FALSE}. Must match perfectly either one of 
 the names included in inAccessMod::country_list (country) or inAccessMod::city_list (city). For cities, can also be the name 

@@ -356,16 +356,12 @@ population layer by selecting the folder
 
 This function allows us to download the Land Cover 100 m from the
 Copernicus Global Land Service and copy it to its corresponding folder.
-The function downloads the landcover tiles from the AWS cloud and
-determines the file names based on the extent of the boundary shapefile.
-If there are multiple tiles, it produces a mosaic. If *alwaysDownload*
-is TRUE, the raster is always be downloaded, even if it has already been
-downloaded ? If FALSE and if the raster has already been downloaded we
-are interactively asked whether we want to download it again or not. And
-the *mostRecent* logical parameter indicates if the most recent boundary
-shapefile should be selected to define the required landcover tiles ?
+The function downloads the landcover global dataset from Zenodo when 
+the globalLandCover path is not provided and store it in the
+pathStoreLandCover folder. Then the land cover data is cropped and copy
+to the corresponding project folder.
 
-    download_landcover(mainPath, country, alwaysDownload = TRUE, mostRecent = TRUE)
+    download_landcover(mainPath, country, globalLandCover, pathStoreLandCover, mostRecent = TRUE)
 
 #### Open Street Maps
 
