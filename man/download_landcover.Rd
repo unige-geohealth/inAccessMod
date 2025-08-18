@@ -20,7 +20,8 @@ download_landcover(
 \item{globalLandCover}{character; the path to the global land cover data (Cpernicus 100m discrete classification);
 if NULL, the function will download the data from Zenodo and copy it to pathStoreLandCover}
 
-\item{pathStoreLandCover}{character; the path to the folder where the global land cover data should be stored}
+\item{pathStoreLandCover}{character; the path to the folder where the global land cover data should be stored. When it is NULL
+it saves the data in a temporary directory.}
 
 \item{mostRecent}{logical; should the most recent boundary shapefile be selected to define the required landcover area?
 If FALSE and if there are multiple available inputs, the user is interactively asked to select the input based on file creation
