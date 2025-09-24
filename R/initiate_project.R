@@ -63,6 +63,7 @@ initiate_project <- function (mainPath,
           countryOriginalName <- name
         }
       } else {
+        stop_quietly("City selection is no longer available because of License restrictions for the ESRI World Urban Areas dataset.")
         cityLst <- paste0(inAccessMod::city_list$Name, " - ", inAccessMod::city_list$ISO_CC)
         cityLstN <- inAccessMod::city_list$Name
         if (!name %in% c(cityLst, cityLstN)) {
@@ -92,6 +93,7 @@ initiate_project <- function (mainPath,
         iso3 <- as.character(country_list[country_list$country.name.en == name, "iso3c"])
         countryOriginalName <- name
       } else {
+        stop_quietly("City selection is no longer available because of License restrictions for the ESRI World Urban Areas dataset.")
         # Some city names exist in multiple country (ex. Vancouver)
         cityLst <- paste0(inAccessMod::city_list$Name, " - ", inAccessMod::city_list$ISO_CC)
         cityInd <- utils::menu(cityLst, title = "Select the city", graphics = FALSE)
