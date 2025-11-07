@@ -129,7 +129,8 @@ download_osm <- function (mainPath, location, type, alwaysDownload = FALSE, most
     # Get right country name for osmextract
     iso3 <- get_param(mainPath, location, "ISO")
     iso2 <- inAccessMod::country_list$iso2c[inAccessMod::country_list$iso3c == iso3]
-    place <- osmextract::geofabrik_zones$name[which(osmextract::geofabrik_zones$iso3166_1_alpha2 == iso2)]
+    # place <- osmextract::geofabrik_zones$name[which(osmextract::geofabrik_zones$iso3166_1_alpha2 == iso2)]
+    place <- osmextract::geofabrik_zones$name[which(grepl(iso2, osmextract::geofabrik_zones$iso3166_1_alpha2))]
     shp <- tryCatch({
       osmextract::oe_get(place,
                          quiet = FALSE,

@@ -9,7 +9,8 @@ download_landcover(
   location,
   globalLandCover = NULL,
   pathStoreLandCover = NULL,
-  mostRecent = FALSE
+  mostRecent = FALSE,
+  timeout = 600
 )
 }
 \arguments{
@@ -26,6 +27,8 @@ it saves the data in a temporary directory.}
 \item{mostRecent}{logical; should the most recent boundary shapefile be selected to define the required landcover area?
 If FALSE and if there are multiple available inputs, the user is interactively asked to select the input based on file creation
 time.}
+
+\item{timeout}{numeric; the maximum time to wait for downloading the global land cover data, in seconds (default 600s)}
 }
 \description{
 Download the Land Cover 100 m from the Copernicus Global Land Service and copy it to its corresponding folder.
